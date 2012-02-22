@@ -1,0 +1,354 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Cell Browser</title>
+
+
+
+<!-- CSS -->
+    	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/ext-libs/sencha/ext-4.0.7/resources/css/ext-all.css">
+     	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/libs/resources/css/style.css">  
+<!--    	<link rel="stylesheet" type="text/css" href="../../wum/resources/css/style.css"> -->
+		<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/ext-libs/ChemDoodleWeb/install/ChemDoodleWeb.css">
+  
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-16414504-2']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+  
+	<!-- EXT-LIBS -->
+
+	<!-- Ext-js -->
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/sencha/ext-4.0.7/ext-all.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/sencha/ext-4.0.7/examples/shared/examples.js"></script>
+	
+
+	<!-- jQuery -->
+<!-- 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery/1.6.4/jquery-1.6.4.min.js"></script>  -->
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.sha1.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.cookie.js"></script>  
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jqXMLUtils.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.smartresize.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-mousewheel-3.0.6/jquery.mousewheel.min.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.svg.js"></script>
+	
+	
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/xml2json.js"  ></script>
+	
+	<!-- Canvas to SVG converters -->
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/base64.js"  ></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvas2image.js"  ></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvg.js"></script> 
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/rgbcolor.js"></script> 
+	
+	
+	<!-- CHEMDOODLE -->
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/ChemDoodleWeb/install/ChemDoodleWeb-libs.js"></script> 
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/ChemDoodleWeb/install/ChemDoodleWeb.js"></script> 
+	
+	
+	
+
+
+	
+		<!-- LIBS -->
+
+		<!-- wum ui-widgets -->
+		<script type="text/javascript" src="../apps/wum/ui-widgets/header-widget.js"></script>
+<!-- 		<script type="text/javascript" src="../apps/wum/ui-widgets/app-viewer.js"></script> -->
+		<script type="text/javascript" src="../apps/wum/ui-widgets/user-list-widget.js"></script>
+		<script type="text/javascript" src="../apps/wum/ui-widgets/job-list-widget.js"></script>
+		<script type="text/javascript" src="../apps/wum/ui-widgets/data-list-widget.js"></script>
+		<script type="text/javascript" src="../apps/wum/ui-widgets/paged-view-list-widget.js"></script>
+		<script type="text/javascript" src="../apps/wum/ui-widgets/user-bar-widget.js"></script>
+		<script type="text/javascript" src="../apps/wum/ui-widgets/upload-widget.js"></script>
+		<script type="text/javascript" src="../apps/wum/ui-widgets/login-widget.js"></script>
+		<script type="text/javascript" src="../apps/wum/ui-widgets/edit-user-widget.js"></script>
+		<script type="text/javascript" src="../apps/wum/ui-widgets/result-widget.js"></script>
+		<script type="text/javascript" src="../apps/wum/ui-widgets/result-table.js"></script>
+		<script type="text/javascript" src="../apps/wum/ui-widgets/browser-data-widget.js"></script>
+		
+		<!-- wum ws-manager -->
+		<script type="text/javascript" src="../apps/wum/ws-manager/wum-adapter.js"></script>
+		<script type="text/javascript" src="../apps/wum/ws-manager/wum-rest-adapter.js"></script>
+	
+		
+		<!-- **************** -->
+		
+		
+		<!-- js-commons-lib dataadapter -->
+		<script type="text/javascript" src="../js-commons-lib/data-adapter/data-adapter.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/data-adapter/file/file-data-adapter.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/data-adapter/file/sif-file-data-adapter.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/data-adapter/file/tabular-file-data-adapter.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/data-adapter/file/dot/dot-file-data-adapter.js"  ></script>
+		
+		<!-- js-commons-lib dataset -->
+		<script type="text/javascript" src="../js-commons-lib/dataset/dataset.js"  ></script>
+		
+	
+		<!-- network viewer -->
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/network-viewer.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/network-meta-data-viewer.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/meta-network.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/network-dataset-formatter.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/layout-dataset.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/attributes-dataset.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/settings-interactome-viewer.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/network-editor-bar-widget.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/network-sbgn-bar-widget.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/graph-dataset.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/network-widget.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/graph-canvas.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/graph-item.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/vertex.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/item-graph-formatter.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/vertex-graph-formatter.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/meta-vertex.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/edge.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/edge-graph-formatter.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/network-file-widget.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/sif-network-file-widget.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/interactome-background-manager.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/pathway-tree-viewer.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/network-viewer/biopax-manager.js"></script>
+		
+		<!-- **************** -->
+		
+		
+		
+		
+		
+		<!-- js-commons-lib cellbase dataadapter -->
+		<script type="text/javascript" src="../js-commons-lib/cellbase/data-adapter/cellbase-data-adapter.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/cellbase/data-adapter/region-cellbase-data-adapter.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/cellbase/data-adapter/gene-region-cellbase-data-adapter.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/cellbase/data-adapter/karyotype-cellbase-data-adapter.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/cellbase/data-adapter/xref-feature-list-cellbase-data-adapter.js"  ></script>
+		
+		<!-- js-commons-lib cellbase ui-widgets -->
+		<script type="text/javascript" src="../js-commons-lib/cellbase/ui-widgets/info-widget.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/cellbase/ui-widgets/gene-info-widget.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/cellbase/ui-widgets/protein-info-widget.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/cellbase/ui-widgets/snp-info-widget.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/cellbase/ui-widgets/transcript-info-widget.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/cellbase/ui-widgets/vcf-variant-info-widget.js"  ></script>
+		
+		<!-- js-commons-lib cellbase ws-manager -->
+		<script type="text/javascript" src="../js-commons-lib/cellbase/cellbase-manager.js"  ></script>
+		
+		
+		
+		
+		
+		
+		<!-- js-commons-lib ui-widgets -->
+		<script type="text/javascript" src="../js-commons-lib/ui-widgets/ux-window.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/ui-widgets/attributes/attributes-widget.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/ui-widgets/attributes/attributes-panel.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/ui-widgets/attributes/network-attributes-widget.js"></script>
+		<script type="text/javascript" src="../js-commons-lib/ui-widgets/text-window-widget.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/ui-widgets/input-list-widget.js"  ></script>
+		
+		<script type="text/javascript" src="../js-commons-lib/ui-widgets/list/list-panel.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/ui-widgets/list/list-widget.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/ui-widgets/list/genomic-list-panel.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/ui-widgets/list/genomic-list-widget.js"  ></script>
+		
+		<!-- js-commons-lib utils -->
+		<script type="text/javascript" src="../js-commons-lib/utils/event.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/utils/dom.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/utils/colors.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/utils/normalization.js"  ></script>
+		<script type="text/javascript" src="../js-commons-lib/utils/string-buffer.js"  ></script> 
+		<script type="text/javascript" src="../js-commons-lib/utils/graphics/svg.js"  ></script> 	
+	
+	
+	
+		<script type="text/javascript" src="../js-commons-lib/utils/geometry.js"  ></script>
+		
+		
+		
+		<!-- cell-browser -->
+		<script type="text/javascript" src="./cell-browser.js"></script>
+		<script type="text/javascript" src="./config/cb-config.json"></script>
+		<script type="text/javascript" src="./config/plugins-config.json"></script>
+		
+	
+	<!-- **************** -->
+	<!-- **************** -->
+	<!-- **************** -->
+	<!-- **************** -->
+	<!-- **************** -->
+	<!-- **************** -->
+	<!-- **************** -->
+	<!-- **************** -->
+	<!-- **************** -->
+	
+<!-- network viewer APP -->
+<!-- 	<script type="text/javascript" src="../../interactome-viewer/js/networkviewer.js"></script> -->
+<!-- interactome-->
+	
+<!-- 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/sencha/ext-4.0.7/examples/portal/classes/PortalColumn.js"></script> -->
+<!-- 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/sencha/ext-4.0.7/examples/portal/classes/PortalPanel.js"></script> -->
+<!-- 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/sencha/ext-4.0.7/examples/portal/classes/PortalDropZone.js"></script> -->
+	
+	
+	
+		<!--INFRARED-->
+<!-- 		<script type="text/javascript" src="../../infrared-js-client/js/infrared-js-core.js"  ></script> -->
+		
+		<!--DATAADAPTERS-->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataadapter/dataadapter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataadapter/infrareddataadapter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataadapter/file/filedataadapter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataadapter/file/siffiledataadapter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataadapter/file/dot/dotfiledataadapter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataadapter/file/dot/interactomedotfiledataadapter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataadapter/file/dot/biopaxdotfiledataadapter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataadapter/featureinfrareddataadapter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataadapter/xreffeaturelistinfrareddataadapter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataadapter/file/tabularfiledataadapter.js"  ></script> -->
+		
+		<!--DATA-->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataset/dataset.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataset/network/graphdataset.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataset/network/graphitem.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataset/network/vertex.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataset/network/edge.js"  ></script> -->
+ 		
+		<!--LAYOUT-->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataset/network/layoutmanager.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataformatter/network/networkdatasetformatter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataformatter/network/itemgraphformatter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataformatter/network/vertexgraphformatter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/dataformatter/network/edgegraphformatter.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../graph/js/graphcanvas.js"  ></script> -->
+		
+		<!-- METADATASET -->
+<!-- 		<script type="text/javascript" src="../../commons/data/metadataset/metavertex.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/metadataset/metanetwork.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../commons/data/metadataset/metanetworkviewer.js"  ></script> -->
+	
+		<!--UTILS-->
+<!-- 		<script type="text/javascript" src="../../dependencies/dom-utils.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../dependencies/graphics/graphics_svg.js"  ></script>  -->
+<!-- 		<script type="text/javascript" src="../../dependencies/normalization.js"  ></script>  -->
+<!-- 		<script type="text/javascript" src="../../dependencies/colors.js"  ></script>  -->
+<!-- 		<script type="text/javascript" src="../../dependencies/geometry.js"  ></script>  -->
+
+		<!--INTERACTOME VIEWER-->
+<!-- 		<script type="text/javascript" src="../../interactome-viewer/js/interactomeviewer.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../interactome-viewer/js/backgroundImageManager.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../interactome-viewer/settingswidget/js/settingsinteractomeviewer.js"></script> -->
+		
+		
+		<!--Biopax-->
+<!-- 		<script type="text/javascript" src="../../biopax/js/biopaxmanager.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../biopax/pathwaytreeviewer/js/pathwaytreeviewer.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../biopax/biopaxserverselectorwidget/js/biopaxserverselectorwidget.js"></script> -->
+			
+		<!--Attributes-->
+<!-- 		<script type="text/javascript" src="../../interactome-viewer/attributeswidget/js/attributeswidget.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../attributeswidget/js/attributeswidget.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../attributeswidget/js/attributespanel.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../attributeswidget/js/networkattributeswidget.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../interactome-viewer/attributeswidget/js/attributeswidgetuploader.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../interactome-viewer/attributeswidget/js/attributesdataset.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../forms/genomic/general/inputlistwidget.js"  ></script>		 -->
+	
+		<!--WIDGET-->
+<!-- 		<script type="text/javascript" src="../../graph-editor/js/grapheditor.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../annotationviewer/js/annotationviewer.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../searcherviewer/js/searcherviewer.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../interactome-viewer/widget/networkeditorbarwidget.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../interactome-viewer/widget/networksbgnbarwidget.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../interactome-viewer/widget/networkwidget.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../attributeswidget/js/expressionnetworkattributeswidget.js"></script> -->
+		
+<!-- 		<script type="text/javascript" src="../../forms/general/textwindowwidget/textwindowwidget.js"  ></script> -->
+<!-- 		<script type="text/javascript" src="../../filters/js/ui/filterviewer.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../filters/js/ui/filtergridviewer.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../filters/js/ui/genomicregionfilterviewer.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../filters/js/ui/idfilterviewer.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../filters/js/ui/ontologyfilterviewer.js"></script> -->
+<!-- 		<script type="text/javascript" src="../../filters/js/src/filter.js"></script> -->
+<!--  		<script type="text/javascript" src="../../dependencies/graphics/utils/string-buffer.js"  ></script>   -->
+ 		
+<!--  		<script type="text/javascript" src="../../genome-viewer/js/widget/file/networkfilewidget.js"  ></script>   -->
+<!-- 		<script type="text/javascript" src="../../genome-viewer/js/widget/file/sifnetworkfilewidget.js"  ></script>  -->
+<script>
+// 	Ext.application({
+// 	    launch: run
+// 	});
+
+Ext.Loader.setConfig({enabled: true});
+Ext.Loader.setPath('Ext.ux', 'http://jsapi.bioinfo.cipf.es/ext-libs/sencha/ext-4.0.7/examples/ux');
+Ext.QuickTips.init();
+Ext.require([
+    'Ext.ux.grid.FiltersFeature',
+    
+    'Ext.ux.GroupTabPanel',
+    'Ext.ux.statusbar.StatusBar',
+]);
+
+Ext.onReady(run);
+var network; 
+function run(){
+/*
+	 function StringBuffer() { 
+		   this.buffer = []; 
+		 } 
+		 
+		 StringBuffer.prototype.append = function append(string) { 
+		   this.buffer.push(string); 
+		   return this; 
+		 }; 
+		 
+		 StringBuffer.prototype.toString = function toString() { 
+		   return this.buffer.join(""); 
+		 };
+		function arrayToString (array, separator){
+			var str = new StringBuffer();
+			for(var i = 0; i < array.length; i++){
+				if(i != array.length-1)
+					str.append(array[i]+separator);
+				else
+					str.append(array[i]);
+			}
+			return str.toString();
+		}
+		var graph;
+	*/
+// 	network = new NetworkViewer({targetId:null,wum:true,east:false});
+// 	network.draw();
+
+	cellBrowser = new CellBrowser("mydiv");
+	cellBrowser.draw();
+
+
+// 	network = new NetworkViewer("mydiv");
+// 	network.draw();
+
+		
+}// END OF run 
+		
+		</script>
+ 
+</head>
+<body style="overflow: hidden">
+	<div id="mydiv"></div>
+	<div id="gv_div1"></div>
+	<div id="gv_div2"></div>
+</body>
+</html>
