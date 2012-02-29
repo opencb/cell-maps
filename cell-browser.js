@@ -1,6 +1,7 @@
 function CellBrowser(targetId,args){
 	var _this=this;
 	this.id = "Cell Browser"+ Math.round(Math.random()*10000);
+	this.suiteId = 9;
 	this.title="Cell Browser";
 	this.description="RC";
 	this.wum=true;
