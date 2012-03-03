@@ -106,13 +106,233 @@ CellBrowser.prototype.draw = function(){
 //};
 
 
-CellBrowser.prototype.getMenuBar = function() {
 
+
+CellBrowser.prototype.getMenuBar = function(){
+	var _this = this;
+	
+	if (this.menuBar == null){
+		var downloadMenu = Ext.create('Ext.menu.Menu', {
+			items :[
+			        {
+			        	text:"PNG",
+			        	iconCls:'icon-blue-box',
+			        	handler:function(){
+			        		var content = _this.networkViewer.networkWidget.getGraphCanvas().toHTML();
+			        		_this.networkViewer.drawConvertPNGDialog(content,"png");
+			        	}
+			        },{
+			        	text:"JPG", 
+			        	iconCls:'icon-blue-box',
+			        	handler:function(){
+			        		var content = _this.networkViewer.networkWidget.getGraphCanvas().toHTML();
+			        		_this.networkViewer.drawConvertPNGDialog(content,"jpg");
+			        	}
+			        },
+			        {
+			        	text:"SVG (recommended)",
+			        	iconCls:'icon-blue-box',
+			        	handler:function(){
+			        		var content = _this.networkViewer.networkWidget.getGraphCanvas().toHTML();
+			        		var clienSideDownloaderWindowWidget = new ClienSideDownloaderWindowWidget();
+			        		clienSideDownloaderWindowWidget.draw(content, content);
+			        	}
+			        }
+			        ]
+
+		});
+
+//		var importLocalNetwork = new Ext.create('Ext.menu.Menu', {
+//			floating: true,
+//			items: [
+//				{
+//					text: 'SIF',
+//					handler : function() {
+//						openSIFDialog.show();
+//					}
+//				}
+//			]
+//		});
+		var importLocalNetwork = new Ext.create('Ext.menu.Menu', {
+			floating: true,
+			items: [
+				{
+					text: 'SIF',
+					handler : function() {
+						var sifNetworkFileWidget =  new SIFNetworkFileWidget();
+						sifNetworkFileWidget.draw();	
+						sifNetworkFileWidget.onOk.addEventListener(function(sender,data){
+							_this.networkViewer.loadSif(data);
+						});
+					}
+				}
+			]
+		});
+		
+		
+			var fileMenu = new Ext.create('Ext.menu.Menu', {
+				floating: true,
+//				width: menuItemWidth,
+				items: [
+	//			{
+	//				text: 'New'
+	//			},
+				{
+					text: 'Open...',
+					handler: function() {
+						var networkFileWidget =  new NetworkFileWidget();
+						networkFileWidget.draw();	
+						networkFileWidget.onOk.addEventListener(function(sender,data){
+							_this.networkViewer.loadJSON(data);
+						});
+					}
+				},
+				{
+					text: 'Save as',
+					handler: function(){
+						var content = JSON.stringify(_this.networkViewer.networkWidget.getGraphCanvas().toJSON());
+						var clienSideDownloaderWindowWidget = new ClienSideDownloaderWindowWidget();
+						clienSideDownloaderWindowWidget.draw(content, content);
+					}
+				}
+				,'-',
+				{
+					text: 'Import',
+					menu: importLocalNetwork
+				},
+				{
+	//				text: 'Export',
+					text : 'Download as',
+					iconCls:'icon-box',
+					menu: downloadMenu//exportFileMenu
+					
+				}]
+			});
+		
+			
+			
+		
+			this.menuToolbar = Ext.create('Ext.toolbar.Toolbar',{
+				cls:'bio-menubar',
+				height:27,
+				padding:'0 0 0 10'
+			});
+			this.menuToolbar.add({
+				text:'File',
+				menu: fileMenu  // assign menu by instance
+			}
+//			,{
+//				text:'Edit',
+//				menu: this.getEditMenu()
+//			}
+			,
+//			{
+//				text:'View',
+//				menu: _this.getViewMenu()
+//			},
+			{
+				text:'Search',
+				menu: _this.getSearchMenu()
+			},
+			{
+				text:'Attributes',
+				handler: function(){
+					var networkAttributesWidget = new NetworkAttributesWidget({title:'Attributes',wum:true,width:_this.width,height:_this.height});
+					networkAttributesWidget.draw(_this.networkViewer.networkWidget.getDataset(), _this.networkViewer.networkWidget.getFormatter(),_this.networkViewer.networkWidget.getLayout());
+					
+					networkAttributesWidget.verticesSelected.addEventListener(function(sender, vertices){
+						_this.networkWidget.deselectNodes();
+						_this.networkWidget.selectVerticesByName(vertices);
+					});
+					
+					
+					_this.networkViewer.networkWidget.onVertexOver.addEventListener(function(sender, nodeId){
+						var name = _this.networkViewer.networkWidget.getDataset().getVertexById(nodeId).getName();
+						_this.setNodeInfoLabel(networkAttributesWidget.getVertexAttributesByName(name).toString());
+					});
+					
+				}
+			},
+//			{
+//				text:'Layout',
+//				menu: this.getLayoutViewMenu()
+//			},
+			
+			{
+				text:'Plugins',
+				menu:this.getAnalysisMenu()
+
+			}
+		//	{
+		//		text:'Layout',
+		//		menu: layoutViewMenu
+		//	},{
+		//		text:'Analysis',
+		//		menu: extensionsMenu
+		//	}
+			);
+	}
+	 return _this.menuToolbar;
+};
+CellBrowser.prototype.getSearchMenu = function() {
+	var _this = this;
+	var viewMenu = Ext.create('Ext.menu.Menu', {
+		margin : '0 0 10 0',
+		floating : true,
+		items : [{
+					text : 'Xref',
+					handler : function() {
+						var inputListWidget = new InputListWidget({viewer:_this.networkViewer});
+						//var geneNames = "BRCA2";
+						inputListWidget.onOk.addEventListener(function(evt, xref) {
+							_this.networkViewer.openGeneListWidget(xref);
+						});
+						inputListWidget.draw();
+					}
+				}, 
+				{
+					text : 'ID'
+//					menu : this.getLabelMenu()
+				}, 
+				{
+					text : 'Functional term',
+					handler: function(){
+		        		_this.openViewer = "searcherViewer";
+		        		_this.networkViewer.loadMetaData();
+					}
+				}
+	
+		]
+	});
+	return viewMenu;
 };
 
-
-
-
+CellBrowser.prototype.getAnalysisMenu = function() {
+	var _this=this;
+	var analysisMenu = Ext.create('Ext.menu.Menu', {
+		margin : '0 0 10 0',
+		floating : true,
+		items : [{
+					text : 'Expression',
+					handler: function(){
+						_this.networkViewer.expressionSelected();
+					}
+				}, 
+				{
+					text : 'Interactome browser',
+					handler: function(){
+					}
+				},
+				{
+					text : 'Reactome browser',
+					handler: function(){
+						_this.networkViewer.reactomeSelected();
+					}
+				}
+		]
+	});
+	return analysisMenu;
+};
 
 
 CellBrowser.prototype.getPluginsMenu = function() {
