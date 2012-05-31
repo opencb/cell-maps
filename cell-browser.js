@@ -289,18 +289,18 @@ CellBrowser.prototype.getSearchMenu = function() {
 						});
 						inputListWidget.draw();
 					}
-				}, 
-				{
-					text : 'ID'
-//					menu : this.getLabelMenu()
-				}, 
-				{
-					text : 'Functional term',
-					handler: function(){
-		        		_this.openViewer = "searcherViewer";
-		        		_this.networkViewer.loadMetaData();
-					}
 				}
+//				,{
+//					text : 'ID'
+////					menu : this.getLabelMenu()
+//				}, 
+//				{
+//					text : 'Functional term',
+//					handler: function(){
+//		        		_this.openViewer = "searcherViewer";
+//		        		_this.networkViewer.loadMetaData();
+//					}
+//				}
 	
 		]
 	});
@@ -317,18 +317,19 @@ CellBrowser.prototype.getAnalysisMenu = function() {
 					handler: function(){
 						_this.networkViewer.expressionSelected();
 					}
-				}, 
-				{
-					text : 'Interactome browser',
-					handler: function(){
-					}
-				},
-				{
-					text : 'Reactome browser',
-					handler: function(){
-						_this.networkViewer.reactomeSelected();
-					}
 				}
+//				, 
+//				{
+//					text : 'Interactome browser',
+//					handler: function(){
+//					}
+//				},
+//				{
+//					text : 'Reactome browser',
+//					handler: function(){
+//						_this.networkViewer.reactomeSelected();
+//					}
+//				}
 		]
 	});
 	return analysisMenu;
