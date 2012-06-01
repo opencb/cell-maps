@@ -349,7 +349,7 @@ CellBrowser.prototype.getPluginsMenu = function() {
 
 CellBrowser.prototype.setPluginsMenu = function() {
 	var _this = this;
-	var plugins_cat = GENOME_MAPS_AVAILABLE_PLUGINS;
+	var plugins_cat = CELLBROWSER_AVAILABLE_PLUGINS;
 	var species = this.networkViewer.species;
 	
 	//Auto generate menu items depending of AVAILABLE_PLUGINS config
@@ -363,8 +363,8 @@ CellBrowser.prototype.setPluginsMenu = function() {
 					text : plugins_cat[i].plugins[j].name,
 					pluginName : plugins_cat[i].plugins[j].name,
 					handler : function() {
-						GENOME_MAPS_REGISTERED_PLUGINS[this.pluginName].draw();
-						GENOME_MAPS_REGISTERED_PLUGINS[this.pluginName].launch();
+						CELLBROWSER_REGISTERED_PLUGINS[this.pluginName].draw();
+						CELLBROWSER_REGISTERED_PLUGINS[this.pluginName].launch();
 					}
 				});
 			}
@@ -378,8 +378,8 @@ CellBrowser.prototype.setPluginsMenu = function() {
 					handler : function() {
 						
 						
-						GENOME_MAPS_REGISTERED_PLUGINS[this.pluginName].draw();
-						GENOME_MAPS_REGISTERED_PLUGINS[this.pluginName].launch();
+						CELLBROWSER_REGISTERED_PLUGINS[this.pluginName].draw();
+						CELLBROWSER_REGISTERED_PLUGINS[this.pluginName].launch();
 					}
 				});
 //				break;
