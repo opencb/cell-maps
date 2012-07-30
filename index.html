@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Cell Browser</title>
+
+
+
+<!-- CSS -->
+    	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/ext-libs/sencha/extjs-4.1.1/resources/css/ext-all.css">
+     	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/libs/resources/css/style.css">  
+<!--    	<link rel="stylesheet" type="text/css" href="../../wum/resources/css/style.css"> -->
+		<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/ext-libs/ChemDoodleWeb/install/ChemDoodleWeb.css">
+  
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-16414504-2']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+  
+	<!-- EXT-LIBS -->
+
+	<!-- Ext-js -->
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/sencha/extjs-4.1.1/ext-all.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/sencha/extjs-4.1.1/examples/shared/examples.js"></script>
+	
+
+	<!-- jQuery -->
+<!-- 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery/1.6.4/jquery-1.6.4.min.js"></script>  -->
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery/1.7.1/jquery-1.7.1.min.js"></script> 
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.sha1.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.cookie.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.url.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jqXMLUtils.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.smartresize.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-mousewheel-3.0.6/jquery.mousewheel.min.js"></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.svg.js"></script>
+	
+	
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/xml2json.js"  ></script>
+	
+	<!-- Canvas to SVG converters -->
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/base64.js"  ></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvas2image.js"  ></script>
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvg.js"></script> 
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/rgbcolor.js"></script> 
+	
+	
+	<!-- CHEMDOODLE -->
+<!--	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/ChemDoodleWeb/install/ChemDoodleWeb-libs.js"></script> -->
+<!--	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/ChemDoodleWeb/install/ChemDoodleWeb.js"></script> -->
+	
+	
+	
+
+
+	
+		<!-- LIBS -->
+		<script type="text/javascript" src="./wum.min.js"></script>
+		<script type="text/javascript" src="./ui-widgets.min.js"></script>
+		<script type="text/javascript" src="./utils.min.js"></script>
+		<script type="text/javascript" src="./network-viewer.min.js"></script>
+		
+		<!-- cell-browser -->
+		<script type="text/javascript" src="./cellbrowser.js"></script>
+		<script type="text/javascript" src="./config/cb-config.json"></script>
+		<script type="text/javascript" src="./config/plugins-config.json"></script>
+		
+
+<script>
+// 	Ext.application({
+// 	    launch: run
+// 	});
+
+Ext.Loader.setConfig({enabled: true});
+Ext.Loader.setPath('Ext.ux', 'http://jsapi.bioinfo.cipf.es/ext-libs/sencha/extjs-4.1.1/examples/ux');
+Ext.QuickTips.init();
+Ext.require([
+    'Ext.ux.grid.FiltersFeature',
+    
+    'Ext.ux.GroupTabPanel',
+    'Ext.ux.statusbar.StatusBar',
+]);
+
+Ext.onReady(run);
+var network; 
+function run(){
+/*
+	 function StringBuffer() { 
+		   this.buffer = []; 
+		 } 
+		 
+		 StringBuffer.prototype.append = function append(string) { 
+		   this.buffer.push(string); 
+		   return this; 
+		 }; 
+		 
+		 StringBuffer.prototype.toString = function toString() { 
+		   return this.buffer.join(""); 
+		 };
+		function arrayToString (array, separator){
+			var str = new StringBuffer();
+			for(var i = 0; i < array.length; i++){
+				if(i != array.length-1)
+					str.append(array[i]+separator);
+				else
+					str.append(array[i]);
+			}
+			return str.toString();
+		}
+		var graph;
+	*/
+// 	network = new NetworkViewer({targetId:null,wum:true,east:false});
+// 	network.draw();
+
+	cellBrowser = new CellBrowser("mydiv");
+	cellBrowser.draw();
+
+
+// 	network = new NetworkViewer("mydiv");
+// 	network.draw();
+
+		
+}// END OF run 
+		
+		</script>
+ 
+</head>
+<body style="overflow: hidden">
+	<div id="mydiv"></div>
+	<div id="gv_div1"></div>
+	<div id="gv_div2"></div>
+</body>
+</html>

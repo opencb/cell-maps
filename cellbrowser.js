@@ -389,14 +389,16 @@ CellBrowser.prototype.getMenuBar = function(){
 						var networkFileWidget =  new NetworkFileWidget();
 						networkFileWidget.draw();	
 						networkFileWidget.onOk.addEventListener(function(sender,data){
-							_this.networkViewer.loadJSON(data);
+//							_this.networkViewer.loadJSON(data);
+							_this.networkViewer.networkSvg.loadFromJson(data);
 						});
 					}
 				},
 				{
 					text: 'Save as',
 					handler: function(){
-						var content = JSON.stringify(_this.networkViewer.networkWidget.getGraphCanvas().toJSON());
+//						var content = JSON.stringify(_this.networkViewer.networkWidget.getGraphCanvas().toJSON());
+						var content = JSON.stringify(_this.networkViewer.networkSvg.toJson());
 						var clienSideDownloaderWindowWidget = new ClienSideDownloaderWindowWidget();
 						clienSideDownloaderWindowWidget.draw(content, content);
 					}
