@@ -1,4 +1,25 @@
-function CellBrowser (targetId,args){
+/*
+ * Copyright (c) 2012 Ruben Sanchez (ICM-CIPF)
+ * Copyright (c) 2012 Francisco Salavert (ICM-CIPF)
+ * Copyright (c) 2012 Ignacio Medina (ICM-CIPF)
+ *
+ * This file is part of Cell Browser.
+ *
+ * Cell Browser is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cell Browser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cell Browser. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+function CellBrowser (targetId, args){
 	var _this = this;
 	this.id = "Cell Browser"+ Math.round(Math.random()*10000);
 	this.suiteId = 10;
@@ -211,7 +232,8 @@ CellBrowser.prototype.showGRNViewer= function (){
 		this.networkViewer = new NetworkViewer(this.id+'contGRNViewer',AVAILABLE_SPECIES[0],{
 			width:this.grnViewer.getWidth()-(0/*15+pan*/),
 			height:this.grnViewer.getHeight()-0/*26*/,
-			menuBar:this.getMenuBar()
+			menuBar:this.getMenuBar(),
+			overview:true
 		});
 		this.networkViewer.setSpeciesMenu(AVAILABLE_SPECIES);
 		this.networkViewer.draw();
@@ -219,7 +241,7 @@ CellBrowser.prototype.showGRNViewer= function (){
 		this.attributeEditWidget = new AttributeEditWidget(this.networkViewer.getNetworkData().getAttributes());
 		this.attributeFilterWidget = new AttributeFilterWidget(this.networkViewer.getNetworkData().getAttributes());
 		
-		this.networkViewer.networkSvg.onSelectionChange.addEventListener(function(sender,data){
+		this.networkViewer.onSelectionChange.addEventListener(function(sender,data){
 			if(Ext.getCmp("editAttrWindow")){
 				_this.attributeEditWidget.selectRowsById(data);
 			}
@@ -229,31 +251,30 @@ CellBrowser.prototype.showGRNViewer= function (){
 		});
 		
 		this.attributeEditWidget.onSelectNodes.addEventListener(function(sender, data) {
-			_this.networkViewer.networkSvg.selectNodes(data);
+			_this.networkViewer.selectNodes(data);
 		});
 		
 		this.attributeFilterWidget.onSelectNodes.addEventListener(function(sender, data) {
-			_this.networkViewer.networkSvg.selectNodes(data);
+			_this.networkViewer.selectNodes(data);
 		});
 		
 		this.attributeFilterWidget.onDeselectNodes.addEventListener(function() {
-			_this.networkViewer.networkSvg.deselectAllNodes();
+			_this.networkViewer.deselectAllNodes();
 		});
 		
 		this.attributeFilterWidget.onFilterNodes.addEventListener(function(sender, data) {
-			_this.networkViewer.networkSvg.filterNodes(data);
+			_this.networkViewer.filterNodes(data);
 		});
 		
 		this.attributeFilterWidget.onRestoreNodes.addEventListener(function() {
-			_this.networkViewer.networkSvg.refresh();
+			_this.networkViewer.refresh();
 		});
 		
-	}else{
+	}
+	else {
 		Ext.getCmp(this.centerPanelId).setActiveTab(this.grnViewer);
 	}
 };
-
-
 
 
 CellBrowser.prototype.getPanel = function(){
@@ -355,30 +376,68 @@ CellBrowser.prototype.getMenuBar = function(){
 			items :[
 			        {
 			        	text:"PNG",
+			        	href: "none",
 			        	iconCls:'icon-blue-box',
 			        	handler:function(){
-			        		var content = _this.networkViewer.networkWidget.getGraphCanvas().toHTML();
-			        		_this.networkViewer.drawConvertPNGDialog(content,"png");
+			        		// quit the image background
+			        		var image = _this.networkViewer.getNetworkSvg().svg.removeChild(_this.networkViewer.networkSvg.backgroundImage);
+							// serialize the svg
+			        		var svg = new XMLSerializer().serializeToString(_this.networkViewer.getNetworkSvg().svg);
+							// put again the image background
+							_this.networkViewer.getNetworkSvg().svg.insertBefore(image, _this.networkViewer.getNetworkSvg().svgC);
+							
+							var canvas = DOM.createNewElement("canvas", document.body, [["id", _this.id+"png"],["visibility", _this.id+"hidden"]]);
+							
+							canvg(canvas, svg);
+
+							this.getEl().child("a").set({
+								href: canvas.toDataURL("image/png"),
+								target: "_blank",
+								download: "network.png"
+							});
+							
+							$("#"+_this.id+"png").remove();
 			        	}
 			        },{
 			        	text:"JPG", 
+			        	href: "none",
 			        	iconCls:'icon-blue-box',
 			        	handler:function(){
-			        		var content = _this.networkViewer.networkWidget.getGraphCanvas().toHTML();
-			        		_this.networkViewer.drawConvertPNGDialog(content,"jpg");
+			        		// quit the image background
+			        		var image = _this.networkViewer.getNetworkSvg().svg.removeChild(_this.networkViewer.networkSvg.backgroundImage);
+							// serialize the svg
+			        		var svg = new XMLSerializer().serializeToString(_this.networkViewer.getNetworkSvg().svg);
+							// put again the image background
+							_this.networkViewer.getNetworkSvg().svg.insertBefore(image, _this.networkViewer.getNetworkSvg().svgC);
+							
+			        		var canvas = DOM.createNewElement("canvas", document.body, [["id", _this.id+"jpg"],["visibility", _this.id+"hidden"]]);
+			        		
+			        		canvg(canvas, svg);
+			        		
+			        		this.getEl().child("a").set({
+			        			href: canvas.toDataURL("image/jpeg"),
+			        			target: "_blank",
+			        			download: "network.jpg"
+			        		});
+			        		
+			        		$("#"+_this.id+"jpg").remove();
 			        	}
 			        },
 			        {
 			        	text:"SVG (recommended)",
+			        	href: "none",
 			        	iconCls:'icon-blue-box',
 			        	handler:function(){
-			        		var content = _this.networkViewer.networkWidget.getGraphCanvas().toHTML();
-			        		var clienSideDownloaderWindowWidget = new ClienSideDownloaderWindowWidget();
-			        		clienSideDownloaderWindowWidget.draw(content, content);
+			        		var svg = new XMLSerializer().serializeToString(_this.networkViewer.getNetworkSvg().svg);
+			        		
+			        		this.getEl().child("a").set({
+			        			href: 'data:image/svg+xml,'+encodeURIComponent(svg),
+			        			target: "_blank",
+			        			download: "network.svg"
+			        		});
 			        	}
 			        }
-			        ]
-
+			       ]
 		});
 
 //		var importLocalNetwork = new Ext.create('Ext.menu.Menu', {
@@ -428,12 +487,14 @@ CellBrowser.prototype.getMenuBar = function(){
 					}
 				},
 				{
-					text: 'Save as',
+					text: 'Save as JSON',
+					href: "none",
 					handler: function(){
-//						var content = JSON.stringify(_this.networkViewer.networkWidget.getGraphCanvas().toJSON());
-						var content = JSON.stringify(_this.networkViewer.networkData.toJSON());
-						var clienSideDownloaderWindowWidget = new ClienSideDownloaderWindowWidget();
-						clienSideDownloaderWindowWidget.draw(content, content);
+						var content = JSON.stringify(_this.networkViewer.toJSON());
+						this.getEl().child("a").set({
+							href: 'data:text/csv,'+encodeURIComponent(content),
+							download: "network.json"
+						});
 					}
 				}
 				,'-',
@@ -529,7 +590,7 @@ CellBrowser.prototype.getAttributesMenu = function() {
 		        	text:"Edit...",
 		        	handler:function(){
 		        		if(!Ext.getCmp("filterAttrWindow")){
-		        			_this.attributeFilterWidget.draw(_this.networkViewer.networkSvg.getSelectedNodes());
+		        			_this.attributeFilterWidget.draw(_this.networkViewer.getSelectedNodes());
 		        		}
 		        	}
 		        },'-'
@@ -543,14 +604,18 @@ CellBrowser.prototype.getAttributesMenu = function() {
 		         {
 		        	 text : 'Import...',
 		        	 handler : function() {
-		        		 
+		        		 var importAttributesFileWidget =  new ImportAttributesFileWidget({"numNodes": _this.networkViewer.getNumNodes()});
+		        		 importAttributesFileWidget.draw();	
+		        		 importAttributesFileWidget.onOk.addEventListener(function(sender, data){
+		        			 _this.networkViewer.importAttributes(data);
+		        		 });
 		        	 }
 		         },'-',
 		         {
 		        	 text : 'Edit...',
 		        	 handler : function() {
 		        		 if(!Ext.getCmp("editAttrWindow")){
-		        			 _this.attributeEditWidget.draw(_this.networkViewer.networkSvg.getSelectedNodes());
+		        			 _this.attributeEditWidget.draw(_this.networkViewer.getSelectedNodes());
 		        		 }
 		        	 }
 		         },
@@ -559,7 +624,7 @@ CellBrowser.prototype.getAttributesMenu = function() {
 		        	 menu: filtersMenu,
 		        	 handler : function() {
 		        		 if(!Ext.getCmp("filterAttrWindow")){
-		        			 _this.attributeFilterWidget.draw(_this.networkViewer.networkSvg.getSelectedNodes());
+		        			 _this.attributeFilterWidget.draw(_this.networkViewer.getSelectedNodes());
 		        		 }
 		        	 }
 		         }
@@ -622,7 +687,7 @@ CellBrowser.prototype.getAnalysisMenu = function() {
 		        		var sifNetworkFileWidget =  new SIFNetworkFileWidget({"networkData":_this.networkViewer.networkData});
 		        		sifNetworkFileWidget.draw();	
 		        		sifNetworkFileWidget.onOk.addEventListener(function(sender,data){
-		        			_this.networkViewer.loadNetwork(data);
+		        			_this.networkViewer.loadNetwork(data, "circle");
 		        		});
 		        	}
 		        },

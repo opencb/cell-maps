@@ -8,7 +8,8 @@
 
 <!-- CSS -->
     	<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.1.1-gpl/resources/css/ext-all.css">
-     	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/libs/resources/css/style.css">  
+     	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/libs/resources/css/style.css">
+     	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.qtip.min.css">
   
 	<!-- Google Analytics -->
 	<script type="text/javascript">
@@ -24,7 +25,7 @@
 	</script>
   
 	<!-- EXT-LIBS -->
-
+	
 	<!-- Ext-js -->
 	<script type="text/javascript" src="http://cdn.sencha.io/ext-4.1.1-gpl/ext-all.js"></script>
 	<script type="text/javascript" src="http://cdn.sencha.io/ext-4.1.1-gpl/examples/shared/examples.js"></script>
@@ -39,16 +40,17 @@
 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jqXMLUtils.js"></script>
 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.smartresize.js"></script>
 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-mousewheel-3.0.6/jquery.mousewheel.min.js"></script>
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.svg.js"></script>
-	
+<!--	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.svg.js"></script>-->
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.qtip.min.js"></script>
+
 	
 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/xml2json.js"  ></script>
 	
 	<!-- Canvas to SVG converters -->
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/base64.js"  ></script>
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvas2image.js"  ></script>
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvg.js"></script> 
 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/rgbcolor.js"></script> 
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvg.js"></script> 
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/base64.js"></script>
+<!--	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvas2image.js"  ></script>-->
 	
 	
 	<!-- LIBS -->
@@ -77,8 +79,9 @@
 		
 		
 		<!-- js-common-libs dataadapter -->
-		<script type="text/javascript" src="../deprecated/data-adapter/data-adapter.js"  ></script>
-		<script type="text/javascript" src="../deprecated/data-adapter/file/file-data-adapter.js"  ></script>
+		<script type="text/javascript" src="../deprecated/data-adapter/data-adapter.js"></script>
+		<script type="text/javascript" src="../deprecated/data-adapter/file/file-data-adapter.js"></script>
+		<script type="text/javascript" src="../deprecated/utils/dom.js"></script>
 <!--		<script type="text/javascript" src="../js-common-libs/data-adapter/file/sif-file-data-adapter.js"  ></script>-->
 <!--		<script type="text/javascript" src="../js-common-libs/data-adapter/file/tabular-file-data-adapter.js"  ></script>-->
 <!--		<script type="text/javascript" src="../js-common-libs/data-adapter/file/dot/dot-file-data-adapter.js"  ></script>-->
@@ -101,11 +104,13 @@
 		<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-manager.js"></script>
 		<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-edit-widget.js"></script>
 		<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-filter-widget.js"></script>
+		<script type="text/javascript" src="../js-common-libs/network-viewer/import-attributes-file-widget.js"></script>
 		<script type="text/javascript" src="../js-common-libs/network-viewer/dot-network-file-widget.js"></script>
 		<script type="text/javascript" src="../js-common-libs/network-viewer/sif-network-file-widget.js"></script>
 		<script type="text/javascript" src="../js-common-libs/network-viewer/network-data-adapter.js"></script>
 		<script type="text/javascript" src="../js-common-libs/network-viewer/dot-data-adapter.js"></script>
 		<script type="text/javascript" src="../js-common-libs/network-viewer/sif-data-adapter.js"></script>
+		<script type="text/javascript" src="../js-common-libs/network-viewer/attributes-data-adapter.js"></script>
 
 		
 		<!-- js-common-libs ui-widgets -->
