@@ -1,4 +1,0 @@
-var AVAILABLE_SPECIES = [{"name":"Homo sapiens", "species":"hsa", "icon":""},
-                         {"name":"Mus musculus", "species":"mmu", "icon":""},
-                         {"name":"Danio rerio", "species":"dre", "icon":""}
-                         ];

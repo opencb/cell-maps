@@ -4,32 +4,16 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Cell Browser</title>
 
-
-
-<!-- CSS -->
-    	<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.1.1-gpl/resources/css/ext-all.css">
-     	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/libs/resources/css/style.css">
-     	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.qtip.min.css">
-  
-	<!-- Google Analytics -->
-	<script type="text/javascript">
-	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-16414504-2']);
-	  _gaq.push(['_trackPageview']);
-
-	  (function() {
-	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	  })();
-	</script>
+	<!-- CSS -->
+   	<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.1.1-gpl/resources/css/ext-all-gray.css">
+   	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/libs/resources/css/style.css">
+   	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.qtip.min.css">
   
 	<!-- EXT-LIBS -->
 	
 	<!-- Ext-js -->
 	<script type="text/javascript" src="http://cdn.sencha.io/ext-4.1.1-gpl/ext-all.js"></script>
 	<script type="text/javascript" src="http://cdn.sencha.io/ext-4.1.1-gpl/examples/shared/examples.js"></script>
-	
 
 	<!-- jQuery -->
 <!--	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery/jquery-1.8.1.min.js"></script> -->
@@ -43,10 +27,8 @@
 <!--	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.svg.js"></script>-->
 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.qtip.min.js"></script>
 
-	
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/xml2json.js"  ></script>
-	
 	<!-- Canvas to SVG converters -->
+	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/xml2json.js"  ></script>
 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/rgbcolor.js"></script> 
 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvg.js"></script> 
 	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/base64.js"></script>
@@ -75,134 +57,85 @@
 	<script type="text/javascript" src="../js-common-libs/wum/ws-manager/wum-adapter.js"></script>
 	<script type="text/javascript" src="../js-common-libs/wum/ws-manager/wum-rest-adapter.js"></script>
 	
-		
-		
-		
-		<!-- js-common-libs dataadapter -->
-		<script type="text/javascript" src="../deprecated/data-adapter/data-adapter.js"></script>
-		<script type="text/javascript" src="../deprecated/data-adapter/file/file-data-adapter.js"></script>
-		<script type="text/javascript" src="../deprecated/utils/dom.js"></script>
-<!--		<script type="text/javascript" src="../js-common-libs/data-adapter/file/sif-file-data-adapter.js"  ></script>-->
-<!--		<script type="text/javascript" src="../js-common-libs/data-adapter/file/tabular-file-data-adapter.js"  ></script>-->
-<!--		<script type="text/javascript" src="../js-common-libs/data-adapter/file/dot/dot-file-data-adapter.js"  ></script>-->
-		
-		<!-- js-common-libs dataset -->
-		<script type="text/javascript" src="../deprecated/dataset/dataset.js"  ></script>
-		
-		<!-- from genome-viewer -->
-		<script type="text/javascript" src="../js-common-libs/genome-viewer/data-source.js"></script>
-		<script type="text/javascript" src="../js-common-libs/genome-viewer/file-data-source.js"></script>
+	<!-- js-common-libs dataadapter -->
+	<script type="text/javascript" src="../js-common-libs/data-adapter/data-adapter.js"></script>
+	<script type="text/javascript" src="../js-common-libs/data-adapter/file-data-adapter.js"></script>
+	<script type="text/javascript" src="../js-common-libs/utils/dom.js"></script>
+	
+	<!-- js-common-libs dataset -->
+	<script type="text/javascript" src="../js-common-libs/dataset/dataset.js"  ></script>
+	
+	<!-- from genome-viewer -->
+	<script type="text/javascript" src="../js-common-libs/genome-viewer/data-source.js"></script>
+	<script type="text/javascript" src="../js-common-libs/genome-viewer/file-data-source.js"></script>
 
-		<!-- network viewer -->
-		<script type="text/javascript" src="../js-common-libs/network-viewer/nv-config.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/network-viewer.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/network-editor-bar-widget.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/network-data.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/network-svg.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/network-file-widget.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/network-background-settings.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-manager.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-edit-widget.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-filter-widget.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/import-attributes-file-widget.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/dot-network-file-widget.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/sif-network-file-widget.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/network-data-adapter.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/dot-data-adapter.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/sif-data-adapter.js"></script>
-		<script type="text/javascript" src="../js-common-libs/network-viewer/attributes-data-adapter.js"></script>
-
+	<!-- network viewer -->
+	<script type="text/javascript" src="../js-common-libs/network-viewer/nv-config.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/network-viewer.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/network-editor-bar-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/network-data.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/network-svg.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/network-file-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/network-background-settings.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-manager.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-edit-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-filter-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/import-attributes-file-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/dot-network-file-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/sif-network-file-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/string-network-file-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/network-data-adapter.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/dot-data-adapter.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/sif-data-adapter.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/string-data-adapter.js"></script>
+	<script type="text/javascript" src="../js-common-libs/network-viewer/attributes-data-adapter.js"></script>
+	
+	<!-- js-common-libs ui-widgets -->
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/ux-window.js"></script>
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/attributes-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/attributes-panel.js"></script>
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/network-attributes-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/expression-network-attributes-widget.js"></script>
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/text-window-widget.js"  ></script>
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/input-list-widget.js"  ></script>
+	
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/list/list-panel.js"  ></script>
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/list/list-widget.js"  ></script>
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/list/genomic-list-panel.js"  ></script>
+	<script type="text/javascript" src="../js-common-libs/ui-widgets/list/genomic-list-widget.js"  ></script>
+	
+	<!-- js-common-libs utils -->
+	<script type="text/javascript" src="../js-common-libs/utils/event.js"  ></script>
+	<script type="text/javascript" src="../js-common-libs/utils/colors.js"  ></script>
+	<script type="text/javascript" src="../js-common-libs/utils/normalization.js"  ></script>
+	<script type="text/javascript" src="../js-common-libs/utils/svg.js"  ></script> 	
+	
+	<!-- cell-browser -->
+	<script type="text/javascript" src="./cellbrowser.js"></script>
+	<script type="text/javascript" src="./config/cb-config.json"></script>
+	<script type="text/javascript" src="./config/plugins-config.json"></script>
+	<script type="text/javascript" src="./plugins/intact-plugin.js"></script>
+	<script type="text/javascript" src="./plugins/reactome-plugin.js"></script>
 		
-		<!-- js-common-libs ui-widgets -->
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/ux-window.js"></script>
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/attributes-widget.js"></script>
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/attributes-panel.js"></script>
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/network-attributes-widget.js"></script>
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/expression-network-attributes-widget.js"></script>
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/text-window-widget.js"  ></script>
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/input-list-widget.js"  ></script>
+	<script>
+		Ext.Loader.setConfig({enabled: true});
+		Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext-4.1.1-gpl/examples/ux');
+		Ext.QuickTips.init();
+		Ext.require([
+		    'Ext.ux.grid.FiltersFeature',
+		    'Ext.ux.GroupTabPanel',
+		    'Ext.ux.statusbar.StatusBar',
+		]);
 		
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/list/list-panel.js"  ></script>
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/list/list-widget.js"  ></script>
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/list/genomic-list-panel.js"  ></script>
-		<script type="text/javascript" src="../js-common-libs/ui-widgets/list/genomic-list-widget.js"  ></script>
-		
-		<!-- js-common-libs utils -->
-		<script type="text/javascript" src="../js-common-libs/utils/event.js"  ></script>
-		<script type="text/javascript" src="../js-common-libs/utils/colors.js"  ></script>
-		<script type="text/javascript" src="../js-common-libs/utils/normalization.js"  ></script>
-		<script type="text/javascript" src="../js-common-libs/utils/svg.js"  ></script> 	
-		
-		
-		
-		<!-- cell-browser -->
-		<script type="text/javascript" src="./cellbrowser.js"></script>
-		<script type="text/javascript" src="./config/cb-config.json"></script>
-		<script type="text/javascript" src="./config/plugins-config.json"></script>
-		
-
-<script>
-// 	Ext.application({
-// 	    launch: run
-// 	});
-
-Ext.Loader.setConfig({enabled: true});
-Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext-4.1.1-gpl/examples/ux');
-Ext.QuickTips.init();
-Ext.require([
-    'Ext.ux.grid.FiltersFeature',
-    
-    'Ext.ux.GroupTabPanel',
-    'Ext.ux.statusbar.StatusBar',
-]);
-
-Ext.onReady(run);
-var network; 
-function run(){
-/*
-	 function StringBuffer() { 
-		   this.buffer = []; 
-		 } 
-		 
-		 StringBuffer.prototype.append = function append(string) { 
-		   this.buffer.push(string); 
-		   return this; 
-		 }; 
-		 
-		 StringBuffer.prototype.toString = function toString() { 
-		   return this.buffer.join(""); 
-		 };
-		function arrayToString (array, separator){
-			var str = new StringBuffer();
-			for(var i = 0; i < array.length; i++){
-				if(i != array.length-1)
-					str.append(array[i]+separator);
-				else
-					str.append(array[i]);
-			}
-			return str.toString();
+		Ext.onReady(run);
+		var network; 
+		function run(){
+			cellBrowser = new CellBrowser("mydiv");
+			cellBrowser.draw();		
 		}
-		var graph;
-	*/
-// 	network = new NetworkViewer({targetId:null,wum:true,east:false});
-// 	network.draw();
-
-	cellBrowser = new CellBrowser("mydiv");
-	cellBrowser.draw();
-
-
-// 	network = new NetworkViewer("mydiv");
-// 	network.draw();
-
-		
-}// END OF run 
-		
-		</script>
- 
+	</script>
 </head>
 <body style="overflow: hidden">
 	<div id="mydiv"></div>
-	<div id="gv_div1"></div>
-	<div id="gv_div2"></div>
 </body>
 </html>
