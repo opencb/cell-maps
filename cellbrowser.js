@@ -406,7 +406,7 @@ CellBrowser.prototype.getMenuBar = function(){
 							// put again the image background
 							_this.networkViewer.getNetworkSvg().svg.insertBefore(image, _this.networkViewer.getNetworkSvg().svgC);
 							
-							var canvas = DOM.createNewElement("canvas", document.body, [["id", _this.id+"png"],["visibility", _this.id+"hidden"]]);
+							var canvas = $("<canvas/>", {"id": _this.id+"png", "visibility": _this.id+"hidden"}).appendTo("body")[0];
 							
 							canvg(canvas, svg);
 
@@ -430,7 +430,7 @@ CellBrowser.prototype.getMenuBar = function(){
 							// put again the image background
 							_this.networkViewer.getNetworkSvg().svg.insertBefore(image, _this.networkViewer.getNetworkSvg().svgC);
 							
-			        		var canvas = DOM.createNewElement("canvas", document.body, [["id", _this.id+"jpg"],["visibility", _this.id+"hidden"]]);
+			        		var canvas = $("<canvas/>", {"id": _this.id+"jpg", "visibility": _this.id+"hidden"}).appendTo("body")[0];
 			        		
 			        		canvg(canvas, svg);
 			        		
