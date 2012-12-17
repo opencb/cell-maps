@@ -1,0 +1,3 @@
+CB_CELLBASE_HOST = "http://rsanchez:8080/cellbase/rest";
+GCSA_HOST = "http://rsanchez:8080/gcsa/rest";
+WUM_HOST = "http://bioinfo.cipf.es/wum/rest";

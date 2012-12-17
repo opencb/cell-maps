@@ -36,7 +36,8 @@
 	
 	
 	<!-- LIBS -->
-
+	<script type="text/javascript" src="./config/cb-config.json"></script>
+	
 	<!-- wum ui-widgets -->
 	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/header-widget.js"></script>
 	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/user-list-widget.js"></script>
@@ -52,10 +53,14 @@
 	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/browser-data-widget.js"></script>
 	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/manage-projects-widget.js"></script>
 	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/check-browser.js"></script>
+	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/gcsa-browser-widget.js"></script>
 	
 	<!-- wum ws-manager -->
 	<script type="text/javascript" src="../js-common-libs/wum/ws-manager/wum-adapter.js"></script>
 	<script type="text/javascript" src="../js-common-libs/wum/ws-manager/wum-rest-adapter.js"></script>
+	
+	<script type="text/javascript" src="../js-common-libs/genome-viewer/gcsa-rest-manager.js"></script>
+	<script type="text/javascript" src="../js-common-libs/genome-viewer/gcsa-manager.js"></script>
 	
 	<!-- js-common-libs dataadapter -->
 	<script type="text/javascript" src="../js-common-libs/data-adapter/data-adapter.js"></script>
@@ -104,17 +109,18 @@
 	<script type="text/javascript" src="../js-common-libs/ui-widgets/list/genomic-list-widget.js"  ></script>
 	
 	<!-- js-common-libs utils -->
-	<script type="text/javascript" src="../js-common-libs/utils/event.js"  ></script>
-	<script type="text/javascript" src="../js-common-libs/utils/colors.js"  ></script>
-	<script type="text/javascript" src="../js-common-libs/utils/normalization.js"  ></script>
-	<script type="text/javascript" src="../js-common-libs/utils/svg.js"  ></script> 	
+	<script type="text/javascript" src="../js-common-libs/utils/event.js"></script>
+	<script type="text/javascript" src="../js-common-libs/utils/colors.js"></script>
+	<script type="text/javascript" src="../js-common-libs/utils/normalization.js"></script>
+	<script type="text/javascript" src="../js-common-libs/utils/svg.js"></script>
 	
 	<!-- cell-browser -->
 	<script type="text/javascript" src="./cellbrowser.js"></script>
-	<script type="text/javascript" src="./config/cb-config.json"></script>
 	<script type="text/javascript" src="./config/plugins-config.json"></script>
+	<script type="text/javascript" src="../js-common-libs/analysis/job-forms/generic-form-panel.js"></script>
 	<script type="text/javascript" src="./plugins/intact-plugin.js"></script>
 	<script type="text/javascript" src="./plugins/reactome-plugin.js"></script>
+	<script type="text/javascript" src="./plugins/fatigo-plugin.js"></script>
 		
 	<script>
 		Ext.Loader.setConfig({enabled: true});

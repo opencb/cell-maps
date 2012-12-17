@@ -115,6 +115,7 @@ function CellBrowser (targetId, args){
 		_this.setSize($(window).width(),$(window).height());
 	});
 	
+	setInterval(function(){_this.saveToLocalStorage();}, 60000);
 };
 
 ///** appInterface **/
@@ -737,17 +738,8 @@ CellBrowser.prototype.getAnalysisMenu = function() {
 		        	text:"Reactome",
 //		        	disabled: true,
 		        	handler:function(){
-		        		var reactome = new ReactomePlugin();
+		        		var reactome = new ReactomePlugin(_this);
 		        		reactome.draw();
-		        		reactome.onAddNode.addEventListener(function(sender,data){
-		        			_this.addNode(data);
-		        		});
-		        		reactome.onNeedClear.addEventListener(function(sender,data){
-		        			_this.clearNetwork();
-		        		});
-		        		reactome.onNeedRefresh.addEventListener(function(sender,data){
-		        			_this.refresh();
-		        		});
 		        	}
 		        },
 		        {
@@ -800,27 +792,49 @@ CellBrowser.prototype.getAnalysisMenu = function() {
 	var functionalMenu = Ext.create('Ext.menu.Menu', {
 		items :[
 		        {
+		        	text:"FatiGO",
+		        	handler:function(){
+		        		var fatigo = new FatigoPlugin(_this);
+		        		var args = {
+		        			type: "window",
+		        			title: "Fatigo plugin",
+		        			taskbar: Ext.getCmp(_this.networkViewer.id+'uxTaskbar')
+		        		};
+		        		fatigo.draw(args);
+		        	}
+		        },
+		        {
+		        	text:"Gene set analysis",
+		        	handler:function(){
+		        	}
+		        },
+		        {
 		        	text:"Functional network",
+		        	disabled: true,
 		        	handler:function(){
 		        	}
 		        },
 		        {
 		        	text:"Regulation network", 
+		        	disabled: true,
 		        	handler:function(){
 		        	}
 		        },
 		        {
 		        	text:"Clustering network",
+		        	disabled: true,
 		        	handler:function(){
 		        	}
 		        },
 		        {
 		        	text:"Disease network",
+		        	disabled: true,
 		        	handler:function(){
 		        	}
 		        },
 		        {
 		        	text:"Interactome 3D",
+		        	disabled: true,
 		        	handler:function(){
 		        	}
 		        }
@@ -866,7 +880,7 @@ CellBrowser.prototype.getAnalysisMenu = function() {
 				},
 				{
 					text: 'Functional enrichment',
-					disabled: true,
+//					disabled: true,
 					menu: functionalMenu
 				},
 				{
@@ -896,17 +910,45 @@ CellBrowser.prototype.getAnalysisMenu = function() {
 	return analysisMenu;
 };
 
-/**** DRAW API *****/
+CellBrowser.prototype.saveToLocalStorage = function() {
+	if(this.networkViewer) {
+		var content = JSON.stringify(this.networkViewer.toJSON());
+		localStorage.setItem("networkAutoSave" , content);
+	}
+};
+
+/***** DRAW API *****/
 CellBrowser.prototype.addNode = function(args) {
-	this.networkViewer.addNode(args);
+	return this.networkViewer.addNode(args);
 };
 
-CellBrowser.prototype.refresh = function(args) {
-	this.networkViewer.refresh();
-	this.networkViewer.setLayout("Square");
+CellBrowser.prototype.removeNode = function(nodeId) {
+	this.networkViewer.removeNode(nodeId);
 };
 
-CellBrowser.prototype.clearNetwork = function(args) {
-	this.networkViewer.networkData = new NetworkData();
-	this.networkViewer.refresh();
+CellBrowser.prototype.addEdge = function(args) {
+	this.networkViewer.addEdge(args.source, args.target, args.type, args.name, args.params);
 };
+
+CellBrowser.prototype.refresh = function(nd) {
+	this.networkViewer.refresh(nd);
+	this.networkViewer.setLayout("neato");
+};
+
+CellBrowser.prototype.clearNetwork = function() {
+	this.networkViewer.clearNetwork();
+};
+
+/***** CONTROL API *****/
+CellBrowser.prototype.getSelectedNodes = function() {
+	return this.networkViewer.getSelectedNodes();
+};
+
+CellBrowser.prototype.getUnselectedNodes = function() {
+	return this.networkViewer.getUnselectedNodes(this.getSelectedNodes());
+};
+
+CellBrowser.prototype.getNodeLabelsFromNodeList= function(nodeList) {
+	return this.networkViewer.getNodeLabelsFromNodeList(nodeList);
+};
+
