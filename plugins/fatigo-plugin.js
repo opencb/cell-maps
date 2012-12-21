@@ -31,15 +31,18 @@ function FatigoPlugin(cellbrowser) {
 
 FatigoPlugin.prototype.beforeRun = function() {
 	var selectedNodes = this.cellbrowser.getNodeLabelsFromNodeList(this.cellbrowser.getSelectedNodes()); 
-	this.paramsWS["list1fromtxt"] = selectedNodes.toString().replace(/,/g,"\n");
+	this.paramsWS["list1"] = selectedNodes.toString().replace(/,/g,"\n");
+	this.paramsWS["list1"] += "\n";
 	
 	if(Ext.getCmp(this.id + "defComparison").getValue().comparison == "snvrn") {
 		var unselectedNodes = this.cellbrowser.getUnselectedNodes();
-		this.paramsWS["list2fromtxt"] = unselectedNodes.toString().replace(/,/g,"\n");
+		this.paramsWS["list2"] = unselectedNodes.toString().replace(/,/g,"\n");
+		this.paramsWS["list2"] += "\n";
 	}
 	
 	if(this.paramsWS["go-bp"] && this.paramsWS["go-bp"] == true) {
 		this.paramsWS["go-bp"] = "";
+		this.paramsWS["annotations"] = "/httpd/bioinfo/gcsa/analysis/fatigo/examples/go_biological_process.txt";
 	}
 	else {
 		delete this.paramsWS["go-bp"];
@@ -47,6 +50,7 @@ FatigoPlugin.prototype.beforeRun = function() {
 	
 	if(this.paramsWS["go-mf"] && this.paramsWS["go-mf"] == true) {
 		this.paramsWS["go-mf"] = "";
+		this.paramsWS["annotations"] = "/httpd/bioinfo/gcsa/analysis/fatigo/examples/go_molecular_function.txt";
 	}
 	else {
 		delete this.paramsWS["go-mf"];
@@ -54,6 +58,7 @@ FatigoPlugin.prototype.beforeRun = function() {
 	
 	if(this.paramsWS["go-cc"] && this.paramsWS["go-cc"] == true) {
 		this.paramsWS["go-cc"] = "";
+		this.paramsWS["annotations"] = "/httpd/bioinfo/gcsa/analysis/fatigo/examples/go_cellular_component.txt";
 	}
 	else {
 		delete this.paramsWS["go-cc"];
@@ -61,6 +66,7 @@ FatigoPlugin.prototype.beforeRun = function() {
 	
 	if(this.paramsWS["go-slim"] && this.paramsWS["go-slim"] == true) {
 		this.paramsWS["go-slim"] = "";
+//		this.paramsWS["annotations"] = "/httpd/bioinfo/gcsa/analysis/fatigo/examples/"; //FALTA EL FICHERO EN EL DISCO
 	}
 	else {
 		delete this.paramsWS["go-slim"];
@@ -68,6 +74,7 @@ FatigoPlugin.prototype.beforeRun = function() {
 	
 	if(this.paramsWS["jaspar"] && this.paramsWS["jaspar"] == true) {
 		this.paramsWS["jaspar"] = "";
+		this.paramsWS["annotations"] = "/httpd/bioinfo/gcsa/analysis/fatigo/examples/tf.txt";
 	}
 	else {
 		delete this.paramsWS["jaspar"];
@@ -75,6 +82,7 @@ FatigoPlugin.prototype.beforeRun = function() {
 	
 	if(this.paramsWS["mirna"] && this.paramsWS["mirna"] == true) {
 		this.paramsWS["mirna"] = "";
+		this.paramsWS["annotations"] = "/httpd/bioinfo/gcsa/analysis/fatigo/examples/mirna_target.txt";
 	}
 	else {
 		delete this.paramsWS["mirna"];

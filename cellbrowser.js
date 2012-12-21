@@ -179,6 +179,7 @@ CellBrowser.prototype.draw = function(){
 CellBrowser.prototype.sessionInitiated = function(){
 	/*action buttons*/
 //	Ext.getCmp(this.grnViewerBtnId).enable();
+	Ext.getCmp(this.id + "fatigoBtn").enable();
 	
 	/**LOAD GCSA**/
 
@@ -202,6 +203,7 @@ CellBrowser.prototype.sessionInitiated = function(){
 CellBrowser.prototype.sessionFinished = function(){
 	/*action buttons*/
 //	Ext.getCmp(this.grnViewerBtnId).disable();
+	if(Ext.getCmp(this.id + "fatigoBtn")) Ext.getCmp(this.id + "fatigoBtn").disable();
 	
 	Ext.getCmp(this.eastPanelId).expand(); //se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).hide();
@@ -839,6 +841,8 @@ CellBrowser.prototype.getAnalysisMenu = function() {
 		items :[
 		        {
 		        	text:"FatiGO",
+		        	disabled: true,
+		        	id: this.id + "fatigoBtn",
 		        	handler:function(){
 		        		var fatigo = new FatigoPlugin(_this);
 		        		var args = {
