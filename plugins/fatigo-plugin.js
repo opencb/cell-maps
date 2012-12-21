@@ -31,11 +31,53 @@ function FatigoPlugin(cellbrowser) {
 
 FatigoPlugin.prototype.beforeRun = function() {
 	var selectedNodes = this.cellbrowser.getNodeLabelsFromNodeList(this.cellbrowser.getSelectedNodes()); 
-	this.paramsWS["list1"] = selectedNodes.toString().replace(/,/g,"\n");
+	this.paramsWS["list1fromtxt"] = selectedNodes.toString().replace(/,/g,"\n");
 	
 	if(Ext.getCmp(this.id + "defComparison").getValue().comparison == "snvrn") {
 		var unselectedNodes = this.cellbrowser.getUnselectedNodes();
-		this.paramsWS["list2"] = unselectedNodes.toString().replace(/,/g,"\n");
+		this.paramsWS["list2fromtxt"] = unselectedNodes.toString().replace(/,/g,"\n");
+	}
+	
+	if(this.paramsWS["go-bp"] && this.paramsWS["go-bp"] == true) {
+		this.paramsWS["go-bp"] = "";
+	}
+	else {
+		delete this.paramsWS["go-bp"];
+	}
+	
+	if(this.paramsWS["go-mf"] && this.paramsWS["go-mf"] == true) {
+		this.paramsWS["go-mf"] = "";
+	}
+	else {
+		delete this.paramsWS["go-mf"];
+	}
+	
+	if(this.paramsWS["go-cc"] && this.paramsWS["go-cc"] == true) {
+		this.paramsWS["go-cc"] = "";
+	}
+	else {
+		delete this.paramsWS["go-cc"];
+	}
+	
+	if(this.paramsWS["go-slim"] && this.paramsWS["go-slim"] == true) {
+		this.paramsWS["go-slim"] = "";
+	}
+	else {
+		delete this.paramsWS["go-slim"];
+	}
+	
+	if(this.paramsWS["jaspar"] && this.paramsWS["jaspar"] == true) {
+		this.paramsWS["jaspar"] = "";
+	}
+	else {
+		delete this.paramsWS["jaspar"];
+	}
+	
+	if(this.paramsWS["mirna"] && this.paramsWS["mirna"] == true) {
+		this.paramsWS["mirna"] = "";
+	}
+	else {
+		delete this.paramsWS["mirna"];
 	}
 };
 
@@ -126,9 +168,9 @@ FatigoPlugin.prototype._getOptionsPanel = function() {
 	var fisherValues = Ext.create('Ext.data.Store', {
 		fields: ['value', 'name'],
 		data : [
-		        {"value":"twoTailed", "name":"Two tailed"},
-		        {"value":"5", "name":"Over-represented terms in selected nodes (genome comparison)"},
-		        {"value":"100", "name":"Over-represented terms in non-selected nodes"}
+		        {"value":"two-tailed", "name":"Two tailed"},
+		        {"value":"less", "name":"Over-represented terms in selected nodes (genome comparison)"},
+		        {"value":"greater", "name":"Over-represented terms in non-selected nodes"}
 		       ]
 	});
 	
@@ -136,9 +178,9 @@ FatigoPlugin.prototype._getOptionsPanel = function() {
 		fields: ['value', 'name'],
 		data : [
 		        {"value":"never", "name":"Never"},
-		        {"value":"separately", "name":"Remove on each selection separately"},
-		        {"value":"commonIds", "name":"Remove on each selection and common ids"},
-		        {"value":"complementary", "name":"Remove from non-selected those appearing in selected (complementary list)"}
+		        {"value":"each", "name":"Remove on each selection separately"},
+		        {"value":"each", "name":"Remove on each selection and common ids"},
+		        {"value":"ref", "name":"Remove from non-selected those appearing in selected (complementary list)"}
 		       ]
 	});
 	
@@ -152,7 +194,7 @@ FatigoPlugin.prototype._getOptionsPanel = function() {
 		items:[
 		       this.createCombobox("fisher", "Fisher exact test", fisherValues, 0, 115),
 		       this.createCombobox("duplicates", "Remove duplicates?", duplicateValues, 0)
-		       ]
+		      ]
 	});
 };
 
@@ -175,7 +217,7 @@ FatigoPlugin.prototype._getDatabasesPanel = function() {
 	var goBPContainer = Ext.create('Ext.container.Container', {
 		layout: "hbox",
 		items:[
-		       this.createCheckBox("goBP", "GO biological process", false, '8 0 0 0', false),
+		       this.createCheckBox("go-bp", "GO biological process", false, '8 0 0 0', false),
 		       {
 		           xtype: 'numberfield',
 		           name: 'goBPMin',
@@ -204,7 +246,7 @@ FatigoPlugin.prototype._getDatabasesPanel = function() {
 	var goMFContainer = Ext.create('Ext.container.Container', {
 		layout: "hbox",
 		items:[
-		       this.createCheckBox("goMF", "GO molecular function", false, '8 0 0 0', false),
+		       this.createCheckBox("go-mf", "GO molecular function", false, '8 0 0 0', false),
 		       {
 		    	   xtype: 'numberfield',
 		    	   name: 'goMFMin',
@@ -233,7 +275,7 @@ FatigoPlugin.prototype._getDatabasesPanel = function() {
 	var goCCContainer = Ext.create('Ext.container.Container', {
 		layout: "hbox",
 		items:[
-		       this.createCheckBox("goCC", "GO cellular component", false, '8 0 0 0', false),
+		       this.createCheckBox("go-cc", "GO cellular component", false, '8 0 0 0', false),
 		       {
 		    	   xtype: 'numberfield',
 		    	   name: 'goCCMin',
@@ -262,7 +304,7 @@ FatigoPlugin.prototype._getDatabasesPanel = function() {
 	var goSlimContainer = Ext.create('Ext.container.Container', {
 		layout: "hbox",
 		items:[
-		       this.createCheckBox("goSlim", "GOSlim GOA", false, '8 0 0 0', false),
+		       this.createCheckBox("go-slim", "GOSlim GOA", false, '8 0 0 0', false),
 		       {
 		    	   xtype: 'numberfield',
 		    	   name: 'goSlimMin',
@@ -296,13 +338,13 @@ FatigoPlugin.prototype._getDatabasesPanel = function() {
 		width: "100%",
 		buttonAlign:'center',
 		items:[
-		       this.createCombobox("organism", "Organism", organismValues, 0),
+		       this.createCombobox("species", "Organism", organismValues, 0),
 		       goBPContainer,
 		       goMFContainer,
 		       goCCContainer,
 		       goSlimContainer,
-		       this.createCheckBox("miRNA", "miRNA targets", false, '8 0 0 0', false),
-		       this.createCheckBox("tfbs", "Jaspar TFBS", false, '8 0 0 0', false)
+		       this.createCheckBox("mirnA", "miRNA targets", false, '8 0 0 0', false),
+		       this.createCheckBox("jaspar", "Jaspar TFBS", false, '8 0 0 0', false)
 		      ]
 	});
 };

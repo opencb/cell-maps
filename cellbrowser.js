@@ -744,7 +744,7 @@ CellBrowser.prototype.getAnalysisMenu = function() {
 		        },
 		        {
 		        	text:"Intact",
-//		        	disabled: true,
+		        	disabled: true,
 		        	handler:function(){
 		        		var intact = new IntactPlugin();
 		        		intact.draw();
@@ -805,6 +805,7 @@ CellBrowser.prototype.getAnalysisMenu = function() {
 		        },
 		        {
 		        	text:"Gene set analysis",
+		        	disabled: true,
 		        	handler:function(){
 		        	}
 		        },
