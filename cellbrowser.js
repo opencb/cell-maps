@@ -23,6 +23,7 @@ function CellBrowser (targetId, args){
 	var _this = this;
 	this.id = "Cell Browser"+ Math.round(Math.random()*10000);
 	this.suiteId = 10;
+	this.tools = ["fatigo"];
 	this.title="Cell Browser";
 	this.description="RC";
 	this.wum=true;
@@ -53,6 +54,7 @@ function CellBrowser (targetId, args){
 	this.jobListWidget = new JobListWidget({
 		"timeout":4000,
 		"suiteId":this.suiteId,
+		"tools":this.tools,
 		"pagedViewList":{
 			"title": 'Jobs',
 			"pageSize": 7, 
@@ -63,28 +65,28 @@ function CellBrowser (targetId, args){
 			"mode":"view"
 		}
 	});
-	this.dataListWidget = new DataListWidget({
-		"timeout":4000,
-		"suiteId":this.suiteId,
-		"pagedViewList":{
-			"title": 'Data',
-			"pageSize": 7,
-			"targetId": this.eastPanelId,
-			"order" : 1,
-			"width": 280,
-			"height": 650,
-			"mode":"view"  //allowed grid | view
-		}
-	});
+	//this.dataListWidget = new DataListWidget({
+		//"timeout":4000,
+		//"suiteId":this.suiteId,
+		//"pagedViewList":{
+			//"title": 'Data',
+			//"pageSize": 7,
+			//"targetId": this.eastPanelId,
+			//"order" : 1,
+			//"width": 280,
+			//"height": 650,
+			//"mode":"view"  //allowed grid | view
+		//}
+	//});
 	
 	/**Atach events i listen**/
 	this.jobListWidget.pagedListViewWidget.onItemClick.addEventListener(function (sender, record){
 		_this.jobItemClick(record);
 	});
 	
-	this.dataListWidget.pagedListViewWidget.onItemClick.addEventListener(function (sender, record){
-		_this.dataItemClick(record);		
-	});
+	//this.dataListWidget.pagedListViewWidget.onItemClick.addEventListener(function (sender, record){
+		//_this.dataItemClick(record);		
+	//});
 	
 	
 	if (this.wum==true){
@@ -103,6 +105,14 @@ function CellBrowser (targetId, args){
 		this.headerWidget.onLogout.addEventListener(function (sender){
 			Ext.example.msg('Good bye', 'You logged out');
 			_this.sessionFinished();
+		});
+
+		this.headerWidget.gcsaBrowserWidget.onNeedRefresh.addEventListener (function (sender) {
+			_this.getAccountInfo();
+		});
+		
+		this.headerWidget.adapter.onGetAccountInfo.addEventListener(function (evt, response){
+			_this.setAccountInfo(response);
 		});
 		
 		this.headerWidget.userBarWidget.onProjectChange.addEventListener(function (sender){
@@ -170,14 +180,23 @@ CellBrowser.prototype.sessionInitiated = function(){
 	/*action buttons*/
 //	Ext.getCmp(this.grnViewerBtnId).enable();
 	
+	/**LOAD GCSA**/
+
+	
 	Ext.getCmp(this.eastPanelId).expand();//se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).show();
-	this.jobListWidget.draw();
-	this.dataListWidget.draw();
+	
+	//this.dataListWidget.draw();
+
 	
 	if(this.networkViewer) {
 		this.networkViewer.setSize(this.width-20, this.height-this.headerWidget.height);
 	}
+	
+	this.getAccountInfo();//first call
+	this.accountInfoInterval = setInterval(function(){_this.getAccountInfo();}, 40000);
+	
+	//this.jobListWidget.draw();
 };
 
 CellBrowser.prototype.sessionFinished = function(){
@@ -187,7 +206,7 @@ CellBrowser.prototype.sessionFinished = function(){
 	Ext.getCmp(this.eastPanelId).expand(); //se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).hide();
 	this.jobListWidget.clean();
-	this.dataListWidget.clean();
+	//this.dataListWidget.clean();
 	
 	while(Ext.getCmp(this.centerPanelId).items.items.length>1){
 		Ext.getCmp(this.centerPanelId).remove(Ext.getCmp(this.centerPanelId).items.items[Ext.getCmp(this.centerPanelId).items.items.length-1]);
@@ -196,7 +215,32 @@ CellBrowser.prototype.sessionFinished = function(){
 	if(this.networkViewer) {
 		this.networkViewer.setSize(this.width, this.height-this.headerWidget.height);
 	}
+
+	this.accountData = null;
+	clearInterval(this.accountInfoInterval);
+	
 //	this.centerPanel.removeChildEls(function(o) { return o.title != 'Home'; });
+};
+
+CellBrowser.prototype.setAccountInfo = function(response) {
+	_this = this;
+	console.log("checking account info")
+	console.log(response)
+	if(response.accountId != null){
+		this.accountData = response;
+		this.headerWidget.setAccountData(_this.accountData);
+		this.jobListWidget.setAccountData(_this.accountData);
+		console.log("accountData has been modified since last call");
+	}
+};	
+
+CellBrowser.prototype.getAccountInfo = function() {
+	_this = this;
+	var lastActivity = null;
+	if(this.accountData != null){
+		lastActivity =  this.accountData.lastActivity;
+	}
+	this.headerWidget.adapter.getAccountInfo($.cookie('bioinfo_account'), $.cookie('bioinfo_sid'), lastActivity);
 };
 
 CellBrowser.prototype.jobItemClick = function (record){
@@ -372,11 +416,13 @@ CellBrowser.prototype.getPanel = function(){
 };
 
 CellBrowser.prototype.getEastPanel = function(){
-	var eastPanel = Ext.create('Ext.tab.Panel', {
+	//var eastPanel = Ext.create('Ext.tab.Panel', {
+	var eastPanel = Ext.create('Ext.panel.Panel', {
 		id: this.eastPanelId,
 		region: 'east',
 		style : 'border: 0',
-		title: 'Jobs & Data list',
+		//title: 'Jobs & Data list',
+		title: 'Jobs',
 		collapsible : true,
 		titleCollapse: true,
 		animCollapse : false,
