@@ -343,7 +343,7 @@ FatigoPlugin.prototype._getDatabasesPanel = function() {
 		       goMFContainer,
 		       goCCContainer,
 		       goSlimContainer,
-		       this.createCheckBox("mirnA", "miRNA targets", false, '8 0 0 0', false),
+		       this.createCheckBox("mirna", "miRNA targets", false, '8 0 0 0', false),
 		       this.createCheckBox("jaspar", "Jaspar TFBS", false, '8 0 0 0', false)
 		      ]
 	});
