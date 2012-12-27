@@ -106,7 +106,7 @@ function CellBrowser (targetId, args){
 			Ext.example.msg('Good bye', 'You logged out');
 			_this.sessionFinished();
 		});
-
+		
 		this.headerWidget.gcsaBrowserWidget.onNeedRefresh.addEventListener (function (sender) {
 			_this.getAccountInfo();
 		});
@@ -179,7 +179,7 @@ CellBrowser.prototype.draw = function(){
 CellBrowser.prototype.sessionInitiated = function(){
 	/*action buttons*/
 //	Ext.getCmp(this.grnViewerBtnId).enable();
-	Ext.getCmp(this.id + "fatigoBtn").enable();
+	if(Ext.getCmp(this.id + "fatigoBtn")) Ext.getCmp(this.id + "fatigoBtn").enable();
 	
 	/**LOAD GCSA**/
 
@@ -851,7 +851,10 @@ CellBrowser.prototype.getAnalysisMenu = function() {
 		        			taskbar: Ext.getCmp(_this.networkViewer.id+'uxTaskbar')
 		        		};
 		        		fatigo.draw(args);
-		        	}
+		        	},
+		        	listeners:{
+						afterrender:function(me){if($.cookie("bioinfo_sid")!=null){me.enable()}}
+					}
 		        },
 		        {
 		        	text:"Gene set analysis",
