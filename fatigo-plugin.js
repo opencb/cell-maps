@@ -30,7 +30,8 @@ function FatigoPlugin(cellbrowser) {
 };
 
 FatigoPlugin.prototype.beforeRun = function() {
-	var selectedNodes = this.cellbrowser.getNodeLabelsFromNodeList(this.cellbrowser.getSelectedNodes()); 
+	/*TODO subir antes los ficheros*/
+	var selectedNodes = this.cellbrowser.getNodeLabelsFromNodeList(this.cellbrowser.getSelectedNodes());
 	this.paramsWS["list1"] = selectedNodes.toString().replace(/,/g,"\n");
 	this.paramsWS["list1"] += "\n";
 	
@@ -39,6 +40,7 @@ FatigoPlugin.prototype.beforeRun = function() {
 		this.paramsWS["list2"] = unselectedNodes.toString().replace(/,/g,"\n");
 		this.paramsWS["list2"] += "\n";
 	}
+	/*******************************/
 	
 	if(this.paramsWS["go-bp"] && this.paramsWS["go-bp"] == true) {
 		this.paramsWS["go-bp"] = "";
