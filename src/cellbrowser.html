@@ -1,148 +1,179 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Cell Browser</title>
 
-	<!-- CSS -->
-   	<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.1.1a-gpl/resources/css/ext-all-gray.css">
-   	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/libs/resources/css/style.css">
-   	<link rel="stylesheet" type="text/css" href="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.qtip.min.css">
-  
-	<!-- EXT-LIBS -->
-	
-	<!-- Ext-js -->
-	<script type="text/javascript" src="http://cdn.sencha.io/ext-4.1.1a-gpl/ext-all.js"></script>
-	<script type="text/javascript" src="http://cdn.sencha.io/ext-4.1.1a-gpl/examples/shared/examples.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all-gray.css">
 
-	<!-- jQuery -->
-<!--	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery/jquery-1.8.1.min.js"></script> -->
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery/1.7.1/jquery-1.7.1.min.js"></script> 
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.sha1.js"></script>
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.cookie.js"></script>
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.url.js"></script>
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jqXMLUtils.js"></script>
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.smartresize.js"></script>
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-mousewheel-3.0.6/jquery.mousewheel.min.js"></script>
-<!--	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.svg.js"></script>-->
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/jquery-plugins/jquery.qtip.min.js"></script>
+    <!-- CSS from vendors -->
+    <!-- build:style vendor -->
+    <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.qtip.min.css"/>
+    <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/bootstrap-scoped-dist/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.simplecolorpicker.css">
+    <!-- /build -->
 
-	<!-- Canvas to SVG converters -->
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/xml2json.js"  ></script>
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/rgbcolor.js"></script> 
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvg.js"></script> 
-	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/base64.js"></script>
-<!--	<script type="text/javascript" src="http://jsapi.bioinfo.cipf.es/ext-libs/svg/canvas2image.js"  ></script>-->
-	
 
-		<!-- js-common-libs utils -->
-	<script type="text/javascript" src="../js-common-libs/utils/event.js"></script>
-	<script type="text/javascript" src="../js-common-libs/utils/colors.js"></script>
-	<script type="text/javascript" src="../js-common-libs/utils/normalization.js"></script>
-	<script type="text/javascript" src="../js-common-libs/utils/svg.js"></script>
-	<script type="text/javascript" src="../js-common-libs/utils/compbio.js"></script>
-	
-	<!-- LIBS -->
-	<script type="text/javascript" src="./config/cb-config.json"></script>
-	
-	<!-- wum ui-widgets -->
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/header-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/user-list-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/job-list-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/data-list-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/paged-view-list-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/user-bar-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/upload-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/login-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/profile-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/result-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/result-table.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/browser-data-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/manage-projects-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/check-browser.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ui-widgets/gcsa-browser-widget.js"></script>
-	
-	<!-- wum ws-manager -->
-	<script type="text/javascript" src="../js-common-libs/wum/ws-manager/wum-adapter.js"></script>
-	<script type="text/javascript" src="../js-common-libs/wum/ws-manager/wum-rest-adapter.js"></script>
-	
-	<script type="text/javascript" src="../js-common-libs/genome-viewer/gcsa-rest-manager.js"></script>
-	<script type="text/javascript" src="../js-common-libs/genome-viewer/gcsa-manager.js"></script>
-	
-	<!-- js-common-libs dataadapter -->
-	<script type="text/javascript" src="../js-common-libs/data-adapter/data-adapter.js"></script>
-	<script type="text/javascript" src="../js-common-libs/data-adapter/file-data-adapter.js"></script>
-	
-	<!-- js-common-libs dataset -->
-	<script type="text/javascript" src="../js-common-libs/dataset/dataset.js"  ></script>
-	
-	<!-- from genome-viewer -->
-	<script type="text/javascript" src="../js-common-libs/genome-viewer/data-source.js"></script>
-	<script type="text/javascript" src="../js-common-libs/genome-viewer/file-data-source.js"></script>
+    <!-- CSS from Styles -->
+    <!-- build:style css -->
+    <link type="text/css" rel="stylesheet" href="../lib/jsorolla/styles/css/style.css"/>
+    <!-- /build -->
 
-	<!-- network viewer -->
-	<script type="text/javascript" src="../js-common-libs/network-viewer/nv-config.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/network-viewer.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/network-editor-bar-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/network-data.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/network-svg.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/network-file-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/network-background-settings.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-manager.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-edit-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/attribute-filter-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/import-attributes-file-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/dot-network-file-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/sif-network-file-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/string-network-file-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/network-data-adapter.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/dot-data-adapter.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/sif-data-adapter.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/string-data-adapter.js"></script>
-	<script type="text/javascript" src="../js-common-libs/network-viewer/attributes-data-adapter.js"></script>
-	
-	<!-- js-common-libs ui-widgets -->
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/ux-window.js"></script>
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/attributes-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/attributes-panel.js"></script>
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/network-attributes-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/attributes/expression-network-attributes-widget.js"></script>
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/text-window-widget.js"  ></script>
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/input-list-widget.js"  ></script>
-	
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/list/list-panel.js"  ></script>
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/list/list-widget.js"  ></script>
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/list/genomic-list-panel.js"  ></script>
-	<script type="text/javascript" src="../js-common-libs/ui-widgets/list/genomic-list-widget.js"  ></script>
-	
-	
-	<!-- cell-browser -->
-	<script type="text/javascript" src="./cellbrowser.js"></script>
-	<script type="text/javascript" src="./config/plugins-config.json"></script>
-	<script type="text/javascript" src="../js-common-libs/analysis/job-forms/generic-form-panel.js"></script>
-	<script type="text/javascript" src="./intact-plugin.js"></script>
-	<script type="text/javascript" src="./reactome-plugin.js"></script>
-	<script type="text/javascript" src="./fatigo-plugin.js"></script>
-		
-	<script>
-		Ext.Loader.setConfig({enabled: true});
-		Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext-4.1.1-gpl/examples/ux');
-		Ext.QuickTips.init();
-		Ext.require([
-		    'Ext.ux.grid.FiltersFeature',
-		    'Ext.ux.GroupTabPanel',
-		    'Ext.ux.statusbar.StatusBar',
-		]);
-		
-		Ext.onReady(run);
-		var network; 
-		function run(){
-			cellBrowser = new CellBrowser("mydiv");
-			cellBrowser.draw();		
-		}
-	</script>
+
+    <!-- Sencha Ext -->
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/examples/shared/examples.js"></script>
+
+    <!-- Workers directory -->
+    <script type="text/javascript">
+        WORKERS_PATH = "./";
+    </script>
+
+
+    <!-- JS from vendors -->
+
+    <!-- build:script vendor -->
+    <script type="text/javascript" src="../lib/jsorolla/vendor/underscore-min.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/backbone-min.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/rawdeflate.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/xml2json.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.min.js"></script>
+
+    <!-- These dependencies must go AFTER jquery -->
+    <script type="text/javascript" src="../lib/jsorolla/vendor/bootstrap-scoped-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/typeahead.min.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.qtip.min.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.sha1.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/purl.min.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.mousewheel.min.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/gl-matrix-min.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/ChemDoodleWeb.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.simplecolorpicker.js"></script>
+
+    <!-- /build -->
+
+
+    <!-- Cellbrowser config -->
+    <!-- build:script nvconfig -->
+    <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/nv-config.js"></script>
+    <!-- /build -->
+    <script type="text/javascript" src="cb-config.js"></script>
+
+
+    <!-- JS from jsorolla Viewer -->
+    <!-- build:script jsorolla -->
+
+    <!-- utils -->
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/utils/svg.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/utils/utils.js"></script>
+
+    <!-- ui-widgets -->
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/ux-window.js"></script>
+
+
+    <!-- cellbase ui-widgets -->
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/info-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/gene-info-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/protein-info-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/snp-info-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/transcript-info-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/vcf-variant-info-widget.js"></script>
+
+    <!-- cellbase ws-manager -->
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/cellbase-manager.js"></script>
+
+    <!-- Network viewer -->
+    <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/tool-bar.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/edition-bar.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/network-svg-layout.js"></script>
+
+    <script type="text/javascript" src="../lib/jsorolla/src/network/attribute-manager.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/network.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/network-config.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/graph.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/edge.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/edge-config.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/vertex.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/vertex-config.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/default-vertex-renderer.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/circos-vertex-renderer.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/default-edge-renderer.js"></script>
+
+    <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/network-viewer.js"></script>
+
+    <!-- Opencga -->
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/opencga-manager.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/generic-form-panel.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/user-list-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/check-browser.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/header-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/job-list-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/login-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/opencga-browser-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/paged-view-list-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/profile-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/result2-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/result-table.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/upload-widget.js"></script>
+
+
+    <script type="text/javascript">
+        WORKERS_PATH = "../lib/jsorolla/src/lib/opencga/";
+    </script>
+    <!-- /build -->
+
+    <!-- JS from CellBrowser -->
+    <!-- build:script js -->
+    <script type="text/javascript" src="./plugins-config.js"></script>
+    <script type="text/javascript" src="./fatigo-plugin.js"></script>
+    <script type="text/javascript" src="./intact-plugin.js"></script>
+    <script type="text/javascript" src="./reactome-plugin.js"></script>
+    <script type="text/javascript" src="./cb-toolbar.js"></script>
+    <script type="text/javascript" src="./cellbrowser.js"></script>
+    <!-- /build -->
+
+    <script>
+        Ext.Loader.setConfig({enabled: true});
+        Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext/gpl/4.2.1/examples/ux');
+        //    Ext.QuickTips.init();
+        //    Ext.require([
+        //        'Ext.grid.plugin.BufferedRenderer'
+        //    ]);
+
+        var cellBrowser;
+        Ext.onReady(function () {
+            CheckBrowser();
+            cellBrowser = new CellBrowser({
+                targetId: 'application',
+                autoRender: true
+            }); //the div must exist
+            cellBrowser.draw();
+        });
+    </script>
+    <STYLE type="text/css">
+        html {
+            /*overflow-y: scroll;*/
+            /*overflow-x: hidden;*/
+        }
+
+        #status {
+            height: 26px;
+            border-color:lightgrey;
+            border-style:solid;
+            border-width: 0 1px 1px 1px;
+        }
+
+        body {
+            /*background-color: #f5f5f5;*/
+            padding: 4px;
+        }
+    </STYLE>
 </head>
-<body style="overflow: hidden">
-	<div id="mydiv"></div>
+<body>
+<div id="checkBrowser"></div>
+<div id="application"></div>
+<div id="status" class="gm-navigation-bar"></div>
 </body>
 </html>
+

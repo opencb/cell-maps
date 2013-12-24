@@ -1,3 +1,2 @@
-CB_CELLBASE_HOST = "http://ws-beta.bioinfo.cipf.es/cellbase/rest";
-GCSA_HOST = "http://ws-beta.bioinfo.cipf.es/gcsa/rest";
-WUM_HOST = "http://bioinfo.cipf.es/wum/rest";
+CELLBASE_HOST = "http://ws-beta.bioinfo.cipf.es/cellbase/rest";
+OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga-server-beta/rest";
