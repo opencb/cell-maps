@@ -37,6 +37,9 @@
     <script type="text/javascript" src="../lib/jsorolla/vendor/backbone-min.js"></script>
     <script type="text/javascript" src="../lib/jsorolla/vendor/rawdeflate.js"></script>
     <script type="text/javascript" src="../lib/jsorolla/vendor/xml2json.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/rgbcolor.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/canvg.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/vendor/xml2json.js"></script>
     <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.min.js"></script>
 
     <!-- These dependencies must go AFTER jquery -->
@@ -88,7 +91,8 @@
     <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/edition-bar.js"></script>
     <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/network-svg-layout.js"></script>
 
-    <script type="text/javascript" src="../lib/jsorolla/src/network/attribute-manager.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/attributes/attribute-manager-idb.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/attributes/attribute-manager-store.js"></script>
     <script type="text/javascript" src="../lib/jsorolla/src/network/network.js"></script>
     <script type="text/javascript" src="../lib/jsorolla/src/network/network-config.js"></script>
     <script type="text/javascript" src="../lib/jsorolla/src/network/graph.js"></script>
@@ -117,6 +121,19 @@
     <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/result-table.js"></script>
     <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/upload-widget.js"></script>
 
+    <!-- widgets -->
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/json-data-adapter.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/attributes-data-adapter.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/data-source/data-source.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/data-source/file-data-source.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/network-file-widget.js"></script>
+
+    <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/attributes/import-attributes-file-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/attributes/attribute-edit-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/attributes/attribute-filter-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/attributes/attribute-manager-store.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/network/attributes/attribute-manager-idb.js"></script>
+
 
     <script type="text/javascript">
         WORKERS_PATH = "../lib/jsorolla/src/lib/opencga/";
@@ -125,7 +142,6 @@
 
     <!-- JS from CellBrowser -->
     <!-- build:script js -->
-    <script type="text/javascript" src="./plugins-config.js"></script>
     <script type="text/javascript" src="./fatigo-plugin.js"></script>
     <script type="text/javascript" src="./intact-plugin.js"></script>
     <script type="text/javascript" src="./reactome-plugin.js"></script>

@@ -28,7 +28,7 @@ function CellBrowser(args) {
     //set default args
     this.suiteId = 10;
     this.title = 'Cell Browser';
-    this.description = "System biology visualization";
+    this.description = "Systems biology visualization";
     this.version = "2.0.0";
     this.border = true;
     this.resizable = true;
@@ -79,7 +79,7 @@ CellBrowser.prototype = {
                 if (event.target == window) {
                     if (!_this.resizing) {//avoid multiple resize events
                         _this.resizing = true;
-                        _this.setWidth($(_this.div).width());
+//                        _this.setWidth($(_this.div).width());
                         setTimeout(function () {
                             _this.resizing = false;
                         }, 400);
@@ -115,11 +115,68 @@ CellBrowser.prototype = {
         this.statusBar = this._createStatusBar('status');
 
 
+        this.nodeAttributeEditWidget = new AttributeEditWidget({
+            attrMan:this.networkViewer.network.nodeAttributeManager,
+            type:'Node',
+            handlers:{
+                'vertices:select':function(event){
+                    _this.networkViewer.networkSvgLayout.selectVerticesByIds(event.vertices)
+                }
+            }
+        });
+        this.nodeAttributeFilterWidget = new AttributeFilterWidget({
+            attrMan:this.networkViewer.network.nodeAttributeManager,
+            type:'Node',
+            handlers:{
+                'vertices:select':function(event){
+                    _this.networkViewer.networkSvgLayout.selectVerticesByIds(event.vertices)
+                },
+                'vertices:deselect':function(event){
+                    //TODO
+                },
+                'vertices:filter':function(event){
+                    //event.vertices
+                    //TODO
+                },
+                'vertices:restore':function(event){
+                    //TODO
+                }
+            }
+        });
+
+        this.edgeAttributeEditWidget = new AttributeEditWidget({
+            attrMan:this.networkViewer.network.edgeAttributeManager,
+            type:'Edge',
+            handlers:{
+                'vertices:select':function(event){
+                    //todo
+                }
+            }
+        });
+        this.edgeAttributeFilterWidget = new AttributeFilterWidget({
+            attrMan:this.networkViewer.network.edgeAttributeManager,
+            type:'Edge',
+            handlers:{
+                'vertices:select':function(event){
+                    //event.vertices
+                    //TODO
+                },
+                'vertices:deselect':function(event){
+                    //TODO
+                },
+                'vertices:filter':function(event){
+                    //event.vertices
+                    //TODO
+                },
+                'vertices:restore':function(event){
+                    //TODO
+                }
+            }
+        });
+
 //        //TEST SCROLL BAR
-
-
-        var text = "Release Candidate";
-        this.headerWidget.setDescription(text);
+//        var text = "";
+//        this.headerWidget.setDescription(text);
 
         //check login
         if ($.cookie('bioinfo_sid') != null) {
@@ -164,7 +221,106 @@ CellBrowser.prototype = {
         var _this = this;
         var cbToolBar = new CbToolBar({
             targetId: targetId,
-            autoRender:true
+            autoRender: true,
+            handlers: {
+                'saveJSON:click': function (event) {
+                    var content = JSON.stringify(_this.networkViewer.toJSON());
+                    event.a.set({
+                        href: 'data:text/csv,' + encodeURIComponent(content),
+                        download: "network.json"
+                    });
+                },
+                'openJSON:click': function (event) {
+                    var networkFileWidget = new NetworkFileWidget({
+                        handlers: {
+                            'okButton:click': function (event) {
+                                _this.networkViewer.loadJSON(event.content);
+                            }
+                        }
+                    });
+                    networkFileWidget.draw();
+                },
+                'savePNG:click': function (event) {
+                    var svgEl = _this.networkViewer.networkSvgLayout.getSvgEl();
+
+                    var svgBack = _this.networkViewer.networkSvgLayout.backgroundSvg;
+                    // quit the image background
+                    var image = svgEl.removeChild(svgBack);
+
+                    var svg = new XMLSerializer().serializeToString(svgEl);
+
+                    // put again the image background
+                    $(svgEl).prepend(image);
+
+                    var canvas = $("<canvas/>", {"id": _this.id + "png", "visibility": _this.id + "hidden"}).appendTo("body")[0];
+                    canvg(canvas, svg);
+                    event.a.set({
+                        href: canvas.toDataURL("image/png"),
+                        target: "_blank",
+                        download: "network.png"
+                    });
+                    $("#" + _this.id + "png").remove();
+                },
+                'saveJPG:click': function (event) {
+                    var svgEl = _this.networkViewer.networkSvgLayout.getSvgEl();
+
+                    var svgBack = _this.networkViewer.networkSvgLayout.backgroundSvg;
+                    // quit the image background
+                    var image = svgEl.removeChild(svgBack);
+
+                    var svg = new XMLSerializer().serializeToString(svgEl);
+
+                    // put again the image background
+                    $(svgEl).prepend(image);
+
+                    var canvas = $("<canvas/>", {"id": _this.id + "jpg", "visibility": _this.id + "hidden"}).appendTo("body")[0];
+                    canvg(canvas, svg);
+                    event.a.set({
+                        href: canvas.toDataURL("image/jpg"),
+                        target: "_blank",
+                        download: "network.jpg"
+                    });
+                    $("#" + _this.id + "jpg").remove();
+                },
+                'saveSVG:click': function (event) {
+                    var svg = new XMLSerializer().serializeToString(_this.networkViewer.networkSvgLayout.getSvgEl());
+                    var content = 'data:image/svg+xml,' + encodeURIComponent(svg);
+                    event.a.set({
+                        href: content,
+                        target: "_blank",
+                        download: "network.svg"
+                    });
+                },
+                'importNodeAttributes:click': function (event) {
+                    var importAttributesFileWidget = new ImportAttributesFileWidget({
+                        "numNodes": _this.networkViewer.getVerticesLength(),
+                        handlers:{
+                            'okButton:click':function(attrEvent){
+                                _this.networkViewer.importVertexWithAttributes(attrEvent.content);
+                            }
+                        }
+                    });
+                    importAttributesFileWidget.draw();
+                },
+                'editNodeAttributes:click': function (event) {
+                    _this.nodeAttributeEditWidget.draw(_this.networkViewer.getSelectedVertices());
+                },
+                'filterNodeAttributes:click': function (event) {
+                    _this.nodeAttributeFilterWidget.draw(_this.networkViewer.getSelectedVertices());
+                },
+                '': function (event) {
+                },
+                '': function (event) {
+                },
+                '': function (event) {
+                },
+                '': function (event) {
+                },
+                '': function (event) {
+                },
+                '': function (event) {
+                }
+            }
         });
         return cbToolBar;
     },
@@ -174,7 +330,7 @@ CellBrowser.prototype = {
             targetId: targetId,
             autoRender: true,
             sidePanel: false,
-            border:false
+            border: false
         });
         networkViewer.draw();
         return networkViewer;
