@@ -5,13 +5,12 @@ module.exports = function (grunt) {
     grunt.initConfig({
         // Metadata.
         meta: {
-            version: '3.1.6',
+            version: '2.0.0',
             jsorolla: {
                 dir: '/lib/jsorolla/',
-                //genome viewer contains cellbse and utils
-                'genomeviewer': {
-                    version: '1.0.3',
-                    dir: '<%= meta.jsorolla.dir %>build/genome-viewer/<%= meta.jsorolla.genomeviewer.version %>/'
+                'networkviewer': {
+                    version: '1.0.0',
+                    dir: '<%= meta.jsorolla.dir %>build/network-viewer/<%= meta.jsorolla.networkviewer.version %>/'
                 },
                 //opencga does not contains utils
                 opencga: {
@@ -33,13 +32,11 @@ module.exports = function (grunt) {
             },
             build: {
                 src: [
-//                    'src/gm-config.js',
-                    'src/gm-plugins-config.js',
-                    'src/gm-navigation-bar.js',
-                    'src/gm-status-bar.js',
-                    'src/genome-maps.js'
+//                    'src/cb-config.js',
+                    'src/cb-toolbar.js',
+                    'src/cellbrowser.js'
                 ],
-                dest: 'build/<%= meta.version %>/genome-maps-<%= meta.version %>.js'
+                dest: 'build/<%= meta.version %>/cellbrowser-<%= meta.version %>.js'
             }
         },
         uglify: {
@@ -48,16 +45,20 @@ module.exports = function (grunt) {
             },
             build: {
                 src: '<%= concat.build.dest %>',
-                dest: 'build/<%= meta.version %>/genome-maps-<%= meta.version %>.min.js'
+                dest: 'build/<%= meta.version %>/cellbrowser-<%= meta.version %>.min.js'
             }
         },
         copy: {
             build: {
                 files: [
-                    {   expand: true, cwd: './src', src: ['gm-config.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['cb-config.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['plugins-config.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['fatigo-plugin.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['intact-plugin.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['reactome-plugin.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['vendor/**'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['styles/**'], dest: 'build/<%= meta.version %>/' }, // includes files in path and its subdirs
-                    {   expand: true, cwd: './<%= meta.jsorolla.genomeviewer.dir %>', src: ['genome-viewer*.js', 'gv-config.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './<%= meta.jsorolla.networkviewer.dir %>', src: ['network-viewer*.js', 'nv-config.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './<%= meta.jsorolla.opencga.dir %>', src: ['opencga*.js', 'worker*'], dest: 'build/<%= meta.version %>/' }
                 ]
             }
@@ -70,36 +71,39 @@ module.exports = function (grunt) {
         stylesPath: 'build/<%= meta.version %>/styles',
         htmlbuild: {
             build: {
-                src: 'src/genome-maps.html',
+                src: 'src/cellbrowser.html',
                 dest: 'build/<%= meta.version %>/',
                 options: {
                     beautify: true,
                     scripts: {
-                        'js': 'build/<%= meta.version %>/genome-maps-<%= meta.version %>.min.js',
+                        'js': 'build/<%= meta.version %>/cellbrowser-<%= meta.version %>.min.js',
                         'vendor': [
                             'build/<%= meta.version %>/vendor/underscore*.js',
                             'build/<%= meta.version %>/vendor/backbone*.js',
+                            'build/<%= meta.version %>/vendor/rawdeflate*.js',
+                            'build/<%= meta.version %>/vendor/rgbcolor.js',
+                            'build/<%= meta.version %>/vendor/canvg.js',
+                            'build/<%= meta.version %>/vendor/xml2json.js',
                             'build/<%= meta.version %>/vendor/jquery.min.js',
+
                             'build/<%= meta.version %>/vendor/bootstrap-*-dist/js/bootstrap.min.js',
                             'build/<%= meta.version %>/vendor/typeahead.min.js',
+                            'build/<%= meta.version %>/vendor/jquery.qtip*.js',
+                            'build/<%= meta.version %>/vendor/jquery.cookie*.js',
+                            'build/<%= meta.version %>/vendor/jquery.sha1*.js',
+                            'build/<%= meta.version %>/vendor/purl*.js',
                             'build/<%= meta.version %>/vendor/jquery.mousewheel*.js',
                             'build/<%= meta.version %>/vendor/gl-matrix-min*.js',
                             'build/<%= meta.version %>/vendor/ChemDoodleWeb*.js',
-                            'build/<%= meta.version %>/vendor/jquery.cookie*.js',
-                            'build/<%= meta.version %>/vendor/purl*.js',
-                            'build/<%= meta.version %>/vendor/jquery.sha1*.js',
-                            'build/<%= meta.version %>/vendor/jquery.qtip*.js',
-                            'build/<%= meta.version %>/vendor/rawdeflate*.js',
-                            'build/<%= meta.version %>/vendor/xml2json.js',
-//                            'build/<%= meta.version %>/vendor/jquery-ui-1.10.3*/js/jquery-ui*min.js'
+                            'build/<%= meta.version %>/vendor/jquery.simplecolorpicker.js'
 
                         ],
-                        gv: [
+                        nv: [
                             'build/<%= meta.version %>/opencga*.min.js',
-                            'build/<%= meta.version %>/genome-viewer*.min.js'
+                            'build/<%= meta.version %>/network-viewer*.min.js'
                         ],
-                        gvconfig: [
-                            'build/<%= meta.version %>/gv-config.js'
+                        nvconfig: [
+                            'build/<%= meta.version %>/nv-config.js'
                         ]
                     },
                     styles: {
@@ -107,9 +111,7 @@ module.exports = function (grunt) {
                         'vendor': [
                             'build/<%= meta.version %>/vendor/jquery.qtip*.css',
                             'build/<%= meta.version %>/vendor/ChemDoodleWeb*.css',
-                            'build/<%= meta.version %>/vendor/bootstrap-*-dist/css/bootstrap.min.css',
-                            'build/<%= meta.version %>/vendor/typeahead.js-bootstrap.css'
-//                            'build/<%= meta.version %>/vendor/jquery-ui-1.10.3*/css/**/jquery-ui*min.css'
+                            'build/<%= meta.version %>/vendor/bootstrap-*-dist/css/bootstrap.min.css'
                         ]
                     }
                 }
@@ -121,14 +123,14 @@ module.exports = function (grunt) {
         rename: {
             html: {
                 files: [
-                    {src: ['build/<%= meta.version %>/genome-maps.html'], dest: 'build/<%= meta.version %>/index.html'}
+                    {src: ['build/<%= meta.version %>/cellbrowser.html'], dest: 'build/<%= meta.version %>/index.html'}
                 ]
             }
         },
         hub: {
             all: {
                 src: ['lib/jsorolla/Gruntfile.js'],
-                tasks: ['opencga', 'gv']
+                tasks: ['opencga', 'nv']
             }
         }
     });
@@ -145,7 +147,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-hub');
 
     grunt.registerTask('log-deploy', 'Deploy path info', function (version) {
-        grunt.log.writeln("DEPLOY COMMAND: scp -r build/"+grunt.config.data.meta.version+" cafetero@mem16:/httpd/bioinfo/www-apps/genome-maps/");
+        grunt.log.writeln("DEPLOY COMMAND: scp -r build/"+grunt.config.data.meta.version+" cafetero@mem16:/httpd/bioinfo/www-apps/cellbrowser/");
     });
 
     // Default task.

@@ -28,7 +28,7 @@ function CellBrowser(args) {
     //set default args
     this.suiteId = 10;
     this.title = 'Cell Browser';
-    this.description = "Systems biology visualization";
+    this.description = "Systems Biology Visualization";
     this.version = "2.0.0";
     this.border = true;
     this.resizable = true;

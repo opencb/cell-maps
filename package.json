@@ -1,6 +1,6 @@
 {
-    "name": "GenomeMaps",
-    "version": "3.1.1",
+    "name": "Cellbrowser",
+    "version": "2.0.0",
     "devDependencies": {
         "grunt": "~0.4.1",
         "grunt-contrib-concat": "~0.3.0",
