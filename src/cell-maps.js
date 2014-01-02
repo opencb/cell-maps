@@ -331,6 +331,9 @@ CellMaps.prototype = {
                 'filterNodeAttributes:click': function (event) {
                     _this.nodeAttributeFilterWidget.draw(_this.networkViewer.getSelectedVertices());
                 },
+
+
+
                 '': function (event) {
                 },
                 '': function (event) {
@@ -339,9 +342,14 @@ CellMaps.prototype = {
                 },
                 '': function (event) {
                 },
-                '': function (event) {
+
+
+                'reactome:click': function (event) {
+                    var reactome = new ReactomePlugin(_this);
+                    reactome.draw();
                 },
                 'example:click': function (event) {
+
                     if (event.example == 1) {
                         _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_1_JSON));
                     }

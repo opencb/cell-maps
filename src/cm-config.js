@@ -1,4 +1,5 @@
 CELLBASE_HOST = "http://ws-beta.bioinfo.cipf.es/cellbase/rest";
+CELLBASE_HOST = "http://ws-beta.bioinfo.cipf.es/cellbase-mongo/rest";
 OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga-server-beta/rest";
 
 HEADER_HOME_LINK = "https://github.com/opencb/cellbrowser";

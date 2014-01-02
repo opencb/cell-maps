@@ -315,37 +315,6 @@ CmToolBar.prototype = {
         var _this = this;
 
 
-        var importMenu = Ext.create('Ext.menu.Menu', {
-            items: [
-//                {
-//                    text: "File",
-//                    menu: importFileMenu
-//                },
-                {
-                    text: "Reactome",
-//		        	disabled: true,
-                    handler: function () {
-                        var reactome = new ReactomePlugin(_this);
-                        reactome.draw();
-                    }
-                },
-                {
-                    text: "IntAct",
-                    disabled: true,
-                    handler: function () {
-                        var intact = new IntactPlugin();
-                        intact.draw();
-                    }
-                },
-                {
-                    text: "Differential Expression Analysis",
-                    disabled: true,
-                    handler: function () {
-                    }
-                }
-            ]
-        });
-
         var networkMenu = Ext.create('Ext.menu.Menu', {
             items: [
                 {
@@ -465,12 +434,30 @@ CmToolBar.prototype = {
 
         var analysisMenu = Ext.create('Ext.menu.Menu', {
             margin: '0 0 10 0',
-            floating: true,
+            plain: true,
             items: [
                 {
-                    text: 'Import',
-                    menu: importMenu
+                    text: "Reactome",
+//		        	disabled: true,
+                    handler: function () {
+                        _this.trigger('reactome:click', {sender: _this});
+                    }
                 },
+                {
+                    text: "IntAct",
+                    disabled: true,
+                    handler: function () {
+                        var intact = new IntactPlugin();
+                        intact.draw();
+                    }
+                },
+//                {
+//                    text: "Differential Expression Analysis",
+//                    disabled: true,
+//                    handler: function () {
+//                    }
+//                }
+                '-',
                 {
                     text: 'Network analysis',
                     disabled: true,

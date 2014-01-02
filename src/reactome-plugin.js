@@ -19,14 +19,14 @@
  * along with Cell Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function ReactomePlugin(cellbrowser) {
+function ReactomePlugin(cellMaps) {
 	this.id = Math.round(Math.random() * 10000000);
 	
 	this.nodeNameIdDic = {};
 	this.nodeIdNameDic = {};
 	this.pathwayComponents = {};
 	this.reusedNodes = {};
-	this.cellbrowser = cellbrowser;
+	this.cellMaps = cellMaps;
 };
 
 ReactomePlugin.prototype.draw = function() {
@@ -190,7 +190,7 @@ ReactomePlugin.prototype.draw = function() {
     			var searchText = searchTb.getValue();
     			var searchBy = searchRadioGrp.getChecked()[0].inputValue;
     			
-    			$.ajax({url: CB_CELLBASE_HOST+"/latest/"+speciesSelected+"/network/reactome-pathway/search?by="+searchBy+"&text="+searchText+"&onlyIds=true", success:function(data) {
+    			$.ajax({url: CELLBASE_HOST+"/latest/"+speciesSelected+"/network/reactome-pathway/search?by="+searchBy+"&text="+searchText+"&onlyIds=true", success:function(data) {
     				var json = JSON.parse(data);
     				
     				for(var i=0, len=json.length; i<len; i++) {
@@ -234,7 +234,7 @@ ReactomePlugin.prototype.draw = function() {
     
 	var window = Ext.create('Ext.ux.Window', {
 		title : "Reactome plugin",
-		taskbar: Ext.getCmp(this.cellbrowser.networkViewer.id+'uxTaskbar'),
+		taskbar: Ext.getCmp(this.cellMaps.networkViewer.id+'uxTaskbar'),
 		height : 500,
 		width : 350,
 		layout : "fit",
@@ -251,7 +251,7 @@ ReactomePlugin.prototype.draw = function() {
 	
 	function renderTree(){
 		tree.setLoading(true);
-		$.ajax({url: CB_CELLBASE_HOST+"/latest/"+speciesSelected+"/network/reactome-pathway/tree", success:function(data) {
+		$.ajax({url: CELLBASE_HOST+"/latest/"+speciesSelected+"/network/reactome-pathway/tree", success:function(data) {
 			var json = JSON.parse(data.replace(/\"subPathways\" : \[ \]/g,"\"leaf\":true").replace(/subPathways/g,"children"));
 			treeStore.setRootNode({
 				children:json
@@ -265,15 +265,16 @@ ReactomePlugin.prototype.draw = function() {
 ReactomePlugin.prototype.loadPathway = function(speciesSelected, pathwayId){
 	var _this = this;
 
-	//	_this.cellbrowser.clearNetwork();
+	//	_this.cellMaps.clearNetwork();
 	_this.nodeNameIdDic = {};
 	_this.nodeIdNameDic = {};
 	_this.pathwayComponents = {};
-	_this.cellbrowser.networkViewer.networkData = new NetworkData();
-	
+
+    var network = new Network();
+
 	_this.pathwayComponents[pathwayId] = {};
-	
-	$.ajax({url: CB_CELLBASE_HOST+"/latest/"+speciesSelected+"/network/reactome-pathway/"+pathwayId+"/info", success:function(data) {
+
+	$.ajax({url: CELLBASE_HOST+"/latest/"+speciesSelected+"/network/reactome-pathway/"+pathwayId+"/info", success:function(data) {
 		var json = JSON.parse(data)[0];
 		for(var i=0, len=json.subPathways.length; i<len; i++) {
 			var nodeId = _this.addPathwayNode(json.subPathways[i].name, json.subPathways[i].displayName[0], speciesSelected);
@@ -301,16 +302,17 @@ ReactomePlugin.prototype.loadPathway = function(speciesSelected, pathwayId){
 			if(!_this.reusedNodes[name]) _this.reusedNodes[name] = {};
 			_this.reusedNodes[name][pathwayId] = true;
 		}
-		
-		_this.cellbrowser.refresh(_this.cellbrowser.networkViewer.networkData);
+		_this.cellMaps.networkViewer.setNetwork(network);
 	}});
 };
 
 ReactomePlugin.prototype.addPathway = function(speciesSelected, pathwayId){
 	var _this = this;
 	_this.pathwayComponents[pathwayId] = {};
-	
-	$.ajax({url: CB_CELLBASE_HOST+"/latest/"+speciesSelected+"/network/reactome-pathway/"+pathwayId+"/info", success:function(data) {
+
+    var network = _this.cellMaps.networkViewer.network;
+
+	$.ajax({url: CELLBASE_HOST+"/latest/"+speciesSelected+"/network/reactome-pathway/"+pathwayId+"/info", success:function(data) {
 		var json = JSON.parse(data)[0];
 		
 		for(var i=0, len=json.subPathways.length; i<len; i++) {
@@ -339,8 +341,7 @@ ReactomePlugin.prototype.addPathway = function(speciesSelected, pathwayId){
 			if(!_this.reusedNodes[name]) _this.reusedNodes[name] = {};
 			_this.reusedNodes[name][pathwayId] = true;
 		}
-		
-		_this.cellbrowser.refresh(_this.cellbrowser.networkViewer.networkData);
+        _this.cellMaps.networkViewer.setNetwork(network);
 	}});
 };
 
@@ -360,7 +361,7 @@ ReactomePlugin.prototype.removePathway = function(pathwayId) {
 //	    }
 //		
 //		if(size <= 1) {
-//			this.cellbrowser.removeNode(this.pathwayComponents[pathwayId][i]);
+//			this.cellMaps.removeNode(this.pathwayComponents[pathwayId][i]);
 //		}
 ////		for(var j=0,lenj=this.reusedNodes[node].length; j<lenj; j++) {
 ////			if(this.reusedNodes[node][j] == pathwayId) {
@@ -379,7 +380,7 @@ ReactomePlugin.prototype.removePathway = function(pathwayId) {
 	    }
 		
 		if(size <= 1) {
-			this.cellbrowser.removeNode(comp);
+			this.cellMaps.removeNode(comp);
 		}
 		
 		delete this.reusedNodes[node][pathwayId];
@@ -387,7 +388,7 @@ ReactomePlugin.prototype.removePathway = function(pathwayId) {
 	
 	delete this.pathwayComponents[pathwayId];
 	
-	this.cellbrowser.refresh(this.cellbrowser.networkViewer.networkData);
+	this.cellMaps.refresh(this.cellMaps.networkViewer.networkData);
 };
 
 ReactomePlugin.prototype.addPathwayNode = function(name, displayName, species) {
@@ -401,7 +402,7 @@ ReactomePlugin.prototype.addPathwayNode = function(name, displayName, species) {
 		"qtipContent": '<b style="cursor:pointer" class="link">Open pathway</b>'
 	};
 	
-	var nodeId = this.cellbrowser.addNode(args);
+	var nodeId = this.cellMaps.addNode(args);
 	if(nodeId != -1) {
 		this.nodeNameIdDic[name] = nodeId;
 		this.nodeIdNameDic[nodeId] = name;
@@ -417,7 +418,7 @@ ReactomePlugin.prototype.addPhysicalEntity = function(name, type, displayName, p
 	args.metainfo = params;
 	args.metainfo.label = displayName;
 	
-	var nodeId = this.cellbrowser.addNode(args);
+	var nodeId = this.cellMaps.addNode(args);
 	if(nodeId != -1) {
 		this.nodeNameIdDic[name] = nodeId;
 		this.nodeIdNameDic[nodeId] = name;
@@ -434,7 +435,7 @@ ReactomePlugin.prototype.addInteraction = function(interaction) {
 	nodeArgs.metainfo = interaction.params;
 	nodeArgs.metainfo.label = interaction.params.displayName[0];
 	
-	var nodeId = this.cellbrowser.addNode(nodeArgs);
+	var nodeId = this.cellMaps.addNode(nodeArgs);
 	if(nodeId != -1) {
 		this.nodeNameIdDic[name] = nodeId;
 		this.nodeIdNameDic[nodeId] = name;
@@ -453,7 +454,7 @@ ReactomePlugin.prototype.addInteraction = function(interaction) {
 			edgeArgs.type = "odot";
 			edgeArgs.name = "";
 			edgeArgs.params = {};
-			this.cellbrowser.addEdge(edgeArgs);
+			this.cellMaps.addEdge(edgeArgs);
 		}
 		
 		for(var i=0, len=interaction.params["right"].length; i<len; i++) {
@@ -464,7 +465,7 @@ ReactomePlugin.prototype.addInteraction = function(interaction) {
 			edgeArgs.type = "directed";
 			edgeArgs.name = "";
 			edgeArgs.params = {};
-			this.cellbrowser.addEdge(edgeArgs);
+			this.cellMaps.addEdge(edgeArgs);
 		}
 		break;
 	case "TemplateReaction":
@@ -476,7 +477,7 @@ ReactomePlugin.prototype.addInteraction = function(interaction) {
 			edgeArgs.type = "directed";
 			edgeArgs.name = "";
 			edgeArgs.params = {};
-			this.cellbrowser.addEdge(edgeArgs);
+			this.cellMaps.addEdge(edgeArgs);
 		}
 		break;
 
