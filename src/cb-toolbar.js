@@ -55,6 +55,60 @@ CbToolBar.prototype = {
         this.div = $('<div id="navigation-bar' + this.id + '" class="unselectable"></div>')[0];
         $(this.targetDiv).append(this.div);
 
+
+        var importFileMenu = Ext.create('Ext.menu.Menu', {
+            items: [
+                {
+                    text: "DOT",
+                    handler: function () {
+                        var dotNetworkFileWidget = new DOTNetworkFileWidget({"networkData": _this.networkViewer.networkData});
+                        dotNetworkFileWidget.draw();
+                        dotNetworkFileWidget.onOk.addEventListener(function (sender, data) {
+                            _this.networkViewer.loadNetwork(data.content, data.layout);
+                        });
+                    }
+                },
+                {
+                    text: "SIF",
+                    handler: function () {
+                        var sifNetworkFileWidget = new SIFNetworkFileWidget({"networkData": _this.networkViewer.networkData});
+                        sifNetworkFileWidget.draw();
+                        sifNetworkFileWidget.onOk.addEventListener(function (sender, data) {
+                            _this.networkViewer.loadNetwork(data.content, data.layout);
+                        });
+                    }
+                },
+                {
+                    text: "STRING",
+                    handler: function () {
+                        var stringNetworkFileWidget = new StringNetworkFileWidget({"networkData": _this.networkViewer.networkData});
+                        stringNetworkFileWidget.draw();
+                        stringNetworkFileWidget.onOk.addEventListener(function (sender, data) {
+                            _this.networkViewer.loadNetwork(data.content, data.layout);
+                        });
+                    }
+                },
+                {
+                    text: "txt",
+                    disabled: true,
+                    handler: function () {
+                    }
+                },
+                {
+                    text: "SBML",
+                    disabled: true,
+                    handler: function () {
+                    }
+                },
+                {
+                    text: "Biopax",
+                    disabled: true,
+                    handler: function () {
+                    }
+                }
+            ]
+        });
+
         this.toolbar = Ext.create('Ext.toolbar.Toolbar', {
             id: this.id + "navToolbar",
             renderTo: $(this.div).attr('id'),
@@ -68,6 +122,11 @@ CbToolBar.prototype = {
                     menu: {
                         plain: true,
                         items: [
+                            {
+                                text: 'Open',
+                                menu:importFileMenu
+                            },
+                            '-',
                             {
                                 text: 'Open JSON...',
                                 handler: function () {
@@ -252,65 +311,13 @@ CbToolBar.prototype = {
     getAnalysisMenu: function () {
         var _this = this;
 
-        var importFileMenu = Ext.create('Ext.menu.Menu', {
-            items: [
-                {
-                    text: "DOT",
-                    handler: function () {
-                        var dotNetworkFileWidget = new DOTNetworkFileWidget({"networkData": _this.networkViewer.networkData});
-                        dotNetworkFileWidget.draw();
-                        dotNetworkFileWidget.onOk.addEventListener(function (sender, data) {
-                            _this.networkViewer.loadNetwork(data.content, data.layout);
-                        });
-                    }
-                },
-                {
-                    text: "SIF",
-                    handler: function () {
-                        var sifNetworkFileWidget = new SIFNetworkFileWidget({"networkData": _this.networkViewer.networkData});
-                        sifNetworkFileWidget.draw();
-                        sifNetworkFileWidget.onOk.addEventListener(function (sender, data) {
-                            _this.networkViewer.loadNetwork(data.content, data.layout);
-                        });
-                    }
-                },
-                {
-                    text: "STRING",
-                    handler: function () {
-                        var stringNetworkFileWidget = new StringNetworkFileWidget({"networkData": _this.networkViewer.networkData});
-                        stringNetworkFileWidget.draw();
-                        stringNetworkFileWidget.onOk.addEventListener(function (sender, data) {
-                            _this.networkViewer.loadNetwork(data.content, data.layout);
-                        });
-                    }
-                },
-                {
-                    text: "txt",
-                    disabled: true,
-                    handler: function () {
-                    }
-                },
-                {
-                    text: "SBML",
-                    disabled: true,
-                    handler: function () {
-                    }
-                },
-                {
-                    text: "Biopax",
-                    disabled: true,
-                    handler: function () {
-                    }
-                }
-            ]
-        });
 
         var importMenu = Ext.create('Ext.menu.Menu', {
             items: [
-                {
-                    text: "File",
-                    menu: importFileMenu
-                },
+//                {
+//                    text: "File",
+//                    menu: importFileMenu
+//                },
                 {
                     text: "Reactome",
 //		        	disabled: true,
@@ -320,7 +327,7 @@ CbToolBar.prototype = {
                     }
                 },
                 {
-                    text: "Intact",
+                    text: "IntAct",
                     disabled: true,
                     handler: function () {
                         var intact = new IntactPlugin();
