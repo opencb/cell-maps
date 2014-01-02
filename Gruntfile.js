@@ -5,6 +5,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         // Metadata.
         meta: {
+            name:'cell-maps',
             version: '2.0.0',
             jsorolla: {
                 dir: '/lib/jsorolla/',
@@ -17,7 +18,7 @@ module.exports = function (grunt) {
                     version: '1.0.0',
                     dir: '<%= meta.jsorolla.dir %>build/opencga/<%= meta.jsorolla.opencga.version %>/'
                 }
-            }
+            },
         },
         banner: '/*! PROJECT_NAME - v<%= meta.version %> - ' +
             '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -32,11 +33,11 @@ module.exports = function (grunt) {
             },
             build: {
                 src: [
-//                    'src/cb-config.js',
-                    'src/cb-toolbar.js',
-                    'src/cellbrowser.js'
+//                    'src/cm-config.js',
+                    'src/cm-toolbar.js',
+                    'src/cell-maps.js'
                 ],
-                dest: 'build/<%= meta.version %>/cellbrowser-<%= meta.version %>.js'
+                dest: 'build/<%= meta.version %>/<%= meta.name %>-<%= meta.version %>.js'
             }
         },
         uglify: {
@@ -45,13 +46,13 @@ module.exports = function (grunt) {
             },
             build: {
                 src: '<%= concat.build.dest %>',
-                dest: 'build/<%= meta.version %>/cellbrowser-<%= meta.version %>.min.js'
+                dest: 'build/<%= meta.version %>/<%= meta.name %>-<%= meta.version %>.min.js'
             }
         },
         copy: {
             build: {
                 files: [
-                    {   expand: true, cwd: './src', src: ['cb-config.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['cm-config.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './src', src: ['plugins-config.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './src', src: ['fatigo-plugin.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './src', src: ['intact-plugin.js'], dest: 'build/<%= meta.version %>/' },
@@ -71,12 +72,12 @@ module.exports = function (grunt) {
         stylesPath: 'build/<%= meta.version %>/styles',
         htmlbuild: {
             build: {
-                src: 'src/cellbrowser.html',
+                src: 'src/cell-maps.html',
                 dest: 'build/<%= meta.version %>/',
                 options: {
                     beautify: true,
                     scripts: {
-                        'js': 'build/<%= meta.version %>/cellbrowser-<%= meta.version %>.min.js',
+                        'js': 'build/<%= meta.version %>/<%= meta.name %>-<%= meta.version %>.min.js',
                         'vendor': [
                             'build/<%= meta.version %>/vendor/underscore*.js',
                             'build/<%= meta.version %>/vendor/backbone*.js',
@@ -123,7 +124,7 @@ module.exports = function (grunt) {
         rename: {
             html: {
                 files: [
-                    {src: ['build/<%= meta.version %>/cellbrowser.html'], dest: 'build/<%= meta.version %>/index.html'}
+                    {src: ['build/<%= meta.version %>/cell-maps.html'], dest: 'build/<%= meta.version %>/index.html'}
                 ]
             }
         },
@@ -147,7 +148,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-hub');
 
     grunt.registerTask('log-deploy', 'Deploy path info', function (version) {
-        grunt.log.writeln("DEPLOY COMMAND: scp -r build/"+grunt.config.data.meta.version+" cafetero@mem16:/httpd/bioinfo/www-apps/cellbrowser/");
+        grunt.log.writeln("DEPLOY COMMAND: scp -r build/"+grunt.config.data.meta.version+" cafetero@mem16:/httpd/bioinfo/www-apps/cell-maps/");
     });
 
     // Default task.

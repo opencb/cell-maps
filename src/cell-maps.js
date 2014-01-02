@@ -3,31 +3,31 @@
  * Copyright (c) 2013 Francisco Salavert (ICM-CIPF)
  * Copyright (c) 2013 Ignacio Medina (ICM-CIPF)
  *
- * This file is part of Cell Browser.
+ * This file is part of Cell Maps.
  *
- * Cell Browser is free software: you can redistribute it and/or modify
+ * Cell Maps is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
  *
- * Cell Browser is distributed in the hope that it will be useful,
+ * Cell Maps is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Cell Browser. If not, see <http://www.gnu.org/licenses/>.
+ * along with Cell Maps. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function CellBrowser(args) {
+function CellMaps(args) {
     _.extend(this, Backbone.Events);
 
     var _this = this;
-    this.id = Utils.genId("CellBrowser");
+    this.id = Utils.genId("CellMaps");
 
     //set default args
     this.suiteId = 10;
-    this.title = 'Cell Browser';
+    this.title = 'Cell Maps';
     this.description = "Systems Biology Visualization";
     this.version = "2.0.0";
     this.border = true;
@@ -48,7 +48,7 @@ function CellBrowser(args) {
     }
 };
 
-CellBrowser.prototype = {
+CellMaps.prototype = {
     render: function (targetId) {
         var _this = this;
         this.targetId = (targetId) ? targetId : this.targetId;
@@ -56,7 +56,7 @@ CellBrowser.prototype = {
             console.log('targetId not found in DOM');
             return;
         }
-        console.log("Initializing Cell Browser");
+        console.log("Initializing Cell Maps");
         this.targetDiv = $('#' + this.targetId)[0];
         this.div = $('<div id="cell-browser"></div>')[0];
         $(this.targetDiv).append(this.div);
@@ -100,9 +100,9 @@ CellBrowser.prototype = {
         /* Header Widget */
         this.headerWidget = this._createHeaderWidget('cb-header-widget');
 
-        this.cbToolBar = this._createCbToolBar('cb-tool-bar');
+        this.cmToolBar = this._createCbToolBar('cb-tool-bar');
 
-        var centerHeight = $(window).height() - this.headerWidget.height - this.cbToolBar.getHeight() - $('#status').height() - 12;
+        var centerHeight = $(window).height() - this.headerWidget.height - this.cmToolBar.getHeight() - $('#status').height() - 12;
 
         $('#cb-network-viewer').css({
             height: centerHeight
@@ -219,7 +219,7 @@ CellBrowser.prototype = {
     },
     _createCbToolBar: function (targetId) {
         var _this = this;
-        var cbToolBar = new CbToolBar({
+        var cmToolBar = new CmToolBar({
             targetId: targetId,
             autoRender: true,
             handlers: {
@@ -322,7 +322,7 @@ CellBrowser.prototype = {
                 }
             }
         });
-        return cbToolBar;
+        return cmToolBar;
     },
     _createNetworkViewer: function (targetId) {
         var _this = this;

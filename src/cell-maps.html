@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Cell Browser</title>
+    <title>Cell Maps</title>
 
     <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all-gray.css">
 
@@ -56,11 +56,11 @@
     <!-- /build -->
 
 
-    <!-- Cellbrowser config -->
+    <!-- Cellmaps config -->
     <!-- build:script nvconfig -->
     <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/nv-config.js"></script>
     <!-- /build -->
-    <script type="text/javascript" src="cb-config.js"></script>
+    <script type="text/javascript" src="cm-config.js"></script>
 
 
     <!-- JS from network-viewer -->
@@ -143,10 +143,10 @@
     <script type="text/javascript" src="./fatigo-plugin.js"></script>
     <script type="text/javascript" src="./intact-plugin.js"></script>
     <script type="text/javascript" src="./reactome-plugin.js"></script>
-    <!-- JS from CellBrowser -->
+    <!-- JS from Cell Maps -->
     <!-- build:script js -->
-    <script type="text/javascript" src="./cb-toolbar.js"></script>
-    <script type="text/javascript" src="./cellbrowser.js"></script>
+    <script type="text/javascript" src="cm-toolbar.js"></script>
+    <script type="text/javascript" src="cell-maps.js"></script>
     <!-- /build -->
 
     <script>
@@ -157,14 +157,14 @@
         //        'Ext.grid.plugin.BufferedRenderer'
         //    ]);
 
-        var cellBrowser;
+        var cellMaps;
         Ext.onReady(function () {
             CheckBrowser();
-            cellBrowser = new CellBrowser({
+            cellMaps = new CellMaps({
                 targetId: 'application',
                 autoRender: true
             }); //the div must exist
-            cellBrowser.draw();
+            cellMaps.draw();
         });
     </script>
     <STYLE type="text/css">

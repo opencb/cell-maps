@@ -19,7 +19,7 @@
  * along with JS Common Libs. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function CbToolBar(args) {
+function CmToolBar(args) {
 
     // Using Underscore 'extend' function to extend and add Backbone Events
     _.extend(this, Backbone.Events);
@@ -42,7 +42,7 @@ function CbToolBar(args) {
     }
 };
 
-CbToolBar.prototype = {
+CmToolBar.prototype = {
     render: function (targetId) {
         var _this = this;
         this.targetId = (targetId) ? targetId : this.targetId;
