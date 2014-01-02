@@ -341,7 +341,10 @@ CellMaps.prototype = {
                 },
                 '': function (event) {
                 },
-                '': function (event) {
+                'example:click': function (event) {
+                    if (event.example == 1) {
+                        _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_1_JSON));
+                    }
                 }
             }
         });

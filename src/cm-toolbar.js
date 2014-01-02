@@ -57,7 +57,7 @@ CmToolBar.prototype = {
 
 
         var importFileMenu = Ext.create('Ext.menu.Menu', {
-            plain:true,
+            plain: true,
             items: [
                 {
                     text: "DOT",
@@ -136,7 +136,7 @@ CmToolBar.prototype = {
                             '-',
                             {
                                 text: 'Import ...',
-                                menu:importFileMenu
+                                menu: importFileMenu
                             },
                             '-',
                             {
@@ -178,6 +178,12 @@ CmToolBar.prototype = {
                 {
                     text: 'Plugins',
                     menu: this.getAnalysisMenu()
+                },
+
+                {
+                    text: 'Examples',
+                    cls:'bootstrap',
+                    menu: this.getExamplesMenu()
                 }
             ]
         });
@@ -500,6 +506,20 @@ CmToolBar.prototype = {
             ]
         });
         return analysisMenu;
+    },
+    getExamplesMenu: function () {
+        var _this = this;
+        var examplesMenu = Ext.create('Ext.menu.Menu', {
+            plain:true,
+            items: [
+                {
+                    text: "Example network",
+                    handler: function () {
+                        _this.trigger('example:click', {example:1, sender: _this});
+                    }
+                }
+            ]
+        });
+        return examplesMenu;
     }
-
 }
