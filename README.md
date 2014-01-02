@@ -1,10 +1,10 @@
-Cellbrowser
+Cell Maps
 ===========
 HTML5 systems biology tool
 
 ## Compiling CSS and JavaScript
 
-Cellbrowser uses [Grunt](http://gruntjs.com/) task runner to build the code and run tests and other convenient tasks. 
+Cell Maps uses [Grunt](http://gruntjs.com/) task runner to build the code and run tests and other convenient tasks. 
 To use it, install the required dependencies as directed and then run some Grunt commands. Grunt runs on top of Node.js, it must be installed first.
 
 ### Install Node
@@ -25,4 +25,4 @@ When completed, you'll be able to run the various Grunt commands provided from t
 ### Available Grunt commands
 
 #### Build - `grunt`
-Run `grunt` to build Cellbrowser, compiled files will be located in the `/build` dir.
+Run `grunt` to build Cell Maps, compiled files will be located in the `/build` dir.
