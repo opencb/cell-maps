@@ -517,6 +517,13 @@ CmToolBar.prototype = {
                     handler: function () {
                         _this.trigger('example:click', {example:1, sender: _this});
                     }
+                },
+                {
+                    text: "Example network 2",
+                    hidden:true,
+                    handler: function () {
+                        _this.trigger('example:click', {example:2, sender: _this});
+                    }
                 }
             ]
         });

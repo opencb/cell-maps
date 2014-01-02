@@ -345,6 +345,9 @@ CellMaps.prototype = {
                     if (event.example == 1) {
                         _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_1_JSON));
                     }
+                    if (event.example == 2) {
+                        _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_2_JSON));
+                    }
                 }
             }
         });

@@ -112,7 +112,8 @@ module.exports = function (grunt) {
                         'vendor': [
                             'build/<%= meta.version %>/vendor/jquery.qtip*.css',
                             'build/<%= meta.version %>/vendor/ChemDoodleWeb*.css',
-                            'build/<%= meta.version %>/vendor/bootstrap-*-dist/css/bootstrap.min.css'
+                            'build/<%= meta.version %>/vendor/bootstrap-*-dist/css/bootstrap.min.css',
+                            'build/<%= meta.version %>/vendor/jquery.simplecolorpicker.css'
                         ]
                     }
                 }
