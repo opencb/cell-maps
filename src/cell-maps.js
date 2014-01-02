@@ -61,10 +61,10 @@ CellMaps.prototype = {
         this.div = $('<div id="cell-browser"></div>')[0];
         $(this.targetDiv).append(this.div);
 
-        $(this.div).append('<div id="cb-header-widget"></div>');
-        $(this.div).append('<div id="cb-tool-bar"></div>');
-        $(this.div).append('<div id="cb-network-viewer" style="position:relative;"></div>');
-        $(this.div).append('<div id="cb-status-bar"></div>');
+        $(this.div).append('<div id="cm-header-widget"></div>');
+        $(this.div).append('<div id="cm-tool-bar"></div>');
+        $(this.div).append('<div id="cm-network-viewer" style="position:relative;"></div>');
+        $(this.div).append('<div id="cm-status-bar"></div>');
 
         this.width = ($(this.div).width());
 
@@ -98,77 +98,77 @@ CellMaps.prototype = {
         }
 
         /* Header Widget */
-        this.headerWidget = this._createHeaderWidget('cb-header-widget');
+        this.headerWidget = this._createHeaderWidget('cm-header-widget');
 
-        this.cmToolBar = this._createCbToolBar('cb-tool-bar');
+        this.cmToolBar = this._createCbToolBar('cm-tool-bar');
 
         var centerHeight = $(window).height() - this.headerWidget.height - this.cmToolBar.getHeight() - $('#status').height() - 12;
 
-        $('#cb-network-viewer').css({
+        $('#cm-network-viewer').css({
             height: centerHeight
         });
 
         /* network Viewer  */
-        this.networkViewer = this._createNetworkViewer('cb-network-viewer');
+        this.networkViewer = this._createNetworkViewer('cm-network-viewer');
 
         /* status bar  */
         this.statusBar = this._createStatusBar('status');
 
 
         this.nodeAttributeEditWidget = new AttributeEditWidget({
-            attrMan:this.networkViewer.network.nodeAttributeManager,
-            type:'Node',
-            handlers:{
-                'vertices:select':function(event){
+            attrMan: this.networkViewer.network.nodeAttributeManager,
+            type: 'Node',
+            handlers: {
+                'vertices:select': function (event) {
                     _this.networkViewer.networkSvgLayout.selectVerticesByIds(event.vertices)
                 }
             }
         });
         this.nodeAttributeFilterWidget = new AttributeFilterWidget({
-            attrMan:this.networkViewer.network.nodeAttributeManager,
-            type:'Node',
-            handlers:{
-                'vertices:select':function(event){
+            attrMan: this.networkViewer.network.nodeAttributeManager,
+            type: 'Node',
+            handlers: {
+                'vertices:select': function (event) {
                     _this.networkViewer.networkSvgLayout.selectVerticesByIds(event.vertices)
                 },
-                'vertices:deselect':function(event){
+                'vertices:deselect': function (event) {
                     //TODO
                 },
-                'vertices:filter':function(event){
+                'vertices:filter': function (event) {
                     //event.vertices
                     //TODO
                 },
-                'vertices:restore':function(event){
+                'vertices:restore': function (event) {
                     //TODO
                 }
             }
         });
 
         this.edgeAttributeEditWidget = new AttributeEditWidget({
-            attrMan:this.networkViewer.network.edgeAttributeManager,
-            type:'Edge',
-            handlers:{
-                'vertices:select':function(event){
+            attrMan: this.networkViewer.network.edgeAttributeManager,
+            type: 'Edge',
+            handlers: {
+                'vertices:select': function (event) {
                     //todo
                 }
             }
         });
         this.edgeAttributeFilterWidget = new AttributeFilterWidget({
-            attrMan:this.networkViewer.network.edgeAttributeManager,
-            type:'Edge',
-            handlers:{
-                'vertices:select':function(event){
+            attrMan: this.networkViewer.network.edgeAttributeManager,
+            type: 'Edge',
+            handlers: {
+                'vertices:select': function (event) {
                     //event.vertices
                     //TODO
                 },
-                'vertices:deselect':function(event){
+                'vertices:deselect': function (event) {
                     //TODO
                 },
-                'vertices:filter':function(event){
+                'vertices:filter': function (event) {
                     //event.vertices
                     //TODO
                 },
-                'vertices:restore':function(event){
+                'vertices:restore': function (event) {
                     //TODO
                 }
             }
@@ -233,12 +233,35 @@ CellMaps.prototype = {
                 'openJSON:click': function (event) {
                     var networkFileWidget = new NetworkFileWidget({
                         handlers: {
-                            'okButton:click': function (event) {
-                                _this.networkViewer.loadJSON(event.content);
+                            'okButton:click': function (widgetEvent) {
+                                _this.networkViewer.loadJSON(widgetEvent.content);
+                                _this.networkViewer.setLayout(widgetEvent.layout);
                             }
                         }
                     });
                     networkFileWidget.draw();
+                },
+                'openDOT:click': function (event) {
+                    var dotNetworkFileWidget = new DOTNetworkFileWidget({
+                        handlers: {
+                            'okButton:click': function (widgetEvent) {
+                                _this.networkViewer.setNetwork(widgetEvent.content);
+                                _this.networkViewer.setLayout(widgetEvent.layout);
+                            }
+                        }
+                    });
+                    dotNetworkFileWidget.draw();
+                },
+                'openSIF:click': function (event) {
+                    var sifNetworkFileWidget = new SIFNetworkFileWidget({
+                        handlers: {
+                            'okButton:click': function (widgetEvent) {
+                                _this.networkViewer.setNetwork(widgetEvent.content);
+                                _this.networkViewer.setLayout(widgetEvent.layout);
+                            }
+                        }
+                    });
+                    sifNetworkFileWidget.draw();
                 },
                 'savePNG:click': function (event) {
                     var svgEl = _this.networkViewer.networkSvgLayout.getSvgEl();
@@ -294,8 +317,8 @@ CellMaps.prototype = {
                 'importNodeAttributes:click': function (event) {
                     var importAttributesFileWidget = new ImportAttributesFileWidget({
                         "numNodes": _this.networkViewer.getVerticesLength(),
-                        handlers:{
-                            'okButton:click':function(attrEvent){
+                        handlers: {
+                            'okButton:click': function (attrEvent) {
                                 _this.networkViewer.importVertexWithAttributes(attrEvent.content);
                             }
                         }

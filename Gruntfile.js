@@ -18,7 +18,7 @@ module.exports = function (grunt) {
                     version: '1.0.0',
                     dir: '<%= meta.jsorolla.dir %>build/opencga/<%= meta.jsorolla.opencga.version %>/'
                 }
-            },
+            }
         },
         banner: '/*! PROJECT_NAME - v<%= meta.version %> - ' +
             '<%= grunt.template.today("yyyy-mm-dd") %>\n' +

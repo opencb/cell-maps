@@ -57,29 +57,23 @@ CmToolBar.prototype = {
 
 
         var importFileMenu = Ext.create('Ext.menu.Menu', {
+            plain:true,
             items: [
                 {
                     text: "DOT",
                     handler: function () {
-                        var dotNetworkFileWidget = new DOTNetworkFileWidget({"networkData": _this.networkViewer.networkData});
-                        dotNetworkFileWidget.draw();
-                        dotNetworkFileWidget.onOk.addEventListener(function (sender, data) {
-                            _this.networkViewer.loadNetwork(data.content, data.layout);
-                        });
+                        _this.trigger('openDOT:click', {sender: _this});
                     }
                 },
                 {
                     text: "SIF",
                     handler: function () {
-                        var sifNetworkFileWidget = new SIFNetworkFileWidget({"networkData": _this.networkViewer.networkData});
-                        sifNetworkFileWidget.draw();
-                        sifNetworkFileWidget.onOk.addEventListener(function (sender, data) {
-                            _this.networkViewer.loadNetwork(data.content, data.layout);
-                        });
+                        _this.trigger('openSIF:click', {sender: _this});
                     }
                 },
                 {
                     text: "STRING",
+                    disabled: true,
                     handler: function () {
                         var stringNetworkFileWidget = new StringNetworkFileWidget({"networkData": _this.networkViewer.networkData});
                         stringNetworkFileWidget.draw();
@@ -90,18 +84,21 @@ CmToolBar.prototype = {
                 },
                 {
                     text: "txt",
+                    hidden: true,
                     disabled: true,
                     handler: function () {
                     }
                 },
                 {
                     text: "SBML",
+                    hidden: true,
                     disabled: true,
                     handler: function () {
                     }
                 },
                 {
                     text: "Biopax",
+                    hidden: true,
                     disabled: true,
                     handler: function () {
                     }
@@ -123,11 +120,6 @@ CmToolBar.prototype = {
                         plain: true,
                         items: [
                             {
-                                text: 'Open',
-                                menu:importFileMenu
-                            },
-                            '-',
-                            {
                                 text: 'Open JSON...',
                                 handler: function () {
                                     _this.trigger('openJSON:click', {sender: _this});
@@ -141,6 +133,11 @@ CmToolBar.prototype = {
                                 }
                             }
                             ,
+                            '-',
+                            {
+                                text: 'Import ...',
+                                menu:importFileMenu
+                            },
                             '-',
                             {
                                 text: "Save as PNG",
