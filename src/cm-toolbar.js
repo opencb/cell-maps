@@ -182,7 +182,7 @@ CmToolBar.prototype = {
 
                 {
                     text: 'Examples',
-                    cls:'bootstrap',
+                    cls: 'bootstrap',
                     menu: this.getExamplesMenu()
                 }
             ]
@@ -314,6 +314,32 @@ CmToolBar.prototype = {
     getAnalysisMenu: function () {
         var _this = this;
 
+        var importMenu = Ext.create('Ext.menu.Menu', {
+            plain:true,
+            items: [
+                {
+                    text: "Reactome",
+//		        	disabled: true,
+                    handler: function () {
+                        _this.trigger('reactome:click', {sender: _this});
+                    }
+                }
+//                {
+//                    text: "IntAct",
+//                    disabled: true,
+//                    handler: function () {
+//                        var intact = new IntactPlugin();
+//                        intact.draw();
+//                    }
+//                },
+//                {
+//                    text: "Differential Expression Analysis",
+//                    disabled: true,
+//                    handler: function () {
+//                    }
+//                }
+            ]
+        });
 
         var networkMenu = Ext.create('Ext.menu.Menu', {
             items: [
@@ -436,43 +462,26 @@ CmToolBar.prototype = {
             margin: '0 0 10 0',
             plain: true,
             items: [
+
                 {
-                    text: "Reactome",
-//		        	disabled: true,
-                    handler: function () {
-                        _this.trigger('reactome:click', {sender: _this});
-                    }
-                },
-                {
-                    text: "IntAct",
-                    disabled: true,
-                    handler: function () {
-                        var intact = new IntactPlugin();
-                        intact.draw();
-                    }
+                    text: 'Import',
+                    menu: importMenu
                 },
 //                {
-//                    text: "Differential Expression Analysis",
+//                    text: 'Network analysis',
 //                    disabled: true,
-//                    handler: function () {
-//                    }
+//                    menu: networkMenu
+//                },
+//                {
+//                    text: 'Functional enrichment',
+////					disabled: true,
+//                    menu: functionalMenu
+//                },
+//                {
+//                    text: 'Pathway based analysis',
+//                    disabled: true,
+//                    menu: pathwayMenu
 //                }
-                '-',
-                {
-                    text: 'Network analysis',
-                    disabled: true,
-                    menu: networkMenu
-                },
-                {
-                    text: 'Functional enrichment',
-//					disabled: true,
-                    menu: functionalMenu
-                },
-                {
-                    text: 'Pathway based analysis',
-                    disabled: true,
-                    menu: pathwayMenu
-                }
 //					text : 'Expression',
 //					handler: function(){
 //						_this.networkViewer.expressionSelected();
@@ -497,19 +506,19 @@ CmToolBar.prototype = {
     getExamplesMenu: function () {
         var _this = this;
         var examplesMenu = Ext.create('Ext.menu.Menu', {
-            plain:true,
+            plain: true,
             items: [
                 {
                     text: "Example network",
                     handler: function () {
-                        _this.trigger('example:click', {example:1, sender: _this});
+                        _this.trigger('example:click', {example: 1, sender: _this});
                     }
                 },
                 {
                     text: "Example network 2",
-                    hidden:true,
+                    hidden: true,
                     handler: function () {
-                        _this.trigger('example:click', {example:2, sender: _this});
+                        _this.trigger('example:click', {example: 2, sender: _this});
                     }
                 }
             ]
