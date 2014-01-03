@@ -448,9 +448,7 @@ ReactomePlugin.prototype.addPathwayNode = function (name, displayName, species, 
         network.addVertex({
             vertex: vertex,
             vertexConfig: new VertexConfig({
-                renderer: new DefaultVertexRenderer({
-
-                })
+                renderer: new DefaultVertexRenderer(this.nodeTypes["pathway"])
             })
         });
         this.nodeNameIdDic[name] = vertex.id;
@@ -474,7 +472,8 @@ ReactomePlugin.prototype.addPhysicalEntity = function (name, type, displayName, 
 //    }
 //
 //    return nodeId;
-    console.log(type)
+//    console.log(type)
+
     var foundVertices = network.findVerticesByName(name);
     if (foundVertices.length == 0) {
         var vertex = new Vertex({
@@ -483,13 +482,7 @@ ReactomePlugin.prototype.addPhysicalEntity = function (name, type, displayName, 
         network.addVertex({
             vertex: vertex,
             vertexConfig: new VertexConfig({
-                renderer: new DefaultVertexRenderer({
-//                    shape:'rectangle',
-//                    size:30,
-//                    strokeSize:1,
-//                    strokeColor:"#000000",
-//                    color:'#ff0000'
-                })
+                renderer: new DefaultVertexRenderer(this.nodeTypes[type])
             })
         });
         this.nodeNameIdDic[name] = vertex.id;
@@ -519,7 +512,7 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
         network.addVertex({
             vertex: vertex,
             vertexConfig: new VertexConfig({
-                renderer: new DefaultVertexRenderer({})
+                renderer: new DefaultVertexRenderer(this.nodeTypes["interaction"])
             })
         });
         this.nodeNameIdDic[name] = vertex.id;
@@ -542,14 +535,14 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
 //                this.cellMaps.addEdge(edgeArgs);
 
                 var edge = new Edge({
-                    name:'',
+                    name: '',
                     source: network.getVertexById(this.nodeNameIdDic[leftId]),
                     target: network.getVertexById(this.nodeNameIdDic[name])
                 });
                 network.addEdge({
                     edge: edge,
                     edgeConfig: new EdgeConfig({
-                        type:"odot",
+                        type: "odot",
                         renderer: new DefaultEdgeRenderer({
                             shape: "odot"
                         })
@@ -569,14 +562,14 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
 //                this.cellMaps.addEdge(edgeArgs);
 
                 var edge = new Edge({
-                    name:'',
+                    name: '',
                     source: network.getVertexById(this.nodeNameIdDic[name]),
                     target: network.getVertexById(this.nodeNameIdDic[rightId]),
                 });
                 network.addEdge({
                     edge: edge,
                     edgeConfig: new EdgeConfig({
-                        type:"directed",
+                        type: "directed",
                         renderer: new DefaultEdgeRenderer({
                             shape: "directed"
                         })
@@ -596,14 +589,14 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
 //                this.cellMaps.addEdge(edgeArgs);
 
                 var edge = new Edge({
-                    name:'',
+                    name: '',
                     source: network.getVertexById(this.nodeNameIdDic[name]),
                     target: network.getVertexById(this.nodeNameIdDic[productId])
                 });
                 network.addEdge({
                     edge: edge,
                     edgeConfig: new EdgeConfig({
-                        type:"directed",
+                        type: "directed",
                         renderer: new DefaultEdgeRenderer({
                             shape: "directed"
                         })
@@ -617,4 +610,81 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
     }
 
 //    return nodeId;
+};
+
+ReactomePlugin.prototype.nodeTypes = {
+    undefined: {
+    },
+    "pathway": {
+        shape: "rectangle",
+        size: 30,
+        color: "#ffffff",
+        strokeSize: 6,
+        strokeColor: '#ccffcc',
+        opacity: 1
+    },
+    "interaction": {
+        shape: "square",
+        size: 30,
+        color: "#ffffff",
+        strokeSize: 2,
+        strokeColor: '#000000',
+        opacity: 1
+    },
+    "SmallMolecule": {
+        shape: "circle",
+        size: 40,
+        color: "#ccffcc",
+        strokeSize: 2,
+        strokeColor: '#000000',
+        opacity: 1
+    },
+    "Complex": {
+        shape: "rectangle",
+        size: 40,
+        color: "#ccffff",
+        strokeSize: 2,
+        strokeColor: '#000000',
+        opacity: 1
+    },
+    "Protein": {
+        shape: "rectangle",
+        size: 40,
+        color: "#ccffcc",
+        strokeSize: 2,
+        strokeColor: '#000000',
+        opacity: 1
+    },
+    "PhysicalEntity": {
+        shape: "circle",
+        size: 40,
+        color: "#ccffcc",
+        strokeSize: 2,
+        strokeColor: '#000000',
+        opacity: 1
+    },
+    "Rna": {
+        shape: "rectangle",
+        size: 40,
+        color: "#ccffcc",
+        strokeSize: 2,
+        strokeColor: '#000000',
+        opacity: 1
+    },
+    "Dna": {
+        shape: "rectangle",
+        size: 40,
+        color: "#ccffcc",
+        strokeSize: 2,
+        strokeColor: '#000000',
+        opacity: 1
+    },
+    "none": {
+        shape: "circle",
+        size: 45,
+        color: "#993300",
+        strokeSize: 2,
+        strokeColor: '#000000',
+        opacity: 1
+    }
 };
