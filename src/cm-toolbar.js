@@ -60,51 +60,84 @@ CmToolBar.prototype = {
             plain: true,
             items: [
                 {
-                    text: "DOT",
-                    handler: function () {
-                        _this.trigger('openDOT:click', {sender: _this});
+                    text: 'Network',
+                    menu: {
+                        plain: true,
+                        items: [
+                            {
+                                text: "DOT",
+                                handler: function () {
+                                    _this.trigger('openDOT:click', {sender: _this});
+                                }
+                            },
+                            {
+                                text: "SIF",
+                                handler: function () {
+                                    _this.trigger('openSIF:click', {sender: _this});
+                                }
+                            },
+                            {
+                                text: "STRING",
+                                disabled: true,
+                                handler: function () {
+                                    var stringNetworkFileWidget = new StringNetworkFileWidget({"networkData": _this.networkViewer.networkData});
+                                    stringNetworkFileWidget.draw();
+                                    stringNetworkFileWidget.onOk.addEventListener(function (sender, data) {
+                                        _this.networkViewer.loadNetwork(data.content, data.layout);
+                                    });
+                                }
+                            },
+                            {
+                                text: "txt",
+                                hidden: true,
+                                disabled: true,
+                                handler: function () {
+                                }
+                            },
+                            {
+                                text: "SBML",
+                                hidden: true,
+                                disabled: true,
+                                handler: function () {
+                                }
+                            },
+                            {
+                                text: "Biopax",
+                                hidden: true,
+                                disabled: true,
+                                handler: function () {
+                                }
+                            }
+                        ]
                     }
                 },
                 {
-                    text: "SIF",
-                    handler: function () {
-                        _this.trigger('openSIF:click', {sender: _this});
+                    text: 'Attributes',
+                    menu: {
+                        plain: true,
+                        items: [
+                            {
+                                text: 'Nodes',
+                                handler: function () {
+                                    _this.trigger('importNodeAttributes:click', {sender: _this});
+                                }
+                            },
+//                            {
+//                                text: 'Edges'
+//                            }
+
+                        ]
                     }
                 },
-                {
-                    text: "STRING",
-                    disabled: true,
-                    handler: function () {
-                        var stringNetworkFileWidget = new StringNetworkFileWidget({"networkData": _this.networkViewer.networkData});
-                        stringNetworkFileWidget.draw();
-                        stringNetworkFileWidget.onOk.addEventListener(function (sender, data) {
-                            _this.networkViewer.loadNetwork(data.content, data.layout);
-                        });
-                    }
-                },
-                {
-                    text: "txt",
-                    hidden: true,
-                    disabled: true,
-                    handler: function () {
-                    }
-                },
-                {
-                    text: "SBML",
-                    hidden: true,
-                    disabled: true,
-                    handler: function () {
-                    }
-                },
-                {
-                    text: "Biopax",
-                    hidden: true,
-                    disabled: true,
-                    handler: function () {
-                    }
-                }
+//                {
+//                    text: 'Background image',
+//                    handler: function () {
+//
+//                    }
+//                }
+
             ]
-        });
+        })
 
         this.toolbar = Ext.create('Ext.toolbar.Toolbar', {
             id: this.id + "navToolbar",
@@ -140,29 +173,46 @@ CmToolBar.prototype = {
                             },
                             '-',
                             {
-                                text: "Save as PNG",
-                                href: "none",
-                                iconCls: 'icon-blue-box',
-                                handler: function () {
-                                    _this.trigger('savePNG:click', {a: this.getEl().child("a"), sender: _this});
+                                text: 'Export ...',
+                                menu: {
+                                    plain: true,
+                                    items: [
+                                        {
+                                            text: 'Image',
+                                            menu: {
+                                                plain: true,
+                                                items: [
+//                                                    {
+//                                                        text: "Save as PNG",
+//                                                        href: "none",
+//                                                        iconCls: 'icon-blue-box',
+//                                                        handler: function () {
+//                                                            _this.trigger('savePNG:click', {a: this.getEl().child("a"), sender: _this});
+//                                                        }
+//                                                    },
+//                                                    {
+//                                                        text: "Save as JPG",
+//                                                        href: "none",
+//                                                        iconCls: 'icon-blue-box',
+//                                                        handler: function () {
+//                                                            _this.trigger('saveJPG:click', {a: this.getEl().child("a"), sender: _this});
+//                                                        }
+//                                                    },
+                                                    {
+                                                        text: "Save as SVG (recommended)",
+                                                        href: "none",
+                                                        iconCls: 'icon-blue-box',
+                                                        handler: function () {
+                                                            _this.trigger('saveSVG:click', {a: this.getEl().child("a"), sender: _this});
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
                                 }
                             },
-                            {
-                                text: "Save as JPG",
-                                href: "none",
-                                iconCls: 'icon-blue-box',
-                                handler: function () {
-                                    _this.trigger('saveJPG:click', {a: this.getEl().child("a"), sender: _this});
-                                }
-                            },
-                            {
-                                text: "Save as SVG (recommended)",
-                                href: "none",
-                                iconCls: 'icon-blue-box',
-                                handler: function () {
-                                    _this.trigger('saveSVG:click', {a: this.getEl().child("a"), sender: _this});
-                                }
-                            }
+
                         ]
                     }
                 },
@@ -184,7 +234,21 @@ CmToolBar.prototype = {
                     text: 'Examples',
                     cls: 'bootstrap',
                     menu: this.getExamplesMenu()
+                },
+
+                '->',
+                {
+                    tooltip: 'Configure',
+                    text: '<span class="emph"> Configure</span>',
+                    margin: '0 0 0 15',
+                    enableToggle: true,
+                    iconCls: 'ocb-icon-gear',
+                    pressed: false,
+                    toggleHandler: function () {
+                        _this.trigger('configuration-button:change', {selected: this.pressed, sender: _this});
+                    }
                 }
+
             ]
         });
 
@@ -219,13 +283,13 @@ CmToolBar.prototype = {
             margin: '0 0 10 0',
             floating: true,
             items: [
-                {
-                    text: 'Import...',
-                    handler: function () {
-                        _this.trigger('importNodeAttributes:click', {sender: _this});
-                    }
-                },
-                '-',
+//                {
+//                    text: 'Import...',
+//                    handler: function () {
+//                        _this.trigger('importNodeAttributes:click', {sender: _this});
+//                    }
+//                },
+//                '-',
                 {
                     text: 'Edit...',
                     handler: function () {
@@ -300,10 +364,10 @@ CmToolBar.prototype = {
                     text: 'Nodes',
                     menu: nodeMenu
                 },
-                {
-                    text: 'Edges',
-                    menu: edgeMenu
-                }
+//                {
+//                    text: 'Edges',
+//                    menu: edgeMenu
+//                }
             ]
         });
 
@@ -315,7 +379,7 @@ CmToolBar.prototype = {
         var _this = this;
 
         var importMenu = Ext.create('Ext.menu.Menu', {
-            plain:true,
+            plain: true,
             items: [
                 {
                     text: "Reactome",
@@ -466,7 +530,7 @@ CmToolBar.prototype = {
                 {
                     text: 'Import',
                     menu: importMenu
-                },
+                }
 //                {
 //                    text: 'Network analysis',
 //                    disabled: true,

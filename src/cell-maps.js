@@ -62,9 +62,13 @@ CellMaps.prototype = {
         $(this.targetDiv).append(this.div);
 
         $(this.div).append('<div id="cm-header-widget"></div>');
-        $(this.div).append('<div id="cm-tool-bar"></div>');
+        $(this.div).append('<div id="cm-tool-bar" style="position:relative;"></div>');
         $(this.div).append('<div id="cm-network-viewer" style="position:relative;"></div>');
         $(this.div).append('<div id="cm-status-bar"></div>');
+
+
+        this.rightSidebarDiv = $('<div id="rightsidebar-' + this.id + '" style="position:absolute; z-index:50;right:0px;"></div>')[0];
+        $("#cm-network-viewer").append(this.rightSidebarDiv);
 
         this.width = ($(this.div).width());
 
@@ -110,6 +114,9 @@ CellMaps.prototype = {
 
         /* network Viewer  */
         this.networkViewer = this._createNetworkViewer('cm-network-viewer');
+
+        /* Side Panel  */
+        this.sidePanel = this._createSidePanel('rightsidebar-' + this.id);
 
         /* status bar  */
         this.statusBar = this._createStatusBar('status');
@@ -340,8 +347,6 @@ CellMaps.prototype = {
                 },
                 '': function (event) {
                 },
-                '': function (event) {
-                },
 
 
                 'reactome:click': function (event) {
@@ -355,6 +360,13 @@ CellMaps.prototype = {
                     }
                     if (event.example == 2) {
                         _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_2_JSON));
+                    }
+                },
+                'configuration-button:change': function (event) {
+                    if (event.selected) {
+                        _this.sidePanel.show();
+                    } else {
+                        _this.sidePanel.hide();
                     }
                 }
             }
@@ -371,6 +383,26 @@ CellMaps.prototype = {
         });
         networkViewer.draw();
         return networkViewer;
+    },
+    _createSidePanel: function (targetId) {
+        var _this = this;
+//        var height = $(window).height() - this.headerWidget.height-26;
+//        var height = $(this.genomeViewer.rightSidebarDiv).height();
+
+        var sidePanel = Ext.create('Ext.panel.Panel', {
+//            title: 'Configuration',
+            width: 250,
+            height: 600,
+//            collapsible: true,
+//            titleCollapse: true,
+//            border:false,
+            layout: 'accordion',
+            hidden:true,
+            items: [],
+            renderTo: targetId
+        });
+//        this.navigationBar.setConfigurationMenu(sidePanel);
+        return sidePanel;
     },
     _createStatusBar: function (targetId) {
         var _this = this;
