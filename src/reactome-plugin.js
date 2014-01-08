@@ -322,6 +322,7 @@ ReactomePlugin.prototype.loadPathway = function (speciesSelected, pathwayId) {
             }
             _this.cellMaps.networkViewer.setNetwork(network);
             _this.cellMaps.networkViewer.setLayout('neato');
+            _this.cellMaps.networkViewer._refreshOverview();
         }});
 };
 
@@ -372,6 +373,7 @@ ReactomePlugin.prototype.addPathway = function (speciesSelected, pathwayId) {
             }
             _this.cellMaps.networkViewer.setNetwork(network);
             _this.cellMaps.networkViewer.setLayout('neato');
+            _this.cellMaps.networkViewer._refreshOverview();
         }});
 };
 
@@ -440,10 +442,10 @@ ReactomePlugin.prototype.addPathwayNode = function (name, displayName, species, 
 //        this.nodeIdNameDic[nodeId] = name;
 //    }
 
-    var foundVertices = network.findVerticesByName(name);
+    var foundVertices = network.findVerticesByName(displayName);
     if (foundVertices.length == 0) {
         var vertex = new Vertex({
-            name: name
+            name: displayName
         });
         network.addVertex({
             vertex: vertex,
@@ -474,10 +476,10 @@ ReactomePlugin.prototype.addPhysicalEntity = function (name, type, displayName, 
 //    return nodeId;
 //    console.log(type)
 
-    var foundVertices = network.findVerticesByName(name);
+    var foundVertices = network.findVerticesByName(displayName);
     if (foundVertices.length == 0) {
         var vertex = new Vertex({
-            name: name
+            name: displayName
         });
         network.addVertex({
             vertex: vertex,
@@ -493,6 +495,7 @@ ReactomePlugin.prototype.addPhysicalEntity = function (name, type, displayName, 
 ReactomePlugin.prototype.addInteraction = function (interaction, network) {
     var nodeArgs = {};
     var name = interaction.name;
+    var displayName = interaction.params.displayName[0];
 //    nodeArgs.name = name;
 //    nodeArgs.type = "interaction";
 //    nodeArgs.metainfo = interaction.params;
@@ -504,10 +507,10 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
 //        this.nodeIdNameDic[nodeId] = name;
 //    }
 
-    var foundVertices = network.findVerticesByName(name);
+    var foundVertices = network.findVerticesByName(displayName);
     if (foundVertices.length == 0) {
         var vertex = new Vertex({
-            name: name
+            name: displayName
         });
         network.addVertex({
             vertex: vertex,
@@ -544,7 +547,8 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
                     edgeConfig: new EdgeConfig({
                         type: "odot",
                         renderer: new DefaultEdgeRenderer({
-                            shape: "odot"
+                            shape: "odot",
+                            size: 2
                         })
                     })
                 });
@@ -571,7 +575,8 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
                     edgeConfig: new EdgeConfig({
                         type: "directed",
                         renderer: new DefaultEdgeRenderer({
-                            shape: "directed"
+                            shape: "directed",
+                            size: 2
                         })
                     })
                 });
