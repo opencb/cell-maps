@@ -92,6 +92,7 @@ CellMaps.prototype = {
             });
         }
 
+
         this.rendered = true;
     },
     draw: function () {
@@ -116,7 +117,9 @@ CellMaps.prototype = {
         this.networkViewer = this._createNetworkViewer('cm-network-viewer');
 
         /* Side Panel  */
-        this.sidePanel = this._createSidePanel('rightsidebar-' + this.id);
+        this.configuration = this._createConfiguration('rightsidebar-' + this.id);
+
+        this.configuration.panel.show();
 
         /* status bar  */
         this.statusBar = this._createStatusBar('status');
@@ -185,7 +188,30 @@ CellMaps.prototype = {
 //        var text = "";
 //        this.headerWidget.setDescription(text);
 
+        /** Force load example **/
+        _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_TEST_JSON));
+        var attributesDataAdapter = new AttributesDataAdapter({
+            dataSource: new StringDataSource(EXAMPLE_ATTR_TEXT),
+            handlers: {
+                'data:load': function (event) {
+                    var importAttributesFileWidget = new ImportAttributesFileWidget({
+                        "numNodes": _this.networkViewer.getVerticesLength(),
+                        handlers: {
+                            'okButton:click': function (attrEvent) {
+                                _this.networkViewer.importVertexWithAttributes(attrEvent.content);
+                            }
+                        }
+                    });
+                    importAttributesFileWidget.draw();
+                    importAttributesFileWidget.processData(event.sender);
+
+                }
+            }
+        });
+        /** Force load example **/
         //check login
+
+
         if ($.cookie('bioinfo_sid') != null) {
             this.sessionInitiated();
         } else {
@@ -265,6 +291,10 @@ CellMaps.prototype = {
                             'okButton:click': function (widgetEvent) {
                                 _this.networkViewer.setNetwork(widgetEvent.content);
                                 _this.networkViewer.setLayout(widgetEvent.layout);
+                                _this.nodeAttributeEditWidget.attrMan = _this.networkViewer.network.nodeAttributeManager;
+                                _this.configuration.nodeAttributeManager = _this.networkViewer.network.nodeAttributeManager;
+                                _this.edgeAttributeEditWidget.attrMan = _this.networkViewer.network.edgeAttributeManager;
+                                _this.configuration.edgeAttributeManager = _this.networkViewer.network.edgeAttributeManager;
                             }
                         }
                     });
@@ -340,7 +370,6 @@ CellMaps.prototype = {
                 },
 
 
-
                 '': function (event) {
                 },
                 '': function (event) {
@@ -364,9 +393,9 @@ CellMaps.prototype = {
                 },
                 'configuration-button:change': function (event) {
                     if (event.selected) {
-                        _this.sidePanel.show();
+                        _this.configuration.panel.show();
                     } else {
-                        _this.sidePanel.hide();
+                        _this.configuration.panel.hide();
                     }
                 }
             }
@@ -384,25 +413,67 @@ CellMaps.prototype = {
         networkViewer.draw();
         return networkViewer;
     },
-    _createSidePanel: function (targetId) {
+    _createConfiguration: function (targetId) {
         var _this = this;
-//        var height = $(window).height() - this.headerWidget.height-26;
-//        var height = $(this.genomeViewer.rightSidebarDiv).height();
 
-        var sidePanel = Ext.create('Ext.panel.Panel', {
-//            title: 'Configuration',
-            width: 250,
-            height: 600,
-//            collapsible: true,
-//            titleCollapse: true,
-//            border:false,
-            layout: 'accordion',
-            hidden:true,
-            items: [],
-            renderTo: targetId
+        var configuration = new CellMapsConfiguration({
+            autoRender: true,
+            targetId: targetId,
+            nodeAttributeManager: this.networkViewer.network.nodeAttributeManager,
+            edgeAttributeManager: this.networkViewer.network.edgeAttributeManager,
+            handlers: {
+                'change:nodeColor': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttribute('color', e.color, false);
+                },
+                'change:nodeStrokeColor': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttribute('strokeColor', e.color, false);
+                },
+                'change:nodeSize': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttribute('size', e.value);
+                },
+                'change:nodeStrokeSize': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttribute('strokeSize', e.value);
+                },
+                'change:nodeShape': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttribute('shape', e.value);
+                },
+                'change:nodeOpacity': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttribute('opacity', e.value);
+                },
+                'change:nodeLabelSize': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttribute('labelSize', e.value);
+                },
+                'change:nodeLabel': function (e) {
+                    _this.networkViewer.network.setVertexLabelByAttribute(e.value);
+                },
+
+
+                'change:edgeColor': function (e) {
+                    _this.networkViewer.network.setEdgesRendererAttribute('color', e.color, false);
+                },
+                'change:edgeSize': function (e) {
+                    _this.networkViewer.network.setEdgesRendererAttribute('size', e.value);
+                },
+                'change:edgeShape': function (e) {
+                    _this.networkViewer.network.setEdgesRendererAttribute('shape', e.value);
+                },
+                'change:edgeLabelSize': function (e) {
+                    _this.networkViewer.network.setEdgesRendererAttribute('labelSize', e.value);
+                },
+                'change:edgeLabel': function (e) {
+                    _this.networkViewer.network.setEdgeLabelByAttribute(e.value);
+                },
+
+
+                'change:nodeDiplayAttribute': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttributeMap(e.diplayAttribute, e.attribute, e.map);
+                },
+                'change:edgeDiplayAttribute': function (e) {
+                    _this.networkViewer.network.setEdgesRendererAttributeMap(e.diplayAttribute, e.attribute, e.map);
+                }
+            }
         });
-//        this.navigationBar.setConfigurationMenu(sidePanel);
-        return sidePanel;
+        return configuration;
     },
     _createStatusBar: function (targetId) {
         var _this = this;

@@ -153,13 +153,13 @@ CmToolBar.prototype = {
                         plain: true,
                         items: [
                             {
-                                text: 'Open JSON...',
+                                text: 'Open Session',
                                 handler: function () {
                                     _this.trigger('openJSON:click', {sender: _this});
                                 }
                             },
                             {
-                                text: 'Save as JSON',
+                                text: 'Save Session',
                                 href: 'none',
                                 handler: function () {
                                     _this.trigger('saveJSON:click', {a: this.getEl().child("a"), sender: _this});
@@ -199,7 +199,7 @@ CmToolBar.prototype = {
 //                                                        }
 //                                                    },
                                                     {
-                                                        text: "Save as SVG (recommended)",
+                                                        text: "Save as SVG",
                                                         href: "none",
                                                         iconCls: 'icon-blue-box',
                                                         handler: function () {
@@ -243,7 +243,8 @@ CmToolBar.prototype = {
                     margin: '0 0 0 15',
                     enableToggle: true,
                     iconCls: 'ocb-icon-gear',
-                    pressed: false,
+                    pressed: true,
+                    hidden:false,
                     toggleHandler: function () {
                         _this.trigger('configuration-button:change', {selected: this.pressed, sender: _this});
                     }
@@ -528,7 +529,7 @@ CmToolBar.prototype = {
             items: [
 
                 {
-                    text: 'Import',
+                    text: 'Import Data',
                     menu: importMenu
                 }
 //                {
@@ -573,14 +574,14 @@ CmToolBar.prototype = {
             plain: true,
             items: [
                 {
-                    text: "Example network",
+                    text: "Ppis related to histone exchange and removal during nucleosome assembly and disassembly",
                     handler: function () {
                         _this.trigger('example:click', {example: 1, sender: _this});
                     }
                 },
                 {
-                    text: "Example network 2",
-                    hidden: true,
+                    text: "Reactome pathway of Insulin Synthesis and Processing",
+                    hidden: false,
                     handler: function () {
                         _this.trigger('example:click', {example: 2, sender: _this});
                     }
