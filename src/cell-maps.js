@@ -423,16 +423,16 @@ CellMaps.prototype = {
             edgeAttributeManager: this.networkViewer.network.edgeAttributeManager,
             handlers: {
                 'change:nodeColor': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('color', e.color, false);
+                    _this.networkViewer.network.setVerticesRendererAttribute('color', e.color);
                 },
                 'change:nodeStrokeColor': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('strokeColor', e.color, false);
+                    _this.networkViewer.network.setVerticesRendererAttribute('strokeColor', e.color);
                 },
                 'change:nodeSize': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('size', e.value);
+                    _this.networkViewer.network.setVerticesRendererAttribute('size', e.value, true);
                 },
                 'change:nodeStrokeSize': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('strokeSize', e.value);
+                    _this.networkViewer.network.setVerticesRendererAttribute('strokeSize', e.value, true);
                 },
                 'change:nodeShape': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('shape', e.value);
@@ -449,7 +449,7 @@ CellMaps.prototype = {
 
 
                 'change:edgeColor': function (e) {
-                    _this.networkViewer.network.setEdgesRendererAttribute('color', e.color, false);
+                    _this.networkViewer.network.setEdgesRendererAttribute('color', e.color);
                 },
                 'change:edgeSize': function (e) {
                     _this.networkViewer.network.setEdgesRendererAttribute('size', e.value);

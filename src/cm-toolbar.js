@@ -65,13 +65,13 @@ CmToolBar.prototype = {
                         plain: true,
                         items: [
                             {
-                                text: "DOT",
+                                text: "DOT...",
                                 handler: function () {
                                     _this.trigger('openDOT:click', {sender: _this});
                                 }
                             },
                             {
-                                text: "SIF",
+                                text: "SIF...",
                                 handler: function () {
                                     _this.trigger('openSIF:click', {sender: _this});
                                 }
@@ -117,13 +117,13 @@ CmToolBar.prototype = {
                         plain: true,
                         items: [
                             {
-                                text: 'Nodes',
+                                text: 'Nodes...',
                                 handler: function () {
                                     _this.trigger('importNodeAttributes:click', {sender: _this});
                                 }
                             },
 //                            {
-//                                text: 'Edges'
+//                                text: 'Edges...'
 //                            }
 
                         ]
@@ -168,12 +168,12 @@ CmToolBar.prototype = {
                             ,
                             '-',
                             {
-                                text: 'Import ...',
+                                text: 'Import',
                                 menu: importFileMenu
                             },
                             '-',
                             {
-                                text: 'Export ...',
+                                text: 'Export',
                                 menu: {
                                     plain: true,
                                     items: [
@@ -383,7 +383,7 @@ CmToolBar.prototype = {
             plain: true,
             items: [
                 {
-                    text: "Reactome",
+                    text: "Reactome...",
 //		        	disabled: true,
                     handler: function () {
                         _this.trigger('reactome:click', {sender: _this});

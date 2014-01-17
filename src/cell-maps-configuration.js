@@ -105,7 +105,7 @@ CellMapsConfiguration.prototype = {
         var _this = this;
 
         this.propertiesPanel = Ext.create('Ext.tab.Panel', {
-            title: 'Visualization',
+            title: 'Visualization settings',
             autoHeight: true,
             width: 600,
             border: false,
@@ -153,7 +153,7 @@ CellMapsConfiguration.prototype = {
                                     margin: '5 0 0 0',
                                     text: 'Color'
                                 },
-                                this.getColorSelect('#dddddd', function (color, component) {
+                                this.getColorSelect('#9fc6e7', function (color, component) {
                                     component.nextSibling().setText('Select attribute');
                                     component.nextSibling().nextSibling().disable();
                                     _this.trigger('change:nodeColor', {color: color});
@@ -201,7 +201,7 @@ CellMapsConfiguration.prototype = {
                                     margin: '5 0 0 0',
                                     text: 'Stroke color'
                                 },
-                                this.getColorSelect('#dddddd', function (color, component) {
+                                this.getColorSelect('#9fc6e7', function (color, component) {
                                     component.nextSibling().setText('Select attribute');
                                     component.nextSibling().nextSibling().disable();
                                     _this.trigger('change:nodeStrokeColor', {color: color});
@@ -250,13 +250,14 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'numberfield',
+                                    value:10,
                                     width: 65,
                                     maxValue: 160,
                                     minValue: 0,
                                     margin: '0 10 0 0',
                                     listeners: {
                                         change: {
-                                            buffer: 700,
+                                            buffer: 100,
                                             fn: function (field, newValue) {
                                                 if (newValue != null) {
                                                     _this.trigger('change:nodeSize', {value: newValue});
@@ -312,13 +313,14 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'numberfield',
+                                    value:1,
                                     width: 65,
                                     maxValue: 10,
                                     minValue: 0,
                                     margin: '0 10 0 0',
                                     listeners: {
                                         change: {
-                                            buffer: 700,
+                                            buffer: 100,
                                             fn: function (field, newValue) {
                                                 if (newValue != null) {
                                                     _this.trigger('change:nodeStrokeSize', {value: newValue});
@@ -374,6 +376,7 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'combo',
+                                    value:'circle',
                                     store: ["circle", "square", "ellipse", "rectangle"],
                                     width: 65,
                                     margin: '0 10 0 0',
@@ -431,6 +434,7 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'numberfield',
+                                    value:1,
                                     width: 65,
                                     maxValue: 1,
                                     minValue: 0,
@@ -438,7 +442,7 @@ CellMapsConfiguration.prototype = {
                                     margin: '0 10 0 0',
                                     listeners: {
                                         change: {
-                                            buffer: 700,
+                                            buffer: 100,
                                             fn: function (field, newValue) {
                                                 if (newValue != null) {
                                                     _this.trigger('change:nodeOpacity', {value: newValue});
@@ -494,13 +498,14 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'numberfield',
+                                    value:12,
                                     width: 65,
                                     maxValue: 16,
                                     minValue: 0,
                                     margin: '0 10 0 0',
                                     listeners: {
                                         change: {
-                                            buffer: 700,
+                                            buffer: 100,
                                             fn: function (field, newValue) {
                                                 if (newValue != null) {
                                                     _this.trigger('change:nodeLabelSize', {value: newValue});
@@ -544,6 +549,22 @@ CellMapsConfiguration.prototype = {
                         {
                             xtype: 'container',
                             layout: 'hbox',
+                            margin: '20 0 5 0',
+                            style: {
+                                borderBottom: '1px solid gray'
+                            },
+                            defaults: {
+                                style: {
+                                    fontWeight: 'bold'
+                                }
+                            },
+                            items: [
+                                {xtype: 'text', margin: '0 0 0 0', text: 'Set attribute as label'}
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
                             defaults: {
                                 margin: '0 1 0 1'
                             },
@@ -552,7 +573,7 @@ CellMapsConfiguration.prototype = {
                                     xtype: 'text',
                                     width: 80,
                                     margin: '5 0 0 0',
-                                    text: 'Label'
+                                    text: 'Attribute'
                                 },
                                 {
                                     xtype: 'combo',
@@ -561,7 +582,7 @@ CellMapsConfiguration.prototype = {
                                     ]}),
                                     displayField: 'name',
                                     valueField: 'name',
-                                    width: 65,
+                                    width: 120,
                                     queryMode: 'local',
                                     margin: '0 10 0 0',
                                     listeners: {
@@ -674,13 +695,14 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'numberfield',
+                                    value:1,
                                     width: 65,
                                     maxValue: 10,
                                     minValue: 1,
                                     margin: '0 10 0 0',
                                     listeners: {
                                         change: {
-                                            buffer: 700,
+                                            buffer: 100,
                                             fn: function (field, newValue) {
                                                 if (newValue != null) {
                                                     _this.trigger('change:edgeSize', {value: newValue});
@@ -736,13 +758,14 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'numberfield',
+                                    value:12,
                                     width: 65,
                                     maxValue: 16,
                                     minValue: 0,
                                     margin: '0 10 0 0',
                                     listeners: {
                                         change: {
-                                            buffer: 700,
+                                            buffer: 100,
                                             fn: function (field, newValue) {
                                                 if (newValue != null) {
                                                     _this.trigger('change:edgeLabelSize', {value: newValue});
@@ -798,6 +821,7 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'combo',
+                                    value:'undirected',
                                     store: ["directed", "undirected", "inhibited", "dot", "odot"],
                                     width: 65,
                                     margin: '0 10 0 0',
@@ -843,6 +867,22 @@ CellMapsConfiguration.prototype = {
                         {
                             xtype: 'container',
                             layout: 'hbox',
+                            margin: '20 0 5 0',
+                            style: {
+                                borderBottom: '1px solid gray'
+                            },
+                            defaults: {
+                                style: {
+                                    fontWeight: 'bold'
+                                }
+                            },
+                            items: [
+                                {xtype: 'text', margin: '0 0 0 0', text: 'Set attribute as label'}
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
                             defaults: {
                                 margin: '0 1 0 1'
                             },
@@ -851,7 +891,7 @@ CellMapsConfiguration.prototype = {
                                     xtype: 'text',
                                     width: 80,
                                     margin: '5 0 0 0',
-                                    text: 'Label'
+                                    text: 'Attribute'
                                 },
                                 {
                                     xtype: 'combo',
@@ -860,7 +900,7 @@ CellMapsConfiguration.prototype = {
                                     ]}),
                                     displayField: 'name',
                                     valueField: 'name',
-                                    width: 65,
+                                    width: 120,
                                     queryMode: 'local',
                                     margin: '0 10 0 0',
                                     listeners: {
