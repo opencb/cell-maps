@@ -122,9 +122,12 @@ CmToolBar.prototype = {
                                     _this.trigger('importNodeAttributes:click', {sender: _this});
                                 }
                             },
-//                            {
-//                                text: 'Edges...'
-//                            }
+                            {
+                                text: 'Edges...',
+                                handler: function () {
+                                    _this.trigger('importEdgeAttributes:click', {sender: _this});
+                                }
+                            }
 
                         ]
                     }
@@ -341,9 +344,7 @@ CmToolBar.prototype = {
                 {
                     text: 'Edit...',
                     handler: function () {
-                        if (!Ext.getCmp("editEdgeAttrWindow")) {
-                            _this.edgeAttributeEditWidget.draw(_this.networkViewer.getSelectedNodes());
-                        }
+                        _this.trigger('editEdgeAttributes:click', {sender: _this});
                     }
                 },
                 {
@@ -365,10 +366,10 @@ CmToolBar.prototype = {
                     text: 'Nodes',
                     menu: nodeMenu
                 },
-//                {
-//                    text: 'Edges',
-//                    menu: edgeMenu
-//                }
+                {
+                    text: 'Edges',
+                    menu: edgeMenu
+                }
             ]
         });
 
@@ -584,6 +585,13 @@ CmToolBar.prototype = {
                     hidden: false,
                     handler: function () {
                         _this.trigger('example:click', {example: 2, sender: _this});
+                    }
+                },
+                {
+                    text: "PPI network with attributes",
+                    hidden: false,
+                    handler: function () {
+                        _this.trigger('example:click', {example: 3, sender: _this});
                     }
                 }
             ]

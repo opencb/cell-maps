@@ -35,6 +35,7 @@ module.exports = function (grunt) {
                 src: [
 //                    'src/cm-config.js',
                     'src/cm-toolbar.js',
+                    'src/cell-maps-configuration.js',
                     'src/cell-maps.js'
                 ],
                 dest: 'build/<%= meta.version %>/<%= meta.name %>-<%= meta.version %>.js'

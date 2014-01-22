@@ -372,64 +372,6 @@ CellMapsConfiguration.prototype = {
                                     xtype: 'text',
                                     width: 80,
                                     margin: '5 0 0 0',
-                                    text: 'Shape'
-                                },
-                                {
-                                    xtype: 'combo',
-                                    value:'circle',
-                                    store: ["circle", "square", "ellipse", "rectangle"],
-                                    width: 65,
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: function (field, e) {
-                                            var value = field.getValue();
-                                            if (value != null) {
-                                                _this.trigger('change:nodeShape', {value: value});
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var value = bt.previousNode().getValue();
-                                        _this.createMappingWindow({
-                                            type: 'select',
-                                            graphElement: 'node',
-                                            displayAttr: text,
-                                            defaultValue: value,
-                                            button: bt,
-                                            selectItems: ["circle", "square", "ellipse", "rectangle"]
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var value = bt.previousNode().previousNode().getValue();
-                                        _this.trigger('change:nodeShape', {value: value});
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
                                     text: 'Opacity'
                                 },
                                 {
@@ -542,6 +484,64 @@ CellMapsConfiguration.prototype = {
                                         bt.disable();
                                         var value = bt.previousNode().previousNode().getValue();
                                         _this.trigger('change:nodeLabelSize', {value: value});
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            defaults: {
+                                margin: '0 1 0 1'
+                            },
+                            items: [
+                                {
+                                    xtype: 'text',
+                                    width: 80,
+                                    margin: '5 0 0 0',
+                                    text: 'Shape'
+                                },
+                                {
+                                    xtype: 'combo',
+                                    value:'circle',
+                                    store: ["circle", "square", "ellipse", "rectangle"],
+                                    width: 65,
+                                    margin: '0 10 0 0',
+                                    listeners: {
+                                        change: function (field, e) {
+                                            var value = field.getValue();
+                                            if (value != null) {
+                                                _this.trigger('change:nodeShape', {value: value});
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    xtype: 'button',
+                                    text: 'Select attribute',
+                                    width: 100,
+                                    handler: function (bt) {
+                                        var text = bt.up('container').down('text').text;
+                                        var value = bt.previousNode().getValue();
+                                        _this.createMappingWindow({
+                                            type: 'select',
+                                            graphElement: 'node',
+                                            displayAttr: text,
+                                            defaultValue: value,
+                                            button: bt,
+                                            selectItems: ["circle", "square", "ellipse", "rectangle"]
+                                        });
+                                    }
+                                },
+                                {
+                                    xtype: 'button',
+                                    disabled: true,
+                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
+                                    handler: function (bt) {
+                                        bt.previousSibling().setText('Select attribute');
+                                        bt.disable();
+                                        var value = bt.previousNode().previousNode().getValue();
+                                        _this.trigger('change:nodeShape', {value: value});
                                     }
                                 }
                             ]
@@ -758,7 +758,7 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'numberfield',
-                                    value:12,
+                                    value:0,
                                     width: 65,
                                     maxValue: 16,
                                     minValue: 0,
@@ -1012,7 +1012,7 @@ CellMapsConfiguration.prototype = {
                 columns: [
                     { text: 'Attribute Value', dataIndex: 'value', menuDisabled: true, flex: 1},
                     { xtype: 'templatecolumn', menuDisabled: true, width: 45, tpl: '<div style="width:30px;height:12px;background-color: {visualParam};"></div>'},
-                    { text: 'Visual Parameter', dataIndex: 'visualParam', flex: 1, menuDisabled: true, editor: {xtype: 'textfield', allowBlank: false}}
+                    { text: args.displayAttr, dataIndex: 'visualParam', flex: 1, menuDisabled: true, editor: {xtype: 'textfield', allowBlank: false}}
                 ]
             });
         };
@@ -1060,7 +1060,7 @@ CellMapsConfiguration.prototype = {
                 columns: [
                     { text: 'Attribute Value', dataIndex: 'value', menuDisabled: true, flex: 1},
                     {
-                        header: 'Visual Parameter',
+                        header: args.displayAttr,
                         dataIndex: 'visualParam',
                         width: 130,
                         menuDisabled: true,
@@ -1120,7 +1120,7 @@ CellMapsConfiguration.prototype = {
                 columns: [
                     { text: 'Attribute Value', dataIndex: 'value', menuDisabled: true, flex: 1},
                     {
-                        header: 'Visual Parameter',
+                        header: args.displayAttr,
                         dataIndex: 'visualParam',
                         menuDisabled: true,
                         width: 130,
@@ -1166,21 +1166,25 @@ CellMapsConfiguration.prototype = {
 
         var stringMappingPanel = Ext.create('Ext.panel.Panel', {
 //            title: 'String mapping',
-            border: 0
+            border: 0,
+            layout:'fit'
         });
 
         var numberMappingPanel = Ext.create('Ext.panel.Panel', {
 //            title: 'Number mapping',
-            border: 0
+            border: 0,
+            layout:'fit'
         });
 
         var ListStringMappingPanel = Ext.create('Ext.panel.Panel', {
 //            title: 'List string mapping',
-            border: 0
+            border: 0,
+            layout:'fit'
         });
         var ListNumberMappingPanel = Ext.create('Ext.panel.Panel', {
 //            title: 'List number mapping',
-            border: 0
+            border: 0,
+            layout:'fit'
         });
 
 
@@ -1230,7 +1234,7 @@ CellMapsConfiguration.prototype = {
                             valueField: 'name',
                             listeners: {
                                 afterrender: function () {
-                                    this.select(this.getStore().getAt(1));
+                                    this.select(this.getStore().getAt(0));
                                 },
                                 change: function (combo, select) {
                                     console.log(select)

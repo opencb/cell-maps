@@ -128,6 +128,7 @@ CellMaps.prototype = {
         this.nodeAttributeEditWidget = new AttributeEditWidget({
             attrMan: this.networkViewer.network.nodeAttributeManager,
             type: 'Node',
+            autoRender:true,
             handlers: {
                 'vertices:select': function (event) {
                     _this.networkViewer.networkSvgLayout.selectVerticesByIds(event.vertices)
@@ -139,7 +140,7 @@ CellMaps.prototype = {
             type: 'Node',
             handlers: {
                 'vertices:select': function (event) {
-                    _this.networkViewer.networkSvgLayout.selectVerticesByIds(event.vertices)
+                    _this.networkViewer.selectVerticesByIds(event.vertices);
                 },
                 'vertices:deselect': function (event) {
                     //TODO
@@ -157,6 +158,7 @@ CellMaps.prototype = {
         this.edgeAttributeEditWidget = new AttributeEditWidget({
             attrMan: this.networkViewer.network.edgeAttributeManager,
             type: 'Edge',
+            autoRender:true,
             handlers: {
                 'vertices:select': function (event) {
                     //todo
@@ -188,27 +190,6 @@ CellMaps.prototype = {
 //        var text = "";
 //        this.headerWidget.setDescription(text);
 
-        /** Force load example **/
-        _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_TEST_JSON));
-        var attributesDataAdapter = new AttributesDataAdapter({
-            dataSource: new StringDataSource(EXAMPLE_ATTR_TEXT),
-            handlers: {
-                'data:load': function (event) {
-                    var importAttributesFileWidget = new ImportAttributesFileWidget({
-                        "numNodes": _this.networkViewer.getVerticesLength(),
-                        handlers: {
-                            'okButton:click': function (attrEvent) {
-                                _this.networkViewer.importVertexWithAttributes(attrEvent.content);
-                            }
-                        }
-                    });
-                    importAttributesFileWidget.draw();
-                    importAttributesFileWidget.processData(event.sender);
-
-                }
-            }
-        });
-        /** Force load example **/
         //check login
 
 
@@ -291,9 +272,10 @@ CellMaps.prototype = {
                             'okButton:click': function (widgetEvent) {
                                 _this.networkViewer.setNetwork(widgetEvent.content);
                                 _this.networkViewer.setLayout(widgetEvent.layout);
-                                _this.nodeAttributeEditWidget.attrMan = _this.networkViewer.network.nodeAttributeManager;
+                                _this.nodeAttributeEditWidget.setAttributeManager(_this.networkViewer.network.nodeAttributeManager);
+                                _this.edgeAttributeEditWidget.setAttributeManager(_this.networkViewer.network.edgeAttributeManager);
+
                                 _this.configuration.nodeAttributeManager = _this.networkViewer.network.nodeAttributeManager;
-                                _this.edgeAttributeEditWidget.attrMan = _this.networkViewer.network.edgeAttributeManager;
                                 _this.configuration.edgeAttributeManager = _this.networkViewer.network.edgeAttributeManager;
                             }
                         }
@@ -353,7 +335,6 @@ CellMaps.prototype = {
                 },
                 'importNodeAttributes:click': function (event) {
                     var importAttributesFileWidget = new ImportAttributesFileWidget({
-                        "numNodes": _this.networkViewer.getVerticesLength(),
                         handlers: {
                             'okButton:click': function (attrEvent) {
                                 _this.networkViewer.importVertexWithAttributes(attrEvent.content);
@@ -362,8 +343,21 @@ CellMaps.prototype = {
                     });
                     importAttributesFileWidget.draw();
                 },
+                'importEdgeAttributes:click': function (event) {
+                    var importAttributesFileWidget = new ImportAttributesFileWidget({
+                        handlers: {
+                            'okButton:click': function (attrEvent) {
+                                _this.networkViewer.importEdgesWithAttributes(attrEvent.content);
+                            }
+                        }
+                    });
+                    importAttributesFileWidget.draw();
+                },
                 'editNodeAttributes:click': function (event) {
                     _this.nodeAttributeEditWidget.draw(_this.networkViewer.getSelectedVertices());
+                },
+                'editEdgeAttributes:click': function (event) {
+                    _this.edgeAttributeEditWidget.draw(_this.networkViewer.getSelectedVertices());
                 },
                 'filterNodeAttributes:click': function (event) {
                     _this.nodeAttributeFilterWidget.draw(_this.networkViewer.getSelectedVertices());
@@ -389,6 +383,28 @@ CellMaps.prototype = {
                     }
                     if (event.example == 2) {
                         _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_2_JSON));
+                    }
+                    if (event.example == 3) {
+                        _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_TEST_JSON));
+                        var attributesDataAdapter = new AttributesDataAdapter({
+                            dataSource: new StringDataSource(EXAMPLE_ATTR_TEXT),
+                            handlers: {
+                                'data:load': function (event) {
+                                    var importAttributesFileWidget = new ImportAttributesFileWidget({
+                                        "numNodes": _this.networkViewer.getVerticesLength(),
+                                        handlers: {
+                                            'okButton:click': function (attrEvent) {
+//                                                _this.networkViewer.importVertexWithAttributes(attrEvent.content);
+                                            }
+                                        }
+                                    });
+                                    importAttributesFileWidget.draw();
+                                    importAttributesFileWidget.processData(event.sender);
+                                    _this.networkViewer.importVertexWithAttributes(importAttributesFileWidget.filterColumnsToImport());
+                                    importAttributesFileWidget.panel.close();
+                                }
+                            }
+                        });
                     }
                 },
                 'configuration-button:change': function (event) {
