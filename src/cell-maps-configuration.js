@@ -36,6 +36,8 @@ function CellMapsConfiguration(args) {
     _.extend(this, args);
 
     this.panel;
+    this.nodeComboStore;
+    this.edgeComboStore;
 
     this.on(this.handlers);
 
@@ -55,6 +57,16 @@ CellMapsConfiguration.prototype = {
             return;
         }
 
+        this.nodeComboStore = Ext.create('Ext.data.Store', {
+            fields: ['name'],
+            data: this.nodeAttributeManager.attributes
+        });
+        this.edgeComboStore = Ext.create('Ext.data.Store', {
+            fields: ['name'],
+            data: this.edgeAttributeManager.attributes
+        });
+
+
         this.panel = Ext.create('Ext.panel.Panel', {
 //            title: 'Configuration',
             width: this.width,
@@ -70,6 +82,36 @@ CellMapsConfiguration.prototype = {
 
         this.colorMenu = this._createColorMenu();
 
+    },
+    setNodeAttributeManager: function (attrMan) {
+        var _this = this;
+        this.nodeAttributeManager = attrMan;
+        this.nodeAttributeManager.on('change:attributes', function () {
+            _this.reconfigureNodeComponents();
+        });
+        this.reconfigureNodeComponents();
+    },
+    reconfigureNodeComponents: function () {
+
+        this.reloadNodeComboStore();
+    },
+    reloadNodeComboStore: function () {
+        this.nodeComboStore.loadData(this.nodeAttributeManager.attributes);
+    },
+    setEdgeAttributeManager: function (attrMan) {
+        var _this = this;
+        this.edgeAttributeManager = attrMan;
+        this.edgeAttributeManager.on('change:attributes', function () {
+            _this.reconfigureEdgeComponents();
+        });
+        this.reconfigureEdgeComponents();
+    },
+    reconfigureEdgeComponents: function () {
+
+        this.reloadEdgeComboStore();
+    },
+    reloadEdgeComboStore: function () {
+        this.edgeComboStore.loadData(this.edgeAttributeManager.attributes);
     },
     getColorDiv: function (color) {
         return '<div style="width:30px;height:12px;background-color: ' + color + ';"></div>';
@@ -577,23 +619,13 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'combo',
-                                    store: Ext.create('Ext.data.Store', {fields: ['name'], data: [
-                                        {name: ''}
-                                    ]}),
+                                    store: this.nodeComboStore,
                                     displayField: 'name',
                                     valueField: 'name',
                                     width: 120,
                                     queryMode: 'local',
                                     margin: '0 10 0 0',
                                     listeners: {
-                                        afterrender: function (combo) {
-                                            var el = combo.getEl();
-                                            el.on('click', function () {
-                                                combo.collapse();
-                                                combo.store.loadData(_this.nodeAttributeManager.attributes);
-                                                combo.expand();
-                                            });
-                                        },
                                         change: function (field, e) {
                                             var value = field.getValue();
                                             if (value != null) {
@@ -895,23 +927,13 @@ CellMapsConfiguration.prototype = {
                                 },
                                 {
                                     xtype: 'combo',
-                                    store: Ext.create('Ext.data.Store', {fields: ['name'], data: [
-                                        {name: ''}
-                                    ]}),
+                                    store: this.edgeComboStore,
                                     displayField: 'name',
                                     valueField: 'name',
                                     width: 120,
                                     queryMode: 'local',
                                     margin: '0 10 0 0',
                                     listeners: {
-                                        afterrender: function (combo) {
-                                            var el = combo.getEl();
-                                            el.on('click', function () {
-                                                combo.collapse();
-                                                combo.store.loadData(_this.edgeAttributeManager.attributes);
-                                                combo.expand();
-                                            });
-                                        },
                                         change: function (field, e) {
                                             var value = field.getValue();
                                             if (value != null) {
@@ -1193,6 +1215,7 @@ CellMapsConfiguration.prototype = {
             height: 400,
             width: 600,
             closable: true,
+            modal:true,
             bodyStyle: 'background-color: white;',
             layout: {
                 type: 'vbox',

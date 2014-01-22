@@ -162,9 +162,9 @@
         Ext.Loader.setConfig({enabled: true});
         Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext/gpl/4.2.1/examples/ux');
         //    Ext.QuickTips.init();
-        //    Ext.require([
-        //        'Ext.grid.plugin.BufferedRenderer'
-        //    ]);
+        Ext.require([
+            'Ext.grid.plugin.BufferedRenderer'
+        ]);
 
         var cellMaps;
         Ext.onReady(function () {
@@ -184,8 +184,8 @@
 
         #status {
             height: 26px;
-            border-color:lightgrey;
-            border-style:solid;
+            border-color: lightgrey;
+            border-style: solid;
             border-width: 0 1px 1px 1px;
         }
 

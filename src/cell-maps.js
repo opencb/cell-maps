@@ -128,10 +128,10 @@ CellMaps.prototype = {
         this.nodeAttributeEditWidget = new AttributeEditWidget({
             attrMan: this.networkViewer.network.nodeAttributeManager,
             type: 'Node',
-            autoRender:true,
+            autoRender: true,
             handlers: {
                 'vertices:select': function (event) {
-                    _this.networkViewer.networkSvgLayout.selectVerticesByIds(event.vertices)
+                    _this.networkViewer.selectVerticesByIds(event.vertices);
                 }
             }
         });
@@ -158,7 +158,7 @@ CellMaps.prototype = {
         this.edgeAttributeEditWidget = new AttributeEditWidget({
             attrMan: this.networkViewer.network.edgeAttributeManager,
             type: 'Edge',
-            autoRender:true,
+            autoRender: true,
             handlers: {
                 'vertices:select': function (event) {
                     //todo
@@ -275,8 +275,8 @@ CellMaps.prototype = {
                                 _this.nodeAttributeEditWidget.setAttributeManager(_this.networkViewer.network.nodeAttributeManager);
                                 _this.edgeAttributeEditWidget.setAttributeManager(_this.networkViewer.network.edgeAttributeManager);
 
-                                _this.configuration.nodeAttributeManager = _this.networkViewer.network.nodeAttributeManager;
-                                _this.configuration.edgeAttributeManager = _this.networkViewer.network.edgeAttributeManager;
+                                _this.configuration.setNodeAttributeManager(_this.networkViewer.network.nodeAttributeManager);
+                                _this.configuration.setEdgeAttributeManager(_this.networkViewer.network.edgeAttributeManager);
                             }
                         }
                     });
@@ -385,23 +385,41 @@ CellMaps.prototype = {
                         _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_2_JSON));
                     }
                     if (event.example == 3) {
-                        _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_TEST_JSON));
-                        var attributesDataAdapter = new AttributesDataAdapter({
-                            dataSource: new StringDataSource(EXAMPLE_ATTR_TEXT),
+
+                        var sifDataAdapter = new SIFDataAdapter({
+                            dataSource: new StringDataSource(EXAMPLE_SIF_TEXT),
                             handlers: {
                                 'data:load': function (event) {
-                                    var importAttributesFileWidget = new ImportAttributesFileWidget({
-                                        "numNodes": _this.networkViewer.getVerticesLength(),
+                                    _this.networkViewer.setNetwork(event.network);
+                                    _this.networkViewer.setLayout('neato');
+
+                                    _this.nodeAttributeEditWidget.setAttributeManager(_this.networkViewer.network.nodeAttributeManager);
+                                    _this.edgeAttributeEditWidget.setAttributeManager(_this.networkViewer.network.edgeAttributeManager);
+
+                                    _this.configuration.setNodeAttributeManager(_this.networkViewer.network.nodeAttributeManager);
+                                    _this.configuration.setEdgeAttributeManager(_this.networkViewer.network.edgeAttributeManager);
+
+                                    /*LOAD ATTRIBUTES*/
+                                    var attributesDataAdapter = new AttributesDataAdapter({
+                                        dataSource: new StringDataSource(EXAMPLE_ATTR_TEXT),
                                         handlers: {
-                                            'okButton:click': function (attrEvent) {
+                                            'data:load': function (event) {
+                                                var importAttributesFileWidget = new ImportAttributesFileWidget({
+                                                    "numNodes": _this.networkViewer.getVerticesLength(),
+                                                    handlers: {
+                                                        'okButton:click': function (attrEvent) {
 //                                                _this.networkViewer.importVertexWithAttributes(attrEvent.content);
+                                                        }
+                                                    }
+                                                });
+                                                importAttributesFileWidget.draw();
+                                                importAttributesFileWidget.processData(event.sender);
+                                                _this.networkViewer.importVertexWithAttributes(importAttributesFileWidget.filterColumnsToImport());
+                                                importAttributesFileWidget.panel.close();
                                             }
                                         }
                                     });
-                                    importAttributesFileWidget.draw();
-                                    importAttributesFileWidget.processData(event.sender);
-                                    _this.networkViewer.importVertexWithAttributes(importAttributesFileWidget.filterColumnsToImport());
-                                    importAttributesFileWidget.panel.close();
+
                                 }
                             }
                         });
@@ -424,7 +442,12 @@ CellMaps.prototype = {
             targetId: targetId,
             autoRender: true,
             sidePanel: false,
-            border: false
+            border: false,
+            handlers:{
+                'select:vertices':function(e){
+                    _this.nodeAttributeEditWidget.select(e.vertices);
+                }
+            }
         });
         networkViewer.draw();
         return networkViewer;
