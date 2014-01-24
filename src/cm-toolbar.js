@@ -60,78 +60,63 @@ CmToolBar.prototype = {
             plain: true,
             items: [
                 {
-                    text: 'Network',
-                    menu: {
-                        plain: true,
-                        items: [
-                            {
-                                text: "DOT...",
-                                handler: function () {
-                                    _this.trigger('openDOT:click', {sender: _this});
-                                }
-                            },
-                            {
-                                text: "SIF...",
-                                handler: function () {
-                                    _this.trigger('openSIF:click', {sender: _this});
-                                }
-                            },
-                            {
-                                text: "STRING",
-                                disabled: true,
-                                handler: function () {
-                                    var stringNetworkFileWidget = new StringNetworkFileWidget({"networkData": _this.networkViewer.networkData});
-                                    stringNetworkFileWidget.draw();
-                                    stringNetworkFileWidget.onOk.addEventListener(function (sender, data) {
-                                        _this.networkViewer.loadNetwork(data.content, data.layout);
-                                    });
-                                }
-                            },
-                            {
-                                text: "txt",
-                                hidden: true,
-                                disabled: true,
-                                handler: function () {
-                                }
-                            },
-                            {
-                                text: "SBML",
-                                hidden: true,
-                                disabled: true,
-                                handler: function () {
-                                }
-                            },
-                            {
-                                text: "Biopax",
-                                hidden: true,
-                                disabled: true,
-                                handler: function () {
-                                }
-                            }
-                        ]
+                    text: 'Network from SIF...',
+                    handler: function () {
+                        _this.trigger('openSIF:click', {sender: _this});
                     }
                 },
                 {
-                    text: 'Attributes',
-                    menu: {
-                        plain: true,
-                        items: [
-                            {
-                                text: 'Nodes...',
-                                handler: function () {
-                                    _this.trigger('importNodeAttributes:click', {sender: _this});
-                                }
-                            },
-                            {
-                                text: 'Edges...',
-                                handler: function () {
-                                    _this.trigger('importEdgeAttributes:click', {sender: _this});
-                                }
-                            }
-
-                        ]
+                    text: 'Network from DOT...',
+                    hidden: true,
+                    handler: function () {
+                        _this.trigger('openDOT:click', {sender: _this});
                     }
                 },
+                {
+                    text: "STRING",
+                    hidden: true,
+                    handler: function () {
+                        var stringNetworkFileWidget = new StringNetworkFileWidget({"networkData": _this.networkViewer.networkData});
+                        stringNetworkFileWidget.draw();
+                        stringNetworkFileWidget.onOk.addEventListener(function (sender, data) {
+                            _this.networkViewer.loadNetwork(data.content, data.layout);
+                        });
+                    }
+                },
+                {
+                    text: "txt",
+                    hidden: true,
+                    disabled: true,
+                    handler: function () {
+                    }
+                },
+                {
+                    text: "SBML",
+                    hidden: true,
+                    disabled: true,
+                    handler: function () {
+                    }
+                },
+                {
+                    text: "Biopax",
+                    hidden: true,
+                    disabled: true,
+                    handler: function () {
+                    }
+                },
+                '-',
+                {
+                    text: 'Node attributes...',
+                    handler: function () {
+                        _this.trigger('importNodeAttributes:click', {sender: _this});
+                    }
+                },
+                {
+                    text: 'Edge attributes...',
+                    handler: function () {
+                        _this.trigger('importEdgeAttributes:click', {sender: _this});
+                    }
+                }
 //                {
 //                    text: 'Background image',
 //                    handler: function () {
@@ -156,7 +141,7 @@ CmToolBar.prototype = {
                         plain: true,
                         items: [
                             {
-                                text: 'Open Session',
+                                text: 'Open Session...',
                                 handler: function () {
                                     _this.trigger('openJSON:click', {sender: _this});
                                 }
@@ -180,41 +165,36 @@ CmToolBar.prototype = {
                                 menu: {
                                     plain: true,
                                     items: [
+
                                         {
-                                            text: 'Image',
-                                            menu: {
-                                                plain: true,
-                                                items: [
-//                                                    {
-//                                                        text: "Save as PNG",
-//                                                        href: "none",
-//                                                        iconCls: 'icon-blue-box',
-//                                                        handler: function () {
-//                                                            _this.trigger('savePNG:click', {a: this.getEl().child("a"), sender: _this});
-//                                                        }
-//                                                    },
-//                                                    {
-//                                                        text: "Save as JPG",
-//                                                        href: "none",
-//                                                        iconCls: 'icon-blue-box',
-//                                                        handler: function () {
-//                                                            _this.trigger('saveJPG:click', {a: this.getEl().child("a"), sender: _this});
-//                                                        }
-//                                                    },
-                                                    {
-                                                        text: "Save as SVG",
-                                                        href: "none",
-                                                        iconCls: 'icon-blue-box',
-                                                        handler: function () {
-                                                            _this.trigger('saveSVG:click', {a: this.getEl().child("a"), sender: _this});
-                                                        }
-                                                    }
-                                                ]
+                                            text: "SVG image",
+                                            href: "none",
+                                            iconCls: 'icon-blue-box',
+                                            handler: function () {
+                                                _this.trigger('saveSVG:click', {a: this.getEl().child("a"), sender: _this});
+                                            }
+                                        },
+                                        {
+                                            text: "PNG image",
+                                            href: "none",
+                                            iconCls: 'icon-blue-box',
+                                            hidden: true,
+                                            handler: function () {
+                                                _this.trigger('savePNG:click', {a: this.getEl().child("a"), sender: _this});
+                                            }
+                                        },
+                                        {
+                                            text: "JPG image",
+                                            href: "none",
+                                            iconCls: 'icon-blue-box',
+                                            hidden: true,
+                                            handler: function () {
+                                                _this.trigger('saveJPG:click', {a: this.getEl().child("a"), sender: _this});
                                             }
                                         }
                                     ]
                                 }
-                            },
+                            }
 
                         ]
                     }
@@ -241,13 +221,20 @@ CmToolBar.prototype = {
 
                 '->',
                 {
+                    tooltip: 'Network will be deleted permanently!',
+                    text: '<span class="emph"> Clean network</span>',
+                    handler: function () {
+                        _this.trigger('change:clean-button', {sender: _this});
+                    }
+                },
+                {
                     tooltip: 'Configure',
                     text: '<span class="emph"> Configure</span>',
                     margin: '0 0 0 15',
                     enableToggle: true,
                     iconCls: 'ocb-icon-gear',
                     pressed: true,
-                    hidden:false,
+                    hidden: false,
                     toggleHandler: function () {
                         _this.trigger('configuration-button:change', {selected: this.pressed, sender: _this});
                     }
@@ -295,12 +282,6 @@ CmToolBar.prototype = {
 //                },
 //                '-',
                 {
-                    text: 'Edit...',
-                    handler: function () {
-                        _this.trigger('editNodeAttributes:click', {sender: _this});
-                    }
-                },
-                {
                     text: 'Filters',
                     menu: nodeFiltersMenu,
                     handler: function () {
@@ -342,12 +323,6 @@ CmToolBar.prototype = {
 //		        	 }
 //		         },'-',
                 {
-                    text: 'Edit...',
-                    handler: function () {
-                        _this.trigger('editEdgeAttributes:click', {sender: _this});
-                    }
-                },
-                {
                     text: 'Filters',
                     menu: edgeFiltersMenu,
                     handler: function () {
@@ -363,12 +338,17 @@ CmToolBar.prototype = {
             plain: true,
             items: [
                 {
-                    text: 'Nodes',
-                    menu: nodeMenu
+                    text: 'Edit nodes...',
+                    handler: function () {
+                        _this.trigger('editNodeAttributes:click', {sender: _this});
+                    }
                 },
+                '-',
                 {
-                    text: 'Edges',
-                    menu: edgeMenu
+                    text: 'Edit edges...',
+                    handler: function () {
+                        _this.trigger('editEdgeAttributes:click', {sender: _this});
+                    }
                 }
             ]
         });

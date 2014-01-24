@@ -425,6 +425,13 @@ CellMaps.prototype = {
                         });
                     }
                 },
+                'change:clean-button': function (event) {
+                    Ext.Msg.confirm('Start over', 'All changes will be lost. Are you sure?', function (btn, text) {
+                        if (btn == 'yes') {
+                            _this.networkViewer.clean();
+                        }
+                    });
+                },
                 'configuration-button:change': function (event) {
                     if (event.selected) {
                         _this.configuration.panel.show();

@@ -278,7 +278,8 @@ ReactomePlugin.prototype.loadPathway = function (speciesSelected, pathwayId) {
     _this.nodeIdNameDic = {};
     _this.pathwayComponents = {};
 
-    var network = new Network();
+    this.cellMaps.networkViewer.clean();
+    var network = this.cellMaps.networkViewer.network;
 
     _this.pathwayComponents[pathwayId] = {};
 
@@ -320,9 +321,10 @@ ReactomePlugin.prototype.loadPathway = function (speciesSelected, pathwayId) {
                 if (!_this.reusedNodes[name]) _this.reusedNodes[name] = {};
                 _this.reusedNodes[name][pathwayId] = true;
             }
-            _this.cellMaps.networkViewer.setNetwork(network);
+            _this.cellMaps.networkViewer.networkSvgLayout.draw();
             _this.cellMaps.networkViewer.setLayout('neato');
             _this.cellMaps.networkViewer._refreshOverview();
+            network.setVertexLabelByAttribute('Name');
         }});
 };
 
@@ -371,9 +373,10 @@ ReactomePlugin.prototype.addPathway = function (speciesSelected, pathwayId) {
                 if (!_this.reusedNodes[name]) _this.reusedNodes[name] = {};
                 _this.reusedNodes[name][pathwayId] = true;
             }
-            _this.cellMaps.networkViewer.setNetwork(network);
+            _this.cellMaps.networkViewer.networkSvgLayout.draw();
             _this.cellMaps.networkViewer.setLayout('neato');
             _this.cellMaps.networkViewer._refreshOverview();
+            network.setVertexLabelByAttribute('Name');
         }});
 };
 
@@ -442,12 +445,12 @@ ReactomePlugin.prototype.addPathwayNode = function (name, displayName, species, 
 //        this.nodeIdNameDic[nodeId] = name;
 //    }
 
-    var foundVertices = network.findVerticesByName(displayName);
-    if (foundVertices.length == 0) {
+    if (!network.getVertexById(name)) {
         var vertex = new Vertex({
-            name: displayName
+            id: name
         });
         network.addVertex({
+            name:displayName,
             vertex: vertex,
             vertexConfig: new VertexConfig({
                 renderer: new DefaultVertexRenderer(this.nodeTypes["pathway"])
@@ -476,12 +479,12 @@ ReactomePlugin.prototype.addPhysicalEntity = function (name, type, displayName, 
 //    return nodeId;
 //    console.log(type)
 
-    var foundVertices = network.findVerticesByName(displayName);
-    if (foundVertices.length == 0) {
+    if (!network.getVertexById(name)) {
         var vertex = new Vertex({
-            name: displayName
+            id: name
         });
         network.addVertex({
+            name:displayName,
             vertex: vertex,
             vertexConfig: new VertexConfig({
                 renderer: new DefaultVertexRenderer(this.nodeTypes[type])
@@ -507,12 +510,12 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
 //        this.nodeIdNameDic[nodeId] = name;
 //    }
 
-    var foundVertices = network.findVerticesByName(displayName);
-    if (foundVertices.length == 0) {
+    if (!network.getVertexById(name)) {
         var vertex = new Vertex({
-            name: displayName
+            id: name
         });
         network.addVertex({
+            name:displayName,
             vertex: vertex,
             vertexConfig: new VertexConfig({
                 renderer: new DefaultVertexRenderer(this.nodeTypes["interaction"])
@@ -568,7 +571,7 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
                 var edge = new Edge({
                     name: '',
                     source: network.getVertexById(this.nodeNameIdDic[name]),
-                    target: network.getVertexById(this.nodeNameIdDic[rightId]),
+                    target: network.getVertexById(this.nodeNameIdDic[rightId])
                 });
                 network.addEdge({
                     edge: edge,

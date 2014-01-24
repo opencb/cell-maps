@@ -56,6 +56,12 @@ CellMapsConfiguration.prototype = {
 
             return;
         }
+        this.nodeAttributeManager.on('change:attributes', function () {
+            _this.reconfigureNodeComponents();
+        });
+        this.edgeAttributeManager.on('change:attributes', function () {
+            _this.reconfigureEdgeComponents();
+        });
 
         this.nodeComboStore = Ext.create('Ext.data.Store', {
             fields: ['name'],
@@ -65,6 +71,7 @@ CellMapsConfiguration.prototype = {
             fields: ['name'],
             data: this.edgeAttributeManager.attributes
         });
+
 
 
         this.panel = Ext.create('Ext.panel.Panel', {
