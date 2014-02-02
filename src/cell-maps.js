@@ -471,10 +471,10 @@ CellMaps.prototype = {
             edgeAttributeManager: this.networkViewer.network.edgeAttributeManager,
             handlers: {
                 'change:nodeColor': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('color', e.color);
+                    _this.networkViewer.network.setVerticesRendererAttribute('color', e.value);
                 },
                 'change:nodeStrokeColor': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('strokeColor', e.color);
+                    _this.networkViewer.network.setVerticesRendererAttribute('strokeColor', e.value);
                 },
                 'change:nodeSize': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('size', e.value, true);
@@ -497,7 +497,7 @@ CellMaps.prototype = {
 
 
                 'change:edgeColor': function (e) {
-                    _this.networkViewer.network.setEdgesRendererAttribute('color', e.color);
+                    _this.networkViewer.network.setEdgesRendererAttribute('color', e.value);
                 },
                 'change:edgeSize': function (e) {
                     _this.networkViewer.network.setEdgesRendererAttribute('size', e.value);
@@ -513,10 +513,10 @@ CellMaps.prototype = {
                 },
 
 
-                'change:nodeDiplayAttribute': function (e) {
+                'change:nodeDisplayAttribute': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttributeMap(e.diplayAttribute, e.attribute, e.map);
                 },
-                'change:edgeDiplayAttribute': function (e) {
+                'change:edgeDisplayAttribute': function (e) {
                     _this.networkViewer.network.setEdgesRendererAttributeMap(e.diplayAttribute, e.attribute, e.map);
                 }
             }
