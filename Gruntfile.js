@@ -35,6 +35,7 @@ module.exports = function (grunt) {
                 src: [
 //                    'src/cm-config.js',
                     'src/cm-toolbar.js',
+                    'src/visual-attribute-widget.js',
                     'src/cell-maps-configuration.js',
                     'src/cell-maps.js'
                 ],

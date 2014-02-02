@@ -39,6 +39,26 @@ function CellMapsConfiguration(args) {
     this.nodeComboStore;
     this.edgeComboStore;
 
+    this.vertexDefaults = {
+        shape: 'circle',
+        size: 20,
+        color: '#9fc6e7',
+        strokeSize: 1,
+        strokeColor: '#9fc6e7',
+        opacity: 0.8,
+        labelSize: 12,
+        labelColor: '#111111'
+    };
+    this.edgeDefaults = {
+        shape: 'undirected',
+        size: 1,
+        color: '#cccccc',
+        opacity: 1,
+        labelSize: 0,
+        labelColor: '#111111'
+    }
+
+
     this.on(this.handlers);
 
     this.rendered = false;
@@ -72,8 +92,6 @@ CellMapsConfiguration.prototype = {
             data: this.edgeAttributeManager.attributes
         });
 
-
-
         this.panel = Ext.create('Ext.panel.Panel', {
 //            title: 'Configuration',
             width: this.width,
@@ -99,12 +117,9 @@ CellMapsConfiguration.prototype = {
         this.reconfigureNodeComponents();
     },
     reconfigureNodeComponents: function () {
-
-        this.reloadNodeComboStore();
-    },
-    reloadNodeComboStore: function () {
         this.nodeComboStore.loadData(this.nodeAttributeManager.attributes);
     },
+
     setEdgeAttributeManager: function (attrMan) {
         var _this = this;
         this.edgeAttributeManager = attrMan;
@@ -114,10 +129,6 @@ CellMapsConfiguration.prototype = {
         this.reconfigureEdgeComponents();
     },
     reconfigureEdgeComponents: function () {
-
-        this.reloadEdgeComboStore();
-    },
-    reloadEdgeComboStore: function () {
         this.edgeComboStore.loadData(this.edgeAttributeManager.attributes);
     },
     getColorDiv: function (color) {
@@ -131,6 +142,11 @@ CellMapsConfiguration.prototype = {
             margin: '4 10 0 0',
             name: 'colorBox',
             html: '<div style="border:1px solid gray;width:65px;height:15px;background-color: ' + defaultColor + ';" color="' + defaultColor + '"></div>',
+            setColor: function (color) {
+                var el = this.getEl();
+                $(el.dom).find('div').attr('color', color);
+                $(el.dom).find('div').css({'background-color': color});
+            },
             listeners: {
                 afterrender: function (box) {
                     var el = this.getEl();
@@ -150,6 +166,251 @@ CellMapsConfiguration.prototype = {
             }
         }
     },
+    createAttributeColorComponent: function (args) {
+        var _this = this;
+
+        var visualSettingWindow;
+
+        return {
+            xtype: 'container',
+            layout: 'hbox',
+            defaults: {
+                margin: '0 1 0 1'
+            },
+            items: [
+                {
+                    xtype: 'text',
+                    text: args.displayAttribute,
+                    width: 80,
+                    margin: '5 0 0 0'
+                },
+                this.getColorSelect(args.defaultValue, function (color, box) {
+                    _this.trigger(args.eventName, {color: color});
+                    args.defaultValue = color;
+                    var triggerObject = box.ownerCt.triggerObject;
+                    if (triggerObject) {
+                        _this.trigger(args.attributeEventName, triggerObject);
+                    }
+                }),
+                {
+                    xtype: 'button',
+                    text: 'Select attribute',
+                    width: 100,
+                    handler: function () {
+                        visualSettingWindow.show();
+                    },
+                    listeners: {
+                        afterrender: function (bt) {
+                            args.visualComponent = bt.ownerCt;
+                            args.okHandler = function (attributeName, triggerObject) {
+                                bt.setText(attributeName);
+                                bt.nextNode().enable();
+                                bt.ownerCt.triggerObject = triggerObject;
+                            }
+                            visualSettingWindow = _this.createColorMappingWindow(args);
+                        }
+                    }
+                },
+                {
+                    xtype: 'button',
+                    disabled: true,
+                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
+                    handler: function (bt) {
+                        bt.previousSibling().setText('Select attribute');
+                        bt.disable();
+                        var color = $(bt.previousNode().previousNode().getEl().dom).find('div').attr('color');
+                        delete bt.ownerCt.triggerObject;
+                        _this.trigger(args.eventName, {color: color});
+                    }
+                }
+            ]
+        }
+    },
+    createAttributeNumberComponent: function (args) {
+        var _this = this;
+
+        var visualSettingWindow;
+
+        return {
+            xtype: 'container',
+            layout: 'hbox',
+            defaults: {
+                margin: '0 1 0 1'
+            },
+            items: [
+                {
+                    xtype: 'text',
+                    text: args.displayAttribute,
+                    width: 80,
+                    margin: '5 0 0 0'
+                },
+                {
+                    xtype: 'numberfield',
+                    width: 65,
+                    value: args.defaultValue,
+                    maxValue: args.maxvalue,
+                    minValue: args.minValue,
+                    step: args.step,
+                    margin: '0 10 0 0',
+                    listeners: {
+                        change: {
+                            buffer: 100,
+                            fn: function (field, newValue) {
+                                if (newValue != null) {
+                                    _this.trigger(args.eventName, {value: newValue});
+                                    args.defaultValue = newValue;
+                                    var triggerObject = field.ownerCt.triggerObject;
+                                    if (triggerObject) {
+                                        _this.trigger(args.attributeEventName, triggerObject);
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    xtype: 'button',
+                    text: 'Select attribute',
+                    width: 100,
+                    handler: function () {
+                        visualSettingWindow.show();
+                    },
+                    listeners: {
+                        afterrender: function (bt) {
+                            args.visualComponent = bt.ownerCt;
+                            args.okHandler = function (attributeName, triggerObject) {
+                                bt.setText(attributeName);
+                                bt.nextNode().enable();
+                                bt.ownerCt.triggerObject = triggerObject;
+                            }
+                            visualSettingWindow = _this.createNumberMappingWindow(args);
+                        }
+                    }
+                },
+                {
+                    xtype: 'button',
+                    disabled: true,
+                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
+                    handler: function (bt) {
+                        bt.previousSibling().setText('Select attribute');
+                        bt.disable();
+                        var value = bt.previousNode().previousNode().getValue();
+                        delete bt.ownerCt.triggerObject;
+                        _this.trigger(args.eventName, {value: value});
+                    }
+                }
+            ]
+        }
+    },
+    createAttributeComboComponent: function (args) {
+        var _this = this;
+
+        var visualSettingWindow;
+
+        return {
+            xtype: 'container',
+            layout: 'hbox',
+            defaults: {
+                margin: '0 1 0 1'
+            },
+            items: [
+                {
+                    xtype: 'text',
+                    width: 80,
+                    margin: '5 0 0 0',
+                    text: args.displayAttribute
+                },
+                {
+                    xtype: 'combo',
+                    value: args.defaultValue,
+                    store: args.comboValues,
+                    width: 65,
+                    margin: '0 10 0 0',
+                    listeners: {
+                        change: function (field, e) {
+                            var value = field.getValue();
+                            if (value != null) {
+                                _this.trigger(args.eventName, {value: value});
+                                args.defaultValue = value;
+                                var triggerObject = field.ownerCt.triggerObject;
+                                if (triggerObject) {
+                                    _this.trigger(args.attributeEventName, triggerObject);
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    xtype: 'button',
+                    text: 'Select attribute',
+                    width: 100,
+                    handler: function () {
+                        visualSettingWindow.show();
+                    },
+                    listeners: {
+                        afterrender: function (bt) {
+                            args.visualComponent = bt.ownerCt;
+                            args.okHandler = function (attributeName, triggerObject) {
+                                bt.setText(attributeName);
+                                bt.nextNode().enable();
+                                bt.ownerCt.triggerObject = triggerObject;
+                            }
+                            visualSettingWindow = _this.createComboMappingWindow(args);
+                        }
+                    }
+                },
+                {
+                    xtype: 'button',
+                    disabled: true,
+                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
+                    handler: function (bt) {
+                        bt.previousSibling().setText('Select attribute');
+                        bt.disable();
+                        var value = bt.previousNode().previousNode().getValue();
+                        delete bt.ownerCt.triggerObject;
+                        _this.trigger(args.eventName, {value: value});
+                    }
+                }
+            ]
+        }
+    },
+    createLabelComboComponent: function (args) {
+        var _this = this;
+        return {
+            xtype: 'container',
+            layout: 'hbox',
+            defaults: {
+                margin: '0 1 0 1'
+            },
+            items: [
+                {
+                    xtype: 'text',
+                    width: 80,
+                    margin: '5 0 0 0',
+                    text: 'Attribute'
+                },
+                {
+                    xtype: 'combo',
+                    store: args.comboStore,
+                    displayField: 'name',
+                    valueField: 'name',
+                    width: 120,
+                    queryMode: 'local',
+                    margin: '0 10 0 0',
+                    listeners: {
+                        change: function (field, e) {
+                            var value = field.getValue();
+                            if (value != null) {
+                                _this.trigger(args.eventName, {value: value});
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    },
+
     createPropertiesPanel: function () {
         var _this = this;
 
@@ -189,412 +450,75 @@ CellMapsConfiguration.prototype = {
                                 {xtype: 'text', width: 100, text: 'Attribute'}
                             ]
                         },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Color'
-                                },
-                                this.getColorSelect('#9fc6e7', function (color, component) {
-                                    component.nextSibling().setText('Select attribute');
-                                    component.nextSibling().nextSibling().disable();
-                                    _this.trigger('change:nodeColor', {color: color});
-                                }),
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var color = $(bt.previousNode().getEl().dom).find('div').attr('color');
-                                        _this.createMappingWindow({
-                                            type: 'color',
-                                            graphElement: 'node',
-                                            displayAttr: text,
-                                            defaultValue: color,
-                                            button: bt
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var color = $(bt.previousNode().previousNode().getEl().dom).find('div').attr('color');
-                                        _this.trigger('change:nodeColor', {color: color});
-                                    }
-                                }
-
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Stroke color'
-                                },
-                                this.getColorSelect('#9fc6e7', function (color, component) {
-                                    component.nextSibling().setText('Select attribute');
-                                    component.nextSibling().nextSibling().disable();
-                                    _this.trigger('change:nodeStrokeColor', {color: color});
-                                }),
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var color = $(bt.previousNode().getEl().dom).find('div').attr('color');
-                                        _this.createMappingWindow({
-                                            type: 'color',
-                                            graphElement: 'node',
-                                            displayAttr: text,
-                                            defaultValue: color,
-                                            button: bt
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var color = $(bt.previousNode().previousNode().getEl().dom).find('div').attr('color');
-                                        _this.trigger('change:nodeStrokeColor', {color: color});
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Size'
-                                },
-                                {
-                                    xtype: 'numberfield',
-                                    value:10,
-                                    width: 65,
-                                    maxValue: 160,
-                                    minValue: 0,
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: {
-                                            buffer: 100,
-                                            fn: function (field, newValue) {
-                                                if (newValue != null) {
-                                                    _this.trigger('change:nodeSize', {value: newValue});
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var value = bt.previousNode().getValue();
-                                        _this.createMappingWindow({
-                                            type: 'number',
-                                            graphElement: 'node',
-                                            displayAttr: text,
-                                            defaultValue: value,
-                                            button: bt,
-                                            maxValue: 160,
-                                            minValue: 0,
-                                            step: 1
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var value = bt.previousNode().previousNode().getValue();
-                                        _this.trigger('change:nodeSize', {value: value});
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Stroke size'
-                                },
-                                {
-                                    xtype: 'numberfield',
-                                    value:1,
-                                    width: 65,
-                                    maxValue: 10,
-                                    minValue: 0,
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: {
-                                            buffer: 100,
-                                            fn: function (field, newValue) {
-                                                if (newValue != null) {
-                                                    _this.trigger('change:nodeStrokeSize', {value: newValue});
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var value = bt.previousNode().getValue();
-                                        _this.createMappingWindow({
-                                            type: 'number',
-                                            graphElement: 'node',
-                                            displayAttr: text,
-                                            defaultValue: value,
-                                            button: bt,
-                                            maxValue: 10,
-                                            minValue: 0,
-                                            step: 1
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var value = bt.previousNode().previousNode().getValue();
-                                        _this.trigger('change:nodeStrokeSize', {value: value});
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Opacity'
-                                },
-                                {
-                                    xtype: 'numberfield',
-                                    value:1,
-                                    width: 65,
-                                    maxValue: 1,
-                                    minValue: 0,
-                                    step: 0.1,
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: {
-                                            buffer: 100,
-                                            fn: function (field, newValue) {
-                                                if (newValue != null) {
-                                                    _this.trigger('change:nodeOpacity', {value: newValue});
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var value = bt.previousNode().getValue();
-                                        _this.createMappingWindow({
-                                            type: 'number',
-                                            graphElement: 'node',
-                                            displayAttr: text,
-                                            defaultValue: value,
-                                            button: bt,
-                                            maxValue: 1,
-                                            minValue: 0,
-                                            step: 0.1
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var value = bt.previousNode().previousNode().getValue();
-                                        _this.trigger('change:nodeOpacity', {value: value});
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Label size'
-                                },
-                                {
-                                    xtype: 'numberfield',
-                                    value:12,
-                                    width: 65,
-                                    maxValue: 16,
-                                    minValue: 0,
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: {
-                                            buffer: 100,
-                                            fn: function (field, newValue) {
-                                                if (newValue != null) {
-                                                    _this.trigger('change:nodeLabelSize', {value: newValue});
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var value = bt.previousNode().getValue();
-                                        _this.createMappingWindow({
-                                            type: 'number',
-                                            graphElement: 'node',
-                                            displayAttr: text,
-                                            defaultValue: value,
-                                            button: bt,
-                                            maxValue: 16,
-                                            minValue: 0,
-                                            step: 1
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var value = bt.previousNode().previousNode().getValue();
-                                        _this.trigger('change:nodeLabelSize', {value: value});
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Shape'
-                                },
-                                {
-                                    xtype: 'combo',
-                                    value:'circle',
-                                    store: ["circle", "square", "ellipse", "rectangle"],
-                                    width: 65,
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: function (field, e) {
-                                            var value = field.getValue();
-                                            if (value != null) {
-                                                _this.trigger('change:nodeShape', {value: value});
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var value = bt.previousNode().getValue();
-                                        _this.createMappingWindow({
-                                            type: 'select',
-                                            graphElement: 'node',
-                                            displayAttr: text,
-                                            defaultValue: value,
-                                            button: bt,
-                                            selectItems: ["circle", "square", "ellipse", "rectangle"]
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var value = bt.previousNode().previousNode().getValue();
-                                        _this.trigger('change:nodeShape', {value: value});
-                                    }
-                                }
-                            ]
-                        },
+                        this.createAttributeColorComponent({
+                            attributeManager: this.nodeAttributeManager,
+                            comboStore: this.nodeComboStore,
+                            eventName: 'change:nodeColor',
+                            attributeEventName: 'change:nodeDiplayAttribute',
+                            defaultValue: this.vertexDefaults.color,
+                            displayAttribute: 'Color'
+                        }),
+                        this.createAttributeColorComponent({
+                            attributeManager: this.nodeAttributeManager,
+                            comboStore: this.nodeComboStore,
+                            eventName: 'change:nodeStrokeColor',
+                            attributeEventName: 'change:nodeDiplayAttribute',
+                            defaultValue: this.vertexDefaults.strokeColor,
+                            displayAttribute: 'Stroke color'
+                        }),
+                        this.createAttributeNumberComponent({
+                            attributeManager: this.nodeAttributeManager,
+                            comboStore: this.nodeComboStore,
+                            eventName: 'change:nodeSize',
+                            attributeEventName: 'change:nodeDiplayAttribute',
+                            defaultValue: this.vertexDefaults.size,
+                            displayAttribute: 'Size',
+                            maxValue: 160,
+                            minValue: 0,
+                            step: 1
+                        }),
+                        this.createAttributeNumberComponent({
+                            attributeManager: this.nodeAttributeManager,
+                            comboStore: this.nodeComboStore,
+                            eventName: 'change:nodeStrokeSize',
+                            attributeEventName: 'change:nodeDiplayAttribute',
+                            defaultValue: this.vertexDefaults.strokeSize,
+                            displayAttribute: 'Stroke size',
+                            maxValue: 10,
+                            minValue: 0,
+                            step: 1
+                        }),
+                        this.createAttributeNumberComponent({
+                            attributeManager: this.nodeAttributeManager,
+                            comboStore: this.nodeComboStore,
+                            eventName: 'change:nodeOpacity',
+                            attributeEventName: 'change:nodeDiplayAttribute',
+                            defaultValue: this.vertexDefaults.opacity,
+                            displayAttribute: 'Opacity',
+                            maxValue: 1,
+                            minValue: 0,
+                            step: 0.1
+                        }),
+                        this.createAttributeNumberComponent({
+                            attributeManager: this.nodeAttributeManager,
+                            comboStore: this.nodeComboStore,
+                            eventName: 'change:nodeLabelSize',
+                            attributeEventName: 'change:nodeDiplayAttribute',
+                            defaultValue: this.vertexDefaults.labelSize,
+                            displayAttribute: 'Label size',
+                            maxValue: 16,
+                            minValue: 0,
+                            step: 1
+                        }),
+                        this.createAttributeComboComponent({
+                            attributeManager: this.nodeAttributeManager,
+                            comboStore: this.nodeComboStore,
+                            eventName: 'change:nodeShape',
+                            attributeEventName: 'change:nodeDiplayAttribute',
+                            defaultValue: this.vertexDefaults.shape,
+                            displayAttribute: 'Shape',
+                            comboValues: ["circle", "square", "ellipse", "rectangle"]
+                        }),
                         {
                             xtype: 'container',
                             layout: 'hbox',
@@ -611,38 +535,10 @@ CellMapsConfiguration.prototype = {
                                 {xtype: 'text', margin: '0 0 0 0', text: 'Set attribute as label'}
                             ]
                         },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Attribute'
-                                },
-                                {
-                                    xtype: 'combo',
-                                    store: this.nodeComboStore,
-                                    displayField: 'name',
-                                    valueField: 'name',
-                                    width: 120,
-                                    queryMode: 'local',
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: function (field, e) {
-                                            var value = field.getValue();
-                                            if (value != null) {
-                                                _this.trigger('change:nodeLabel', {value: value});
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
+                        this.createLabelComboComponent({
+                            comboStore: this.nodeComboStore,
+                            eventName: 'change:nodeLabel'
+                        })
                     ]
                 },
                 {
@@ -671,238 +567,46 @@ CellMapsConfiguration.prototype = {
                                 {xtype: 'text', width: 100, text: 'Attribute'}
                             ]
                         },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Color'
-                                },
-                                this.getColorSelect('#dddddd', function (color, component) {
-                                    component.nextSibling().setText('Select attribute');
-                                    component.nextSibling().nextSibling().disable();
-                                    _this.trigger('change:edgeColor', {color: color});
-                                }),
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var color = $(bt.previousNode().getEl().dom).find('div').attr('color');
-                                        _this.createMappingWindow({
-                                            type: 'color',
-                                            graphElement: 'edge',
-                                            displayAttr: text,
-                                            defaultValue: color,
-                                            button: bt
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var color = $(bt.previousNode().previousNode().getEl().dom).find('div').attr('color');
-                                        _this.trigger('change:edgeColor', {color: color});
-                                    }
-                                }
 
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Size'
-                                },
-                                {
-                                    xtype: 'numberfield',
-                                    value:1,
-                                    width: 65,
-                                    maxValue: 10,
-                                    minValue: 1,
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: {
-                                            buffer: 100,
-                                            fn: function (field, newValue) {
-                                                if (newValue != null) {
-                                                    _this.trigger('change:edgeSize', {value: newValue});
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var value = bt.previousNode().getValue();
-                                        _this.createMappingWindow({
-                                            type: 'number',
-                                            graphElement: 'edge',
-                                            displayAttr: text,
-                                            defaultValue: value,
-                                            button: bt,
-                                            maxValue: 10,
-                                            minValue: 1,
-                                            step: 1
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var value = bt.previousNode().previousNode().getValue();
-                                        _this.trigger('change:edgeSize', {value: value});
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Label size'
-                                },
-                                {
-                                    xtype: 'numberfield',
-                                    value:0,
-                                    width: 65,
-                                    maxValue: 16,
-                                    minValue: 0,
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: {
-                                            buffer: 100,
-                                            fn: function (field, newValue) {
-                                                if (newValue != null) {
-                                                    _this.trigger('change:edgeLabelSize', {value: newValue});
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var value = bt.previousNode().getValue();
-                                        _this.createMappingWindow({
-                                            type: 'number',
-                                            graphElement: 'edge',
-                                            displayAttr: text,
-                                            defaultValue: value,
-                                            button: bt,
-                                            maxValue: 16,
-                                            minValue: 0,
-                                            step: 1
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var value = bt.previousNode().previousNode().getValue();
-                                        _this.trigger('change:edgeLabelSize', {value: value});
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Shape'
-                                },
-                                {
-                                    xtype: 'combo',
-                                    value:'undirected',
-                                    store: ["directed", "undirected", "inhibited", "dot", "odot"],
-                                    width: 65,
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: function (field, e) {
-                                            var value = field.getValue();
-                                            if (value != null) {
-                                                _this.trigger('change:edgeShape', {value: value});
-                                            }
-                                        }
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    text: 'Select attribute',
-                                    width: 100,
-                                    handler: function (bt) {
-                                        var text = bt.up('container').down('text').text;
-                                        var value = bt.previousNode().getValue();
-                                        _this.createMappingWindow({
-                                            type: 'select',
-                                            graphElement: 'edge',
-                                            displayAttr: text,
-                                            defaultValue: value,
-                                            button: bt,
-                                            selectItems: ["directed", "undirected", "inhibited", "dot", "odot"]
-                                        });
-                                    }
-                                },
-                                {
-                                    xtype: 'button',
-                                    disabled: true,
-                                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-remove" style="font-size: 15px"></span></span>',
-                                    handler: function (bt) {
-                                        bt.previousSibling().setText('Select attribute');
-                                        bt.disable();
-                                        var value = bt.previousNode().previousNode().getValue();
-                                        _this.trigger('change:edgeShape', {value: value});
-                                    }
-                                }
-                            ]
-                        },
+                        this.createAttributeColorComponent({
+                            attributeManager: this.edgeAttributeManager,
+                            comboStore: this.edgeComboStore,
+                            eventName: 'change:edgeColor',
+                            attributeEventName: 'change:edgeDiplayAttribute',
+                            defaultValue: this.edgeDefaults.color,
+                            displayAttribute: 'Color'
+                        }),
+                        this.createAttributeNumberComponent({
+                            attributeManager: this.edgeAttributeManager,
+                            comboStore: this.edgeComboStore,
+                            eventName: 'change:edgeSize',
+                            attributeEventName: 'change:edgeDiplayAttribute',
+                            defaultValue: this.edgeDefaults.size,
+                            displayAttribute: 'Size',
+                            maxValue: 10,
+                            minValue: 0,
+                            step: 1
+                        }),
+                        this.createAttributeNumberComponent({
+                            attributeManager: this.edgeAttributeManager,
+                            comboStore: this.edgeComboStore,
+                            eventName: 'change:edgeLabelSize',
+                            attributeEventName: 'change:edgeDiplayAttribute',
+                            defaultValue: this.edgeDefaults.labelSize,
+                            displayAttribute: 'Label size',
+                            maxValue: 16,
+                            minValue: 0,
+                            step: 1
+                        }),
+                        this.createAttributeComboComponent({
+                            attributeManager: this.edgeAttributeManager,
+                            comboStore: this.edgeComboStore,
+                            eventName: 'change:edgeShape',
+                            attributeEventName: 'change:edgeDiplayAttribute',
+                            defaultValue: this.edgeDefaults.shape,
+                            displayAttribute: 'Shape',
+                            comboValues: ["directed", "undirected", "inhibited", "dot", "odot"]
+                        }),
                         {
                             xtype: 'container',
                             layout: 'hbox',
@@ -919,411 +623,163 @@ CellMapsConfiguration.prototype = {
                                 {xtype: 'text', margin: '0 0 0 0', text: 'Set attribute as label'}
                             ]
                         },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            defaults: {
-                                margin: '0 1 0 1'
-                            },
-                            items: [
-                                {
-                                    xtype: 'text',
-                                    width: 80,
-                                    margin: '5 0 0 0',
-                                    text: 'Attribute'
-                                },
-                                {
-                                    xtype: 'combo',
-                                    store: this.edgeComboStore,
-                                    displayField: 'name',
-                                    valueField: 'name',
-                                    width: 120,
-                                    queryMode: 'local',
-                                    margin: '0 10 0 0',
-                                    listeners: {
-                                        change: function (field, e) {
-                                            var value = field.getValue();
-                                            if (value != null) {
-                                                _this.trigger('change:edgeLabel', {value: value});
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
+                        this.createLabelComboComponent({
+                            comboStore: this.edgeComboStore,
+                            eventName: 'change:edgeLabel'
+                        })
                     ]
 
                 }
             ]
-
-
-
-
         });
         return this.propertiesPanel;
     },
-    createMappingWindow: function (args) {
-
+    createColorMappingWindow: function (args) {
         var _this = this;
-        // The data store containing the list of states
-        var typeSt = Ext.create('Ext.data.Store', {
-            fields: ['id', 'name'],
-            data: [
-                {"id": "string", "name": "String"},
-//                {"id": "number", "name": "Number"},
-//                {"id": "listnumber", "name": "List string"},
-//                {"id": "liststring", "name": "List number"}
-            ]
-        });
-
-        var attributeManager;
-        if(args.graphElement == 'edge'){
-            attributeManager = this.edgeAttributeManager;
-        }else{
-            attributeManager = this.nodeAttributeManager;
-        }
-
-        this.attrSt = Ext.create('Ext.data.Store', {
-            fields: ['name'],
-            data: attributeManager.attributes
-        });
-
-        var uniqueStoreMap = {};
-        var mappingGridMap = {};
-        var getColorGrid = function (fieldName) {
-            return Ext.create('Ext.grid.Panel', {
-                border: false,
-                store: uniqueStoreMap[fieldName],
-                cls: 'bootstrap',
-                selModel: {
-                    mode: 'MULTI'
-                },
-                plugins: [Ext.create('Ext.grid.plugin.CellEditing', {clicksToEdit: 1, listeners: {
-//                    edit: function (editor, e, eOpts) {
-//                        console.log(e.record)
-//                    }
-                }})],
-                tbar: {items: [
-                    '->',
-                    {
-                        text: 'Select all',
-                        handler: function () {
-                            mappingGridMap[fieldName].getSelectionModel().selectAll();
-                        }
-                    }, {
-                        text: 'Deselect all',
-                        handler: function () {
-                            mappingGridMap[fieldName].getSelectionModel().deselectAll();
-                        }
-                    },
-
-                    _this.getColorSelect(args.defaultValue, function (color) {
-                        var records = mappingGridMap[fieldName].getSelectionModel().getSelection();
-                        for (var i = 0; i < records.length; i++) {
-                            var record = records[i];
-                            record.set('visualParam', color)
-                        }
-                    })
-                ]},
-                listeners: {
-                    cellclick: function (cell, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-                        if (cellIndex == 1) {
-                            var x = e.browserEvent.clientX;
-                            var y = e.browserEvent.clientY;
-                            _this._showColorMenu(x, y, function (color) {
-                                record.set('visualParam', color);
-//                                    $(el.dom).find('div').attr('color', record.get('visualParam'));
-//                                    $(el.dom).find('div').css({'background-color': color});
-                            });
-                        }
-                    }
-                },
-                columns: [
-                    { text: 'Attribute Value', dataIndex: 'value', menuDisabled: true, flex: 1},
-                    { xtype: 'templatecolumn', menuDisabled: true, width: 45, tpl: '<div style="width:30px;height:12px;background-color: {visualParam};"></div>'},
-                    { text: args.displayAttr, dataIndex: 'visualParam', flex: 1, menuDisabled: true, editor: {xtype: 'textfield', allowBlank: false}}
-                ]
-            });
-        };
-        var getSelectGrid = function (fieldName) {
-            return Ext.create('Ext.grid.Panel', {
-                border: false,
-                store: uniqueStoreMap[fieldName],
-                cls: 'bootstrap',
-                selModel: {
-                    mode: 'MULTI'
-                },
-                plugins: [Ext.create('Ext.grid.plugin.CellEditing', {clicksToEdit: 1, listeners: {
-//                    edit: function (editor, e, eOpts) {
-//                        console.log(e.record)
-//                    }
-                }})],
-                tbar: {items: [
-                    '->',
-                    {
-                        text: 'Select all',
-                        handler: function () {
-                            mappingGridMap[fieldName].getSelectionModel().selectAll();
-                        }
-                    }, {
-                        text: 'Deselect all',
-                        handler: function () {
-                            mappingGridMap[fieldName].getSelectionModel().deselectAll();
-                        }
-                    },
-                    {
-                        xtype: 'combo',
-                        width: 100,
-                        store: args.selectItems,
-                        listeners: {
-                            change: function (combo, select) {
-                                var records = mappingGridMap[fieldName].getSelectionModel().getSelection();
-                                for (var i = 0; i < records.length; i++) {
-                                    var record = records[i];
-                                    record.set('visualParam', select)
-                                }
-                            }
-                        }
-                    }
-                ]},
-                columns: [
-                    { text: 'Attribute Value', dataIndex: 'value', menuDisabled: true, flex: 1},
-                    {
-                        header: args.displayAttr,
-                        dataIndex: 'visualParam',
-                        width: 130,
-                        menuDisabled: true,
-                        editor: {
-                            xtype: 'combo',
-                            store: args.selectItems
-                        }
-                    }
-                ]
-            });
-        };
-        var getNumberGrid = function (fieldName) {
-            return Ext.create('Ext.grid.Panel', {
-                border: false,
-                store: uniqueStoreMap[fieldName],
-                cls: 'bootstrap',
-                selModel: {
-                    mode: 'MULTI'
-                },
-                plugins: [Ext.create('Ext.grid.plugin.CellEditing', {clicksToEdit: 1, listeners: {
-//                    edit: function (editor, e, eOpts) {
-//                        console.log(e.record)
-//                    }
-                }})],
-                tbar: {items: [
-                    '->',
-                    {
-                        text: 'Select all',
-                        handler: function () {
-                            mappingGridMap[fieldName].getSelectionModel().selectAll();
-                        }
-                    }, {
-                        text: 'Deselect all',
-                        handler: function () {
-                            mappingGridMap[fieldName].getSelectionModel().deselectAll();
-                        }
-                    },
-                    {
-                        xtype: 'numberfield',
-                        width: 100,
-                        maxValue: args.maxValue,
-                        minValue: args.minValue,
-                        step: args.step,
-                        listeners: {
-                            change: function (field, newValue) {
-                                if (newValue != null) {
-                                    var records = mappingGridMap[fieldName].getSelectionModel().getSelection();
-                                    for (var i = 0; i < records.length; i++) {
-                                        var record = records[i];
-                                        record.set('visualParam', newValue)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]},
-                columns: [
-                    { text: 'Attribute Value', dataIndex: 'value', menuDisabled: true, flex: 1},
-                    {
-                        header: args.displayAttr,
-                        dataIndex: 'visualParam',
-                        menuDisabled: true,
-                        width: 130,
-                        editor: {
-                            xtype: 'numberfield',
-                            maxValue: args.maxValue,
-                            minValue: args.minValue,
-                            step: args.step
-                        }
-                    }
-                ]
-            });
-        };
-
-        var getUniqueGrid = function (fieldName, type) {
-            if (typeof uniqueStoreMap[fieldName] === 'undefined') {
-
-                var values = attributeManager.getUniqueByAttribute(fieldName);
-                var valuesData = [];
-                for (var i = 0; i < values.length; i++) {
-                    var value = values[i];
-                    valuesData.push({value: value, visualParam: args.defaultValue});
-
-                }
-                uniqueStoreMap[fieldName] = Ext.create('Ext.data.Store', {
-                    fields: ['value', 'visualParam'],
-                    data: valuesData
-                });
-                switch (type) {
-                    case 'color':
-                        mappingGridMap[fieldName] = getColorGrid(fieldName);
-                        break;
-                    case 'select':
-                        mappingGridMap[fieldName] = getSelectGrid(fieldName);
-                        break;
-                    case 'number':
-                        mappingGridMap[fieldName] = getNumberGrid(fieldName);
-                        break;
-                }
+        var gridMap = {};
+        args.getAttributeGrid = function (attributeName) {
+            if (typeof gridMap[attributeName] === 'undefined') {
+                args.attributeName = attributeName;
+                gridMap[attributeName] = _this._createColorGrid(args);
             }
-            return mappingGridMap[fieldName];
+            return gridMap[attributeName];
         };
+        return this.createMappingWindow(args);
+    },
+    createNumberMappingWindow: function (args) {
+        var _this = this;
+        var gridMap = {};
+        args.getAttributeGrid = function (attributeName) {
+            if (typeof gridMap[attributeName] === 'undefined') {
+                args.attributeName = attributeName;
+                gridMap[attributeName] = _this._createNumberGrid(args);
+            }
+            return gridMap[attributeName];
+        };
+        return this.createMappingWindow(args);
+    },
+    createComboMappingWindow: function (args) {
+        var _this = this;
+        var gridMap = {};
+        args.getAttributeGrid = function (attributeName) {
+            if (typeof gridMap[attributeName] === 'undefined') {
+                args.attributeName = attributeName;
+                gridMap[attributeName] = _this._createComboGrid(args);
+            }
+            return gridMap[attributeName];
+        };
+        return this.createMappingWindow(args);
+    },
+    createMappingWindow: function (args) {
+        var _this = this;
 
         var stringMappingPanel = Ext.create('Ext.panel.Panel', {
-//            title: 'String mapping',
             border: 0,
-            layout:'fit'
+            layout: 'fit'
         });
 
         var numberMappingPanel = Ext.create('Ext.panel.Panel', {
 //            title: 'Number mapping',
             border: 0,
-            layout:'fit'
+            layout: 'fit'
         });
 
         var ListStringMappingPanel = Ext.create('Ext.panel.Panel', {
 //            title: 'List string mapping',
             border: 0,
-            layout:'fit'
+            layout: 'fit'
         });
         var ListNumberMappingPanel = Ext.create('Ext.panel.Panel', {
 //            title: 'List number mapping',
             border: 0,
-            layout:'fit'
+            layout: 'fit'
         });
 
+        var toolbar = Ext.create('Ext.toolbar.Toolbar', {
+            items: [
+                {
+                    xtype: 'combo',
+                    margin: '0 0 0 10',
+                    width: 200,
+                    labelWidth: 80,
+                    fieldLabel: 'Attribute name',
+                    store: args.comboStore,
+                    queryMode: 'local',
+                    qid: 'attrCombo',
+                    displayField: 'name',
+                    valueField: 'name',
+                    forceSelection: true,
+                    editable: false,
+                    listeners: {
+                        afterrender: function () {
+                            this.select(this.getStore().getAt(0));
+                        },
+                        change: function (combo, select) {
+                            console.log(select)
+                            stringMappingPanel.removeAll(false);
+                            stringMappingPanel.add(args.getAttributeGrid(select));
+                        }
+                    }
+                },
+                {
+                    xtype: 'combo',
+                    margin: '0 0 0 10',
+                    width: 200,
+                    labelWidth: 70,
+                    fieldLabel: 'Attribute type',
+                    qid: 'typeCombo',
+                    store: ['String'/*,'Number','List string','List number'*/],
+                    queryMode: 'local',
+                    displayField: 'name',
+                    valueField: 'id',
+                    forceSelection: true,
+                    editable: false,
+                    listeners: {
+                        afterrender: function () {
+                            this.select(this.getStore().getAt(0));
+                            attrComboId = this.id
+                        },
+                        change: function (combo, select) {
+                            console.log(select);
+                            var cont = combo.up('window').down('container[qid=gridContainer]');
+                            cont.removeAll(false);
+                            switch (select) {
+                                case 'String':
+                                    cont.add(stringMappingPanel);
+                                    break;
+//                                case 'number':
+//                                    cont.add(numberMappingPanel);
+//                                    break;
+//                                case 'liststring':
+//                                    cont.add(ListStringMappingPanel);
+//                                    break;
+//                                case 'listnumber':
+//                                    cont.add(ListNumberMappingPanel);
+//                                    break;
+
+                            }
+                        }
+                    }
+                }
+            ]
+        });
 
         var window = Ext.create('Ext.window.Window', {
-            title: args.displayAttr + ' mapping',
+            title: args.displayAttribute + ' by attributes',
             height: 400,
             width: 600,
-            closable: true,
-            modal:true,
-            bodyStyle: 'background-color: white;',
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
+            closable: false,
+            constrain: true,
+//            modal: true,
+            layout: 'fit',
             defaults: {
                 margin: '0 0 0 0'
             },
+            dockedItems: [toolbar],
             items: [
                 {
                     xtype: 'container',
-                    layout: 'hbox',
-                    padding: 5,
-                    border: '0 0 1 0',
-                    bodyStyle: {
-                    },
-                    style: {
-                        backgroundColor: '#f5f5f5',
-                        borderColor: 'lightgray',
-                        borderStyle: 'solid'
-                    },
-                    defaults: {
-                        margin: '0 1 0 1'
-                    },
-                    items: [
-                        {
-                            xtype: 'text',
-                            margin: '5 0 0 0',
-                            text: 'Attribute name:'
-                        },
-                        {
-                            xtype: 'combo',
-                            margin: '0 0 0 10',
-                            width: 100,
-                            store: this.attrSt,
-                            queryMode: 'local',
-                            qid: 'attrCombo',
-                            displayField: 'name',
-                            valueField: 'name',
-                            listeners: {
-                                afterrender: function () {
-                                    this.select(this.getStore().getAt(0));
-                                },
-                                change: function (combo, select) {
-                                    console.log(select)
-                                    stringMappingPanel.removeAll(false);
-                                    stringMappingPanel.add(getUniqueGrid(select, args.type));
-                                }
-                            }
-                        },
-                        {
-                            xtype: 'text',
-                            margin: '5 0 0 10',
-                            text: 'Attribute type:'
-                        },
-                        {
-                            xtype: 'combo',
-                            margin: '0 0 0 10',
-                            width: 100,
-                            qid: 'typeCombo',
-                            store: typeSt,
-                            queryMode: 'local',
-                            displayField: 'name',
-                            valueField: 'id',
-                            listeners: {
-                                afterrender: function () {
-                                    this.select(this.getStore().getAt(0));
-                                    attrComboId = this.id
-                                },
-                                change: function (combo, select) {
-                                    console.log(select);
-                                    var cont = combo.up('container').nextSibling();
-                                    cont.removeAll(false);
-                                    switch (select) {
-                                        case 'string':
-                                            cont.add(stringMappingPanel);
-                                            break;
-                                        case 'number':
-                                            cont.add(numberMappingPanel);
-                                            break;
-                                        case 'liststring':
-                                            cont.add(ListStringMappingPanel);
-                                            break;
-                                        case 'listnumber':
-                                            cont.add(ListNumberMappingPanel);
-                                            break;
-
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                },
-                {
-                    xtype: 'container',
-                    flex: 1,
-//                    border:'1 1 1 1',
-//                    style:{
-//                        borderColor:'lightgray',
-//                        borderStyle:'solid'
-//                    },
+                    qid: 'gridContainer',
                     layout: 'fit'
                 }
             ],
@@ -1331,22 +787,19 @@ CellMapsConfiguration.prototype = {
                 {
                     text: 'Close',
                     handler: function (bt) {
-                        bt.up('window').close();
+                        bt.up('window').hide();
                     }
                 },
                 {
                     text: 'Ok',
                     handler: function (bt) {
-//                        text.setText('Enabled');
-//                        button.setText();
-//                        cellMaps.networkViewer.network.setVerticesRendererAttributeMap("color","Column1",{"autophagy":"#659939", "carboxylic acid metabolic process":"#FF0011"})
-
                         var typeCombo = bt.up('window').down('combo[qid=typeCombo]');
                         var attrCombo = bt.up('window').down('combo[qid=attrCombo]');
 
                         var attributeName = attrCombo.getValue();
 
-                        var st = uniqueStoreMap[attributeName];
+                        var st = args.getAttributeGrid(attributeName).getStore();
+
                         var aux = st.getRange();
                         var map = {};
                         for (var i = 0; i < aux.length; i++) {
@@ -1357,20 +810,355 @@ CellMapsConfiguration.prototype = {
                             map[d.value] = d.visualParam;
                         }
 //                        console.log(map);
-                        args.button.setText(attributeName);
-                        args.button.nextNode().enable();
 
-                        _this.trigger('change:' + args.graphElement + 'DiplayAttribute', {diplayAttribute: Utils.camelCase(args.displayAttr), attribute: attributeName, map: map, sender: _this})
+                        var triggerObject = {diplayAttribute: Utils.camelCase(args.displayAttribute), attribute: attributeName, map: map, sender: _this};
+                        _this.trigger(args.attributeEventName, triggerObject)
 
-                        bt.up('window').close();
+                        args.okHandler(attributeName, triggerObject);
+
+                        bt.up('window').hide();
 
                     }
                 }
             ]
-        }).show();
-
-
+        });
+        return window;
     },
+    _getUniqueValues: function (args) {
+        var values = args.attributeManager.getUniqueByAttribute(args.attributeName);
+        var valuesData = [];
+        for (var j = 0; j < values.length; j++) {
+            var value = values[j];
+            valuesData.push({value: value, visualParam: args.defaultValue});
+        }
+        return valuesData;
+    },
+    _createUniqueStore: function (args) {
+        var store = Ext.create('Ext.data.Store', {
+            pageSize: 50,
+            proxy: {type: 'memory'},
+            fields: ['value', 'visualParam'],
+            data: this._getUniqueValues(args)
+        });
+        args.uniqueStore = store;
+        return store;
+    },
+    _updateUniqueStore: function (config, modifiedFieldNames, store) {
+        if (config.attributeName === modifiedFieldNames[0]) {
+            var data = store.snapshot || store.data;
+            var records = data.items;
+            var dirtyRecords = {};
+            for (var i = 0; i < records.length; i++) {
+                var record = records[i];
+                if (record.dirty) {
+                    dirtyRecords[record.get('value')] = record.get('visualParam');
+                }
+            }
+
+            store.loadData(this._getUniqueValues(config));
+
+
+            var data = store.snapshot || store.data;
+            var records = data.items;
+            store.suspendEvents();
+            for (var i = 0; i < records.length; i++) {
+                var record = records[i];
+                var dirtyValue = dirtyRecords[record.get('value')];
+                if (dirtyValue) {
+                    record.set('visualParam', dirtyValue);
+                }
+            }
+            store.resumeEvents();
+            store.fireEvent('refresh');
+
+            var triggerObject = config.visualComponent.triggerObject;
+            if (triggerObject) {
+                this.trigger(config.attributeEventName, triggerObject);
+            }
+        }
+    },
+    _createColorGrid: function (args) {
+        var _this = this;
+        var store = this._createUniqueStore(args);
+
+        var config = {};
+        _.extend(config, args);
+        args.attributeManager.store.on('update', function (st, record, operation, modifiedFieldNames) {
+            _this._updateUniqueStore(config, modifiedFieldNames, store);
+        });
+
+        this.on(args.eventName, function (e) {
+            args.defaultValue = e.color;
+            grid.down('box[name=colorBox]').setColor(e.color);
+
+            var data = store.snapshot || store.data;
+            var records = data.items;
+            store.suspendEvents();
+            for (var i = 0; i < records.length; i++) {
+                var record = records[i];
+                if (!record.dirty) {
+                    record.set('visualParam', e.color);
+                    record.commit();
+                }
+            }
+            store.resumeEvents();
+            store.fireEvent('refresh');
+        });
+
+        var grid = Ext.create('Ext.grid.Panel', {
+            xtype: 'grid',
+            border: false,
+            store: store,
+            loadMask: true,
+            cls: 'bootstrap',
+            plugins: [
+                'bufferedrenderer',
+                Ext.create('Ext.grid.plugin.CellEditing', {clicksToEdit: 1})
+            ],
+            selModel: {
+                mode: 'MULTI'
+            },
+            tbar: {items: [
+                {
+                    text: 'Select all',
+                    handler: function (bt) {
+                        bt.up('grid').getSelectionModel().selectAll();
+                    }
+                },
+                {
+                    text: 'Deselect all',
+                    handler: function (bt) {
+                        bt.up('grid').getSelectionModel().deselectAll();
+                    }
+                },
+                '->',
+                {
+                    xtype: 'tbtext',
+                    text: 'Apply to selected rows:'
+                },
+                this.getColorSelect(args.defaultValue, function (color, component) {
+                    var grid = component.up('grid');
+                    var store = grid.store;
+                    store.suspendEvents();
+                    var records = grid.getSelectionModel().getSelection();
+                    for (var i = 0; i < records.length; i++) {
+                        var record = records[i];
+                        record.set('visualParam', color);
+                    }
+                    store.resumeEvents();
+                    store.fireEvent('refresh');
+                })
+            ]},
+            listeners: {
+                cellclick: function (cell, td, cellIndex, record, tr, rowIndex, e, eOpts) {
+                    if (cellIndex == 1) {
+                        var x = e.browserEvent.clientX;
+                        var y = e.browserEvent.clientY;
+                        _this._showColorMenu(x, y, function (color) {
+                            record.set('visualParam', color);
+                        });
+                    }
+                }
+            },
+            columns: [
+                { text: args.attributeName, dataIndex: 'value', menuDisabled: true, flex: 1},
+                { xtype: 'templatecolumn', text: 'Display ' + args.displayAttribute, menuDisabled: true, width: 100, tpl: '<div style="text-align:center;width:30px;height:12px;background-color: {visualParam};"></div>'},
+                {  dataIndex: 'visualParam', width: 70, menuDisabled: true, editor: {xtype: 'textfield', allowBlank: false}}
+            ]
+        });
+
+        return grid;
+    },
+    _createNumberGrid: function (args) {
+        var _this = this;
+        var store = this._createUniqueStore(args);
+
+        var config = {};
+        _.extend(config, args);
+        args.attributeManager.store.on('update', function (st, record, operation, modifiedFieldNames) {
+            _this._updateUniqueStore(config, modifiedFieldNames, store);
+        });
+
+        this.on(args.eventName, function (e) {
+            args.defaultValue = e.value;
+            grid.down('numberfield').setValue(e.value);
+
+            var data = store.snapshot || store.data;
+            var records = data.items;
+            store.suspendEvents();
+            for (var i = 0; i < records.length; i++) {
+                var record = records[i];
+                if (!record.dirty) {
+                    record.set('visualParam', e.value);
+                    record.commit();
+                }
+            }
+            store.resumeEvents();
+            store.fireEvent('refresh');
+        });
+
+        var grid = Ext.create('Ext.grid.Panel', {
+            xtype: 'grid',
+            border: false,
+            store: store,
+            cls: 'bootstrap',
+            selModel: {
+                mode: 'MULTI'
+            },
+            plugins: [Ext.create('Ext.grid.plugin.CellEditing', {clicksToEdit: 1})],
+            tbar: {items: [
+                {
+                    text: 'Select all',
+                    handler: function (bt) {
+                        bt.up('grid').getSelectionModel().selectAll();
+                    }
+                },
+                {
+                    text: 'Deselect all',
+                    handler: function (bt) {
+                        bt.up('grid').getSelectionModel().deselectAll();
+                    }
+                },
+                '->',
+                {
+                    xtype: 'tbtext',
+                    text: 'Apply to selected rows:'
+                },
+                {
+                    xtype: 'numberfield',
+                    width: 100,
+                    maxValue: args.maxValue,
+                    minValue: args.minValue,
+                    step: args.step,
+                    listeners: {
+                        change: function (field, newValue) {
+                            if (newValue != null) {
+                                var grid = field.up('grid');
+                                var store = grid.store;
+                                store.suspendEvents();
+                                var records = grid.getSelectionModel().getSelection();
+                                for (var i = 0; i < records.length; i++) {
+                                    var record = records[i];
+                                    record.set('visualParam', newValue)
+                                }
+                                store.resumeEvents();
+                                store.fireEvent('refresh');
+                            }
+                        }
+                    }
+                }
+            ]},
+            columns: [
+                { text: args.attributeName, dataIndex: 'value', menuDisabled: true, flex: 1},
+                {
+                    text: 'Display ' + args.displayAttribute,
+                    dataIndex: 'visualParam',
+                    menuDisabled: true,
+                    width: 130,
+                    editor: {
+                        xtype: 'numberfield',
+                        maxValue: args.maxValue,
+                        minValue: args.minValue,
+                        step: args.step
+                    }
+                }
+            ]
+        });
+        return grid;
+    },
+    _createComboGrid: function (args) {
+        var _this = this;
+        var store = this._createUniqueStore(args);
+
+        var config = {};
+        _.extend(config, args);
+        args.attributeManager.store.on('update', function (st, record, operation, modifiedFieldNames) {
+            _this._updateUniqueStore(config, modifiedFieldNames, store);
+        });
+
+        this.on(args.eventName, function (e) {
+            args.defaultValue = e.value;
+            grid.down('combo').setValue(e.value);
+
+            var data = store.snapshot || store.data;
+            var records = data.items;
+            store.suspendEvents();
+            for (var i = 0; i < records.length; i++) {
+                var record = records[i];
+                if (!record.dirty) {
+                    record.set('visualParam', e.value);
+                    record.commit();
+                }
+            }
+            store.resumeEvents();
+            store.fireEvent('refresh');
+        });
+
+        var grid = Ext.create('Ext.grid.Panel', {
+            xtype: 'grid',
+            border: false,
+            store: store,
+            cls: 'bootstrap',
+            selModel: {
+                mode: 'MULTI'
+            },
+            plugins: [Ext.create('Ext.grid.plugin.CellEditing', {clicksToEdit: 1})],
+            tbar: {items: [
+                {
+                    text: 'Select all',
+                    handler: function (bt) {
+                        bt.up('grid').getSelectionModel().selectAll();
+                    }
+                },
+                {
+                    text: 'Deselect all',
+                    handler: function (bt) {
+                        bt.up('grid').getSelectionModel().deselectAll();
+                    }
+                },
+                '->',
+                {
+                    xtype: 'tbtext',
+                    text: 'Apply to selected rows:'
+                },
+                {
+                    xtype: 'combo',
+                    width: 100,
+                    store: args.comboValues,
+                    listeners: {
+                        change: function (combo, select) {
+                            var grid = combo.up('grid');
+                            var store = grid.store;
+                            store.suspendEvents();
+                            var records = grid.getSelectionModel().getSelection();
+                            for (var i = 0; i < records.length; i++) {
+                                var record = records[i];
+                                record.set('visualParam', select)
+                            }
+                            store.resumeEvents();
+                            store.fireEvent('refresh');
+                        }
+                    }
+                }
+            ]},
+            columns: [
+                { text: args.attributeName, dataIndex: 'value', menuDisabled: true, flex: 1},
+                {
+                    text: 'Display ' + args.displayAttribute,
+                    dataIndex: 'visualParam',
+                    width: 130,
+                    menuDisabled: true,
+                    editor: {
+                        xtype: 'combo',
+                        store: args.comboValues
+                    }
+                }
+            ]
+        });
+        return grid;
+    },
+
+
     _createColorMenu: function () {
         var _this = this;
         var div = $('<div></div>')[0];
@@ -1409,7 +1197,7 @@ CellMapsConfiguration.prototype = {
         var colors = ["cccccc", "888888",
             "ac725e", "d06b64", "f83a22", "fa573c", "ff7537", "ffad46", "42d692", "16a765", "7bd148", "b3dc6c", "fbe983", "fad165",
             "92e1c0", "9fe1e7", "9fc6e7", "4986e7", "9a9cff", "b99aff", "c2c2c2", "cabdbf", "cca6ac", "f691b2", "cd74e6", "a47ae2",
-            "000000"
+            "ffffff", "000000"
         ];
 
         for (var i in colors) {

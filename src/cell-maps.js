@@ -130,8 +130,7 @@ CellMaps.prototype = {
             type: 'Node',
             autoRender: true,
             handlers: {
-                'vertices:select': function (event) {
-                    _this.networkViewer.selectVerticesByIds(event.vertices);
+                '': function (event) {
                 }
             }
         });
@@ -160,7 +159,7 @@ CellMaps.prototype = {
             type: 'Edge',
             autoRender: true,
             handlers: {
-                'vertices:select': function (event) {
+                '': function (event) {
                     //todo
                 }
             }
@@ -425,7 +424,7 @@ CellMaps.prototype = {
                         });
                     }
                 },
-                'change:clean-button': function (event) {
+                'click:newsession': function (event) {
                     Ext.Msg.confirm('Start over', 'All changes will be lost. Are you sure?', function (btn, text) {
                         if (btn == 'yes') {
                             _this.networkViewer.clean();
@@ -452,7 +451,10 @@ CellMaps.prototype = {
             border: false,
             handlers:{
                 'select:vertices':function(e){
-                    _this.nodeAttributeEditWidget.select(e.vertices);
+                    _this.nodeAttributeEditWidget.checkSelectedFilter();
+                },
+                'select:edges':function(e){
+                    _this.edgeAttributeEditWidget.checkSelectedFilter();
                 }
             }
         });

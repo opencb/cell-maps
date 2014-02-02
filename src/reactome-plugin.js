@@ -68,8 +68,8 @@ ReactomePlugin.prototype.draw = function () {
     });
 
     var speciesCombo = Ext.create('Ext.form.field.ComboBox', {
-        margin: "2 2 3 8",
-        width: 318,
+        margin: "0 0 0 5",
+        width: 400,
         labelWidth: 60,
         fieldLabel: 'Species',
         value: speciesSelected,
@@ -89,13 +89,8 @@ ReactomePlugin.prototype.draw = function () {
 
     var selectionType = Ext.create('Ext.form.RadioGroup', {
         fieldLabel: 'Selection',
-        border: '1 0 1 0',
-        style: {
-            borderColor: '#D0D0D0',
-            borderStyle: 'solid'
-        },
         labelWidth: 60,
-        margin: "2 2 0 8",
+        margin: "0 0 0 5",
         width: 320,
         items: [
             { boxLabel: 'Single', name: 'st', inputValue: 'single', checked: true},
@@ -124,7 +119,9 @@ ReactomePlugin.prototype.draw = function () {
 
     var tree = Ext.create('Ext.tree.Panel', {
         store: treeStore,
-        margin: '2 0 0 0',
+        title:'Pathways',
+        flex:1,
+        border:0,
         rootVisible: false,
         useArrows: true,
         viewConfig: {
@@ -156,10 +153,10 @@ ReactomePlugin.prototype.draw = function () {
     });
 
     var searchTb = Ext.create('Ext.form.field.Text', {
-        margin: "2 0 2 2",
-        width: 330,
-        colspan: 2,
         emptyText: "search text",
+        fieldLabel: 'Search',
+        labelWidth: 60,
+        margin: "0 0 0 5",
         listeners: {
             change: function (event, newValue, oldValue, eOpts) {
                 if (newValue.length > 0) searchBtn.enable();
@@ -169,7 +166,6 @@ ReactomePlugin.prototype.draw = function () {
     });
 
     var searchBtn = Ext.create('Ext.button.Button', {
-        margin: "2 2 2 2",
         text: "Go",
         disabled: true,
         listeners: {
@@ -211,43 +207,41 @@ ReactomePlugin.prototype.draw = function () {
     });
 
     var searchRadioGrp = Ext.create('Ext.form.RadioGroup', {
-        fieldLabel: 'Search by',
-        labelWidth: 80,
-        margin: "2 2 2 4",
-        width: 296,
-//	    columns: 3,
-//	    vertical: false,
-//	    columnWidth: '50',
+        layout: 'hbox',
+        defaults: {
+            margin: '0 0 0 10'
+        },
         items: [
             { boxLabel: 'Pathway', name: 'rb', inputValue: 'pathway', checked: true},
             { boxLabel: 'Other', name: 'rb', inputValue: 'other'}
         ]
     });
 
-    var searchPanel = Ext.create('Ext.panel.Panel', {
-        width: 340,
-        collapsible: true,
-        collapsed: true,
-        title: 'Search',
-        layout: {
-            type: 'table',
-            columns: 2
-        },
-        items: [searchTb, searchRadioGrp, searchBtn]
-    });
 
     var window = Ext.create('Ext.ux.Window', {
         title: "Reactome plugin",
         taskbar: Ext.getCmp(this.cellMaps.networkViewer.id + 'uxTaskbar'),
-        height: 500,
-        width: 350,
+        height: 600,
+        width: 500,
         layout: "fit",
-        tbar: {
-            layout: 'vbox',
-            items: [speciesCombo, selectionType]
-        },
-        bbar: [searchPanel],
-        items: tree
+        dockedItems:[
+            {
+                xtype:'toolbar',
+                dock: 'top',
+                items: [searchTb, searchBtn, searchRadioGrp]
+            },
+            {
+                xtype:'toolbar',
+                dock:'top',
+                items: [speciesCombo]
+            },
+            {
+                xtype:'toolbar',
+                dock:'top',
+                items: [selectionType]
+            }
+        ],
+        items:[tree]
     }).show();
 
 
@@ -321,9 +315,8 @@ ReactomePlugin.prototype.loadPathway = function (speciesSelected, pathwayId) {
                 if (!_this.reusedNodes[name]) _this.reusedNodes[name] = {};
                 _this.reusedNodes[name][pathwayId] = true;
             }
-            _this.cellMaps.networkViewer.networkSvgLayout.draw();
+            _this.cellMaps.networkViewer.drawNetwork();
             _this.cellMaps.networkViewer.setLayout('neato');
-            _this.cellMaps.networkViewer._refreshOverview();
             network.setVertexLabelByAttribute('Name');
         }});
 };
@@ -333,6 +326,7 @@ ReactomePlugin.prototype.addPathway = function (speciesSelected, pathwayId) {
     var _this = this;
     _this.pathwayComponents[pathwayId] = {};
 
+    this.cellMaps.networkViewer.clean();
     var network = this.cellMaps.networkViewer.network;
 
     $.ajax({
@@ -373,9 +367,9 @@ ReactomePlugin.prototype.addPathway = function (speciesSelected, pathwayId) {
                 if (!_this.reusedNodes[name]) _this.reusedNodes[name] = {};
                 _this.reusedNodes[name][pathwayId] = true;
             }
-            _this.cellMaps.networkViewer.networkSvgLayout.draw();
+
+            _this.cellMaps.networkViewer.drawNetwork();
             _this.cellMaps.networkViewer.setLayout('neato');
-            _this.cellMaps.networkViewer._refreshOverview();
             network.setVertexLabelByAttribute('Name');
         }});
 };

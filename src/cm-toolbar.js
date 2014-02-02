@@ -141,6 +141,13 @@ CmToolBar.prototype = {
                         plain: true,
                         items: [
                             {
+                                tooltip: 'Network will be deleted permanently!',
+                                text: 'New Session',
+                                handler: function () {
+                                    _this.trigger('click:newsession', {sender: _this});
+                                }
+                            },
+                            {
                                 text: 'Open Session...',
                                 handler: function () {
                                     _this.trigger('openJSON:click', {sender: _this});
@@ -152,7 +159,7 @@ CmToolBar.prototype = {
                                 handler: function () {
                                     _this.trigger('saveJSON:click', {a: this.getEl().child("a"), sender: _this});
                                 }
-                            }
+                            },
                             ,
                             '-',
                             {
@@ -220,13 +227,6 @@ CmToolBar.prototype = {
                 },
 
                 '->',
-                {
-                    tooltip: 'Network will be deleted permanently!',
-                    text: '<span class="emph"> Clean network</span>',
-                    handler: function () {
-                        _this.trigger('change:clean-button', {sender: _this});
-                    }
-                },
                 {
                     tooltip: 'Configure',
                     text: '<span class="emph"> Configure</span>',
@@ -555,7 +555,7 @@ CmToolBar.prototype = {
             plain: true,
             items: [
                 {
-                    text: "Ppis related to histone exchange and removal during nucleosome assembly and disassembly",
+                    text: "PPIs related to histone exchange and removal during nucleosome assembly and disassembly",
                     handler: function () {
                         _this.trigger('example:click', {example: 1, sender: _this});
                     }
