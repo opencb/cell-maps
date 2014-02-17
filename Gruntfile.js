@@ -6,7 +6,7 @@ module.exports = function (grunt) {
         // Metadata.
         meta: {
             name:'cell-maps',
-            version: '2.0.0',
+            version: '2.0.1',
             jsorolla: {
                 dir: '/lib/jsorolla/',
                 'networkviewer': {
@@ -37,6 +37,8 @@ module.exports = function (grunt) {
                     'src/cm-toolbar.js',
                     'src/visual-attribute-widget.js',
                     'src/cell-maps-configuration.js',
+                    'src/visual-attribute-widget/visual-attribute-widget.js',
+                    'src/visual-attribute-widget/*-attribute-widget.js',
                     'src/cell-maps.js'
                 ],
                 dest: 'build/<%= meta.version %>/<%= meta.name %>-<%= meta.version %>.js'
@@ -59,6 +61,8 @@ module.exports = function (grunt) {
                     {   expand: true, cwd: './src', src: ['fatigo-plugin.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './src', src: ['intact-plugin.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './src', src: ['reactome-plugin.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['cellbase-plugin.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['intact-plugin.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['vendor/**'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['styles/**'], dest: 'build/<%= meta.version %>/' }, // includes files in path and its subdirs
                     {   expand: true, cwd: './<%= meta.jsorolla.networkviewer.dir %>', src: ['network-viewer*.js', 'nv-config.js'], dest: 'build/<%= meta.version %>/' },

@@ -125,6 +125,17 @@ CellMaps.prototype = {
         this.statusBar = this._createStatusBar('status');
 
 
+        this.cellbasePlugin = new CellbasePlugin({
+            cellMaps:_this
+        });
+        this.cellbasePlugin.draw();
+        this.intActPlugin = new IntActPlugin({
+            cellMaps:_this
+        });
+        this.intActPlugin.draw();
+
+
+
         this.nodeAttributeEditWidget = new AttributeEditWidget({
             attrMan: this.networkViewer.network.nodeAttributeManager,
             type: 'Node',
@@ -209,6 +220,7 @@ CellMaps.prototype = {
             version: this.version,
             suiteId: this.suiteId,
             accountData: this.accountData,
+            allowLogin:true,
             chunkedUpload: false,
             handlers: {
                 'login': function (event) {
@@ -276,6 +288,7 @@ CellMaps.prototype = {
 
                                 _this.configuration.setNodeAttributeManager(_this.networkViewer.network.nodeAttributeManager);
                                 _this.configuration.setEdgeAttributeManager(_this.networkViewer.network.edgeAttributeManager);
+                                _this.cellbasePlugin.updateAttributeStore();
                             }
                         }
                     });
@@ -363,17 +376,19 @@ CellMaps.prototype = {
                 },
 
 
-                '': function (event) {
+                'cellbase:click': function (event) {
+                    _this.cellbasePlugin.show();
                 },
-                '': function (event) {
-                },
-                '': function (event) {
-                },
+//                '': function (event) {
+//                },
 
 
                 'reactome:click': function (event) {
                     var reactome = new ReactomePlugin(_this);
                     reactome.draw();
+                },
+                'intact:click': function (event) {
+                    _this.intActPlugin.show(_this);
                 },
                 'example:click': function (event) {
 
@@ -418,6 +433,7 @@ CellMaps.prototype = {
                                             }
                                         }
                                     });
+                                    _this.cellbasePlugin.updateAttributeStore();
 
                                 }
                             }
@@ -449,11 +465,11 @@ CellMaps.prototype = {
             autoRender: true,
             sidePanel: false,
             border: false,
-            handlers:{
-                'select:vertices':function(e){
+            handlers: {
+                'select:vertices': function (e) {
                     _this.nodeAttributeEditWidget.checkSelectedFilter();
                 },
-                'select:edges':function(e){
+                'select:edges': function (e) {
                     _this.edgeAttributeEditWidget.checkSelectedFilter();
                 }
             }
@@ -504,6 +520,9 @@ CellMaps.prototype = {
                 },
                 'change:edgeShape': function (e) {
                     _this.networkViewer.network.setEdgesRendererAttribute('shape', e.value);
+                },
+                'change:edgeOpacity': function (e) {
+                    _this.networkViewer.network.setEdgesRendererAttribute('opacity', e.value);
                 },
                 'change:edgeLabelSize': function (e) {
                     _this.networkViewer.network.setEdgesRendererAttribute('labelSize', e.value);

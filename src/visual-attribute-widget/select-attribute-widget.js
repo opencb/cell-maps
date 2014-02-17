@@ -1,17 +1,4 @@
-SelectAttributeWidget.prototype.render = VisualAttributeWidget.prototype.render;
-SelectAttributeWidget.prototype.getComponent = VisualAttributeWidget.prototype.getComponent;
-SelectAttributeWidget.prototype.defaultValueChanged = VisualAttributeWidget.prototype.defaultValueChanged;
-SelectAttributeWidget.prototype.visualSetChanged = VisualAttributeWidget.prototype.visualSetChanged;
-
-SelectAttributeWidget.prototype._createWindow = VisualAttributeWidget.prototype._createWindow;
-SelectAttributeWidget.prototype._createComponent = VisualAttributeWidget.prototype._createComponent;
-
-SelectAttributeWidget.prototype._createGrid = VisualAttributeWidget.prototype._createGrid;
-SelectAttributeWidget.prototype._getUniqueValues = VisualAttributeWidget.prototype._getUniqueValues;
-SelectAttributeWidget.prototype._createUniqueStore = VisualAttributeWidget.prototype._createUniqueStore;
-SelectAttributeWidget.prototype._updateUniqueStore = VisualAttributeWidget.prototype._updateUniqueStore;
-SelectAttributeWidget.prototype._updateVisualSet = VisualAttributeWidget.prototype._updateVisualSet;
-
+SelectAttributeWidget.prototype = new VisualAttributeWidget();
 
 function SelectAttributeWidget(args) {
     VisualAttributeWidget.prototype.constructor.call(this, args);
@@ -26,6 +13,8 @@ SelectAttributeWidget.prototype.createControl = function (changeFunction) {
         margin: '0 10 0 0',
         value: this.defaultValue,
         store: this.comboValues,
+        forceSelection: true,
+        editable: false,
         listeners: {
             change: function (combo, select) {
                 changeFunction(select);
@@ -52,6 +41,4 @@ SelectAttributeWidget.prototype.createGridColumns = function () {
 SelectAttributeWidget.prototype.createGridListeners = function () {
     return;
 }
-
-
 /* Private Methods */

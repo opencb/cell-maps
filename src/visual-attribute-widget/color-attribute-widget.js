@@ -1,17 +1,4 @@
-ColorAttributeWidget.prototype.render = VisualAttributeWidget.prototype.render;
-ColorAttributeWidget.prototype.getComponent = VisualAttributeWidget.prototype.getComponent;
-ColorAttributeWidget.prototype.defaultValueChanged = VisualAttributeWidget.prototype.defaultValueChanged;
-ColorAttributeWidget.prototype.visualSetChanged = VisualAttributeWidget.prototype.visualSetChanged;
-
-ColorAttributeWidget.prototype._createWindow = VisualAttributeWidget.prototype._createWindow;
-ColorAttributeWidget.prototype._createComponent = VisualAttributeWidget.prototype._createComponent;
-
-ColorAttributeWidget.prototype._createGrid = VisualAttributeWidget.prototype._createGrid;
-ColorAttributeWidget.prototype._getUniqueValues = VisualAttributeWidget.prototype._getUniqueValues;
-ColorAttributeWidget.prototype._createUniqueStore = VisualAttributeWidget.prototype._createUniqueStore;
-ColorAttributeWidget.prototype._updateUniqueStore = VisualAttributeWidget.prototype._updateUniqueStore;
-ColorAttributeWidget.prototype._updateVisualSet = VisualAttributeWidget.prototype._updateVisualSet;
-
+ColorAttributeWidget.prototype = new VisualAttributeWidget();
 
 function ColorAttributeWidget(args) {
     VisualAttributeWidget.prototype.constructor.call(this, args);
@@ -50,6 +37,79 @@ ColorAttributeWidget.prototype.createGridListeners = function () {
     }
 }
 
+ColorAttributeWidget.prototype.getNormalizedValue = function (first, second, value) {
+    var _this = this;
+    var color1 = parseInt(first.norm.replace('#', ''), 16);
+    var color2 = parseInt(second.norm.replace('#', ''), 16);
+
+    var firstCont = parseFloat(first.cont);
+    var secondCont = parseFloat(second.cont);
+
+    var steps = 255;
+    var c = (secondCont - firstCont) / steps;
+    var R1 = (color1 & 0xff0000) >> 16;
+    var G1 = (color1 & 0x00ff00) >> 8;
+    var B1 = (color1 & 0x0000ff) >> 0;
+
+    var R2 = (color2 & 0xff0000) >> 16;
+    var G2 = (color2 & 0x00ff00) >> 8;
+    var B2 = (color2 & 0x0000ff) >> 0;
+
+    var v = (value - firstCont) / c;
+    v = (isNaN(v) || !isFinite(v)) ? 0 : v;
+
+    var R = Math.round(this._interpolate(R1, R2, v, steps)).toString(16);
+    var G = Math.round(this._interpolate(G1, G2, v, steps)).toString(16);
+    var B = Math.round(this._interpolate(B1, B2, v, steps)).toString(16);
+
+    R = (R.length < 2) ? '0' + R : R;
+    G = (G.length < 2) ? '0' + G : G;
+    B = (B.length < 2) ? '0' + B : B;
+
+    var color = '#' + R + G + B;
+    return color;
+}
+
+ColorAttributeWidget.prototype.updateLegend = function (items) {
+    var l = items.length - 1;
+    var minNorm = items[0].items.getAt(1).getRawValue();
+    var maxNorm = items[l].items.getAt(1).getRawValue();
+
+    var minVal = items[0].items.getAt(0).getRawValue();
+    var maxVal = items[l].items.getAt(0).getRawValue();
+
+    var diff = maxVal - minVal;
+
+    var stops = {};
+    stops['0'] = {color: minNorm};
+    stops['100'] = {color: maxNorm};
+    for (var i = 1; i < l; i++) {
+        var item = items[i];
+        var pointValue = item.items.getAt(0).getRawValue();
+        var normValue = item.items.getAt(1).getRawValue();
+        var pointDiff = pointValue - minVal;
+        var stopPercentage = Math.round(pointDiff * 100 / diff);
+        stops[stopPercentage] = {color: normValue}
+    }
+
+    return drawComponent = Ext.create('Ext.draw.Component', {
+        items: [
+            {
+                type: 'rect',
+                fill: 'url(#gradientId)',
+                width: 9,
+                height: 1
+            }
+        ],
+        gradients: [
+            {
+                id: 'gradientId',
+                stops: stops
+            }
+        ]
+    });
+}
+
 /* Private Methods */
 ColorAttributeWidget.prototype._getColorDiv = function (color) {
     return '<div style="width:30px;height:12px;background-color: ' + color + ';"></div>';
@@ -66,7 +126,12 @@ ColorAttributeWidget.prototype._getColorSelect = function (defaultColor, handler
             var el = this.getEl();
             $(el.dom).find('div').attr('color', color);
             $(el.dom).find('div').css({'background-color': color});
+            this.color = color;
         },
+        getRawValue: function () {
+            return this.color;
+        },
+        color: defaultColor,
         listeners: {
             afterrender: function (box) {
                 var el = this.getEl();
@@ -76,6 +141,7 @@ ColorAttributeWidget.prototype._getColorSelect = function (defaultColor, handler
                     _this._showColorMenu(x, y, function (color) {
                         $(el.dom).find('div').attr('color', color);
                         $(el.dom).find('div').css({'background-color': color});
+                        box.color = color;
 
                         if ($.isFunction(handler)) {
                             handler(color, box);
@@ -96,7 +162,7 @@ ColorAttributeWidget.prototype._createColorMenu = function () {
     $(this.colorSelect).simplecolorpicker()
     var colorMenu = Ext.create('Ext.menu.Menu', {
         plain: true,
-        width: 170,
+        width: 206,
         items: [
             {
                 xtype: 'box',

@@ -1,17 +1,4 @@
-NumberAttributeWidget.prototype.render = VisualAttributeWidget.prototype.render;
-NumberAttributeWidget.prototype.getComponent = VisualAttributeWidget.prototype.getComponent;
-NumberAttributeWidget.prototype.defaultValueChanged = VisualAttributeWidget.prototype.defaultValueChanged;
-NumberAttributeWidget.prototype.visualSetChanged = VisualAttributeWidget.prototype.visualSetChanged;
-
-NumberAttributeWidget.prototype._createWindow = VisualAttributeWidget.prototype._createWindow;
-NumberAttributeWidget.prototype._createComponent = VisualAttributeWidget.prototype._createComponent;
-
-NumberAttributeWidget.prototype._createGrid = VisualAttributeWidget.prototype._createGrid;
-NumberAttributeWidget.prototype._getUniqueValues = VisualAttributeWidget.prototype._getUniqueValues;
-NumberAttributeWidget.prototype._createUniqueStore = VisualAttributeWidget.prototype._createUniqueStore;
-NumberAttributeWidget.prototype._updateUniqueStore = VisualAttributeWidget.prototype._updateUniqueStore;
-NumberAttributeWidget.prototype._updateVisualSet = VisualAttributeWidget.prototype._updateVisualSet;
-
+NumberAttributeWidget.prototype = new VisualAttributeWidget();
 
 function NumberAttributeWidget(args) {
     VisualAttributeWidget.prototype.constructor.call(this, args);
@@ -62,5 +49,27 @@ NumberAttributeWidget.prototype.createGridListeners = function () {
     return;
 }
 
+NumberAttributeWidget.prototype.getNormalizedValue = function (first, second, value) {
+    var _this = this;
+
+    var firstNormalized = parseFloat(first.norm);
+    var secondNormalized = parseFloat(second.norm);
+
+    var firstCont = parseFloat(first.cont);
+    var secondCont = parseFloat(second.cont);
+
+    var continousDiff = secondCont - firstCont;
+    var normalizedDiff = secondNormalized - firstNormalized;
+
+    var v = value - firstCont;
+
+    var normalizedValue = (v * normalizedDiff / continousDiff) + firstNormalized;
+
+    return normalizedValue;
+}
+
+NumberAttributeWidget.prototype.updateLegend = function (items) {
+    return;
+}
 
 /* Private Methods */

@@ -343,11 +343,17 @@ CmToolBar.prototype = {
                         _this.trigger('editNodeAttributes:click', {sender: _this});
                     }
                 },
-                '-',
                 {
                     text: 'Edit edges...',
                     handler: function () {
                         _this.trigger('editEdgeAttributes:click', {sender: _this});
+                    }
+                },
+                '-',
+                {
+                    text: 'Cellbase...',
+                    handler: function () {
+                        _this.trigger('cellbase:click', {sender: _this});
                     }
                 }
             ]
@@ -369,15 +375,15 @@ CmToolBar.prototype = {
                     handler: function () {
                         _this.trigger('reactome:click', {sender: _this});
                     }
-                }
-//                {
-//                    text: "IntAct",
+                },
+                {
+                    text: "IntAct",
 //                    disabled: true,
-//                    handler: function () {
-//                        var intact = new IntactPlugin();
-//                        intact.draw();
-//                    }
-//                },
+                    handler: function () {
+                        _this.trigger('intact:click', {sender: _this});
+                    }
+                }
+//                ,
 //                {
 //                    text: "Differential Expression Analysis",
 //                    disabled: true,

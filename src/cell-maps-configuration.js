@@ -109,6 +109,9 @@ CellMapsConfiguration.prototype = {
     setNodeAttributeManager: function (attrMan) {
         var _this = this;
         this.nodeAttributeManager = attrMan;
+
+        this._setNodeComponentsAttributeManager();
+
         this.nodeAttributeManager.on('change:attributes', function () {
             _this.reconfigureNodeComponents();
         });
@@ -117,10 +120,22 @@ CellMapsConfiguration.prototype = {
     reconfigureNodeComponents: function () {
         this.nodeComboStore.loadData(this.nodeAttributeManager.attributes);
     },
+    _setNodeComponentsAttributeManager: function () {
+        this.nodeColorAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+        this.nodeStrokeColorAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+        this.nodeSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+        this.nodeStrokeSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+        this.nodeOpacityAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+        this.nodeLabelSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+        this.nodeShapeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+    },
 
     setEdgeAttributeManager: function (attrMan) {
         var _this = this;
         this.edgeAttributeManager = attrMan;
+
+        this._setEdgeComponentsAttributeManager();
+
         this.edgeAttributeManager.on('change:attributes', function () {
             _this.reconfigureEdgeComponents();
         });
@@ -128,6 +143,13 @@ CellMapsConfiguration.prototype = {
     },
     reconfigureEdgeComponents: function () {
         this.edgeComboStore.loadData(this.edgeAttributeManager.attributes);
+    },
+    _setEdgeComponentsAttributeManager: function () {
+        this.edgeColorAttributeWidget.setAttributeManager(this.edgeAttributeManager);
+        this.edgeSizeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
+        this.edgeOpacityAttributeWidget.setAttributeManager(this.edgeAttributeManager);
+        this.edgeLabelSizeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
+        this.edgeShapeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
     },
 
     createLabelComboComponent: function (args) {
@@ -153,7 +175,12 @@ CellMapsConfiguration.prototype = {
                     width: 120,
                     queryMode: 'local',
                     margin: '0 10 0 0',
+                    forceSelection: true,
+                    editable: false,
                     listeners: {
+                        afterrender: function () {
+                            this.select(this.getStore().getAt(0));
+                        },
                         change: function (field, e) {
                             var value = field.getValue();
                             if (value != null) {
@@ -170,7 +197,7 @@ CellMapsConfiguration.prototype = {
     createPropertiesPanel: function () {
         var _this = this;
 
-        var nodeColorAttributeWidget = new ColorAttributeWidget({
+        this.nodeColorAttributeWidget = new ColorAttributeWidget({
             displayAttribute: 'Color',
             attributeManager: this.nodeAttributeManager,
             attributesStore: this.nodeComboStore,
@@ -185,7 +212,7 @@ CellMapsConfiguration.prototype = {
             }
         });
 
-        var nodeStrokeColorAttributeWidget = new ColorAttributeWidget({
+        this.nodeStrokeColorAttributeWidget = new ColorAttributeWidget({
             displayAttribute: 'Stroke color',
             attributeManager: this.nodeAttributeManager,
             attributesStore: this.nodeComboStore,
@@ -199,7 +226,7 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-        var nodeSizeAttributeWidget = new NumberAttributeWidget({
+        this.nodeSizeAttributeWidget = new NumberAttributeWidget({
             displayAttribute: 'Size',
             attributeManager: this.nodeAttributeManager,
             attributesStore: this.nodeComboStore,
@@ -216,7 +243,7 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-        var nodeStrokeSizeAttributeWidget = new NumberAttributeWidget({
+        this.nodeStrokeSizeAttributeWidget = new NumberAttributeWidget({
             displayAttribute: 'Stroke size',
             attributeManager: this.nodeAttributeManager,
             attributesStore: this.nodeComboStore,
@@ -234,7 +261,7 @@ CellMapsConfiguration.prototype = {
             }
         });
 
-        var nodeOpacityAttributeWidget = new NumberAttributeWidget({
+        this.nodeOpacityAttributeWidget = new NumberAttributeWidget({
             displayAttribute: 'Opacity',
             attributeManager: this.nodeAttributeManager,
             attributesStore: this.nodeComboStore,
@@ -251,7 +278,7 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-        var nodeLabelSizeAttributeWidget = new NumberAttributeWidget({
+        this.nodeLabelSizeAttributeWidget = new NumberAttributeWidget({
             displayAttribute: 'Label size',
             attributeManager: this.nodeAttributeManager,
             attributesStore: this.nodeComboStore,
@@ -268,7 +295,7 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-        var nodeShapeAttributeWidget = new SelectAttributeWidget({
+        this.nodeShapeAttributeWidget = new SelectAttributeWidget({
             displayAttribute: 'Shape',
             attributeManager: this.nodeAttributeManager,
             attributesStore: this.nodeComboStore,
@@ -283,47 +310,89 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-//
-//        //EDGES
-//        var edgeColorAttributeWidget = new VisualAttributeWidget({
-//            attributeManager: this.edgeAttributeManager,
-//            comboStore: this.edgeComboStore,
-//            eventName: 'change:edgeColor',
-//            attributeEventName: 'change:edgeDiplayAttribute',
-//            defaultValue: this.edgeDefaults.color,
-//            displayAttribute: 'Color'
-//        });
-//        var edgeSizeAttributeWidget = new VisualAttributeWidget({
-//            attributeManager: this.edgeAttributeManager,
-//            comboStore: this.edgeComboStore,
-//            eventName: 'change:edgeSize',
-//            attributeEventName: 'change:edgeDiplayAttribute',
-//            defaultValue: this.edgeDefaults.size,
-//            displayAttribute: 'Size',
-//            maxValue: 10,
-//            minValue: 0,
-//            step: 1
-//        });
-//        var edgeLabelSizeAttributeWidget = new VisualAttributeWidget({
-//            attributeManager: this.edgeAttributeManager,
-//            comboStore: this.edgeComboStore,
-//            eventName: 'change:edgeLabelSize',
-//            attributeEventName: 'change:edgeDiplayAttribute',
-//            defaultValue: this.edgeDefaults.labelSize,
-//            displayAttribute: 'Label size',
-//            maxValue: 16,
-//            minValue: 0,
-//            step: 1
-//        });
-//        var edgeShapeAttributeWidget = new VisualAttributeWidget({
-//            attributeManager: this.edgeAttributeManager,
-//            comboStore: this.edgeComboStore,
-//            eventName: 'change:edgeShape',
-//            attributeEventName: 'change:edgeDiplayAttribute',
-//            defaultValue: this.edgeDefaults.shape,
-//            displayAttribute: 'Shape',
-//            comboValues: ["directed", "undirected", "inhibited", "dot", "odot"]
-//        });
+
+
+        //EDGES
+        this.edgeColorAttributeWidget = new ColorAttributeWidget({
+            displayAttribute: 'Color',
+            attributeManager: this.edgeAttributeManager,
+            attributesStore: this.edgeComboStore,
+            defaultValue: this.edgeDefaults.color,
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:edgeColor', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:edgeDisplayAttribute', e);
+                }
+            }
+        });
+        this.edgeSizeAttributeWidget = new NumberAttributeWidget({
+            displayAttribute: 'Size',
+            attributeManager: this.edgeAttributeManager,
+            attributesStore: this.edgeComboStore,
+            defaultValue: this.edgeDefaults.size,
+            maxValue: 10,
+            minValue: 0,
+            step: 1,
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:edgeSize', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:edgeDisplayAttribute', e);
+                }
+            }
+        });
+        this.edgeOpacityAttributeWidget = new NumberAttributeWidget({
+            displayAttribute: 'Opacity',
+            attributeManager: this.edgeAttributeManager,
+            attributesStore: this.edgeComboStore,
+            defaultValue: this.edgeDefaults.opacity,
+            maxValue: 1,
+            minValue: 0,
+            step: 0.1,
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:edgeOpacity', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:edgeDisplayAttribute', e);
+                }
+            }
+        });
+        this.edgeLabelSizeAttributeWidget = new NumberAttributeWidget({
+            displayAttribute: 'Label size',
+            attributeManager: this.edgeAttributeManager,
+            attributesStore: this.edgeComboStore,
+            defaultValue: this.edgeDefaults.labelSize,
+            maxValue: 16,
+            minValue: 0,
+            step: 1,
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:edgeLabelSize', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:edgeDisplayAttribute', e);
+                }
+            }
+        });
+        this.edgeShapeAttributeWidget = new SelectAttributeWidget({
+            displayAttribute: 'Shape',
+            attributeManager: this.edgeAttributeManager,
+            attributesStore: this.edgeComboStore,
+            defaultValue: this.edgeDefaults.shape,
+            comboValues: ["directed", "undirected", "inhibited", "dot", "odot"],
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:edgeShape', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:edgeDisplayAttribute', e);
+                }
+            }
+        });
 
 
         this.propertiesPanel = Ext.create('Ext.tab.Panel', {
@@ -362,13 +431,13 @@ CellMapsConfiguration.prototype = {
                                 {xtype: 'text', width: 100, text: 'Attribute'}
                             ]
                         },
-                        nodeColorAttributeWidget.getComponent(),
-                        nodeStrokeColorAttributeWidget.getComponent(),
-                        nodeSizeAttributeWidget.getComponent(),
-                        nodeStrokeSizeAttributeWidget.getComponent(),
-                        nodeOpacityAttributeWidget.getComponent(),
-                        nodeLabelSizeAttributeWidget.getComponent(),
-                        nodeShapeAttributeWidget.getComponent(),
+                        this.nodeColorAttributeWidget.getComponent(),
+                        this.nodeStrokeColorAttributeWidget.getComponent(),
+                        this.nodeSizeAttributeWidget.getComponent(),
+                        this.nodeStrokeSizeAttributeWidget.getComponent(),
+                        this.nodeOpacityAttributeWidget.getComponent(),
+                        this.nodeLabelSizeAttributeWidget.getComponent(),
+                        this.nodeShapeAttributeWidget.getComponent(),
                         {
                             xtype: 'container',
                             layout: 'hbox',
@@ -417,10 +486,11 @@ CellMapsConfiguration.prototype = {
                                 {xtype: 'text', width: 100, text: 'Attribute'}
                             ]
                         },
-//                        edgeColorAttributeWidget.getComponent(),
-//                        edgeSizeAttributeWidget.getComponent(),
-//                        edgeLabelSizeAttributeWidget.getComponent(),
-//                        edgeShapeAttributeWidget.getComponent(),
+                        this.edgeColorAttributeWidget.getComponent(),
+                        this.edgeSizeAttributeWidget.getComponent(),
+                        this.edgeOpacityAttributeWidget.getComponent(),
+                        this.edgeLabelSizeAttributeWidget.getComponent(),
+                        this.edgeShapeAttributeWidget.getComponent(),
                         {
                             xtype: 'container',
                             layout: 'hbox',
