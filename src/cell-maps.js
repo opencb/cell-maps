@@ -126,24 +126,23 @@ CellMaps.prototype = {
 
 
         this.cellbasePlugin = new CellbasePlugin({
-            cellMaps:_this
+            cellMaps: _this
         });
         this.cellbasePlugin.draw();
         this.intActPlugin = new IntActPlugin({
-            cellMaps:_this
+            cellMaps: _this
         });
         this.intActPlugin.draw();
-
 
 
         this.nodeAttributeEditWidget = new AttributeEditWidget({
             attrMan: this.networkViewer.network.nodeAttributeManager,
             type: 'Node',
             autoRender: true,
-            handlers: {
-                '': function (event) {
-                }
-            }
+//            handlers: {
+//                '': function (event) {
+//                }
+//            }
         });
         this.nodeAttributeFilterWidget = new AttributeFilterWidget({
             attrMan: this.networkViewer.network.nodeAttributeManager,
@@ -169,11 +168,11 @@ CellMaps.prototype = {
             attrMan: this.networkViewer.network.edgeAttributeManager,
             type: 'Edge',
             autoRender: true,
-            handlers: {
-                '': function (event) {
-                    //todo
-                }
-            }
+//            handlers: {
+//                '': function (event) {
+//                    //todo
+//                }
+//            }
         });
         this.edgeAttributeFilterWidget = new AttributeFilterWidget({
             attrMan: this.networkViewer.network.edgeAttributeManager,
@@ -220,7 +219,7 @@ CellMaps.prototype = {
             version: this.version,
             suiteId: this.suiteId,
             accountData: this.accountData,
-            allowLogin:true,
+            allowLogin: true,
             chunkedUpload: false,
             handlers: {
                 'login': function (event) {
@@ -278,17 +277,13 @@ CellMaps.prototype = {
                     dotNetworkFileWidget.draw();
                 },
                 'openSIF:click': function (event) {
+                    _this.networkViewer.clean();
                     var sifNetworkFileWidget = new SIFNetworkFileWidget({
+                        network: _this.networkViewer.network,
                         handlers: {
                             'okButton:click': function (widgetEvent) {
-                                _this.networkViewer.setNetwork(widgetEvent.content);
-                                _this.networkViewer.setLayout(widgetEvent.layout);
-                                _this.nodeAttributeEditWidget.setAttributeManager(_this.networkViewer.network.nodeAttributeManager);
-                                _this.edgeAttributeEditWidget.setAttributeManager(_this.networkViewer.network.edgeAttributeManager);
-
-                                _this.configuration.setNodeAttributeManager(_this.networkViewer.network.nodeAttributeManager);
-                                _this.configuration.setEdgeAttributeManager(_this.networkViewer.network.edgeAttributeManager);
-                                _this.cellbasePlugin.updateAttributeStore();
+                                _this.networkViewer.drawNetwork();
+                                _this.networkViewer.setLayout('Force directed');
                             }
                         }
                     });
@@ -399,45 +394,8 @@ CellMaps.prototype = {
                         _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_2_JSON));
                     }
                     if (event.example == 3) {
-
-                        var sifDataAdapter = new SIFDataAdapter({
-                            dataSource: new StringDataSource(EXAMPLE_SIF_TEXT),
-                            handlers: {
-                                'data:load': function (event) {
-                                    _this.networkViewer.setNetwork(event.network);
-                                    _this.networkViewer.setLayout('neato');
-
-                                    _this.nodeAttributeEditWidget.setAttributeManager(_this.networkViewer.network.nodeAttributeManager);
-                                    _this.edgeAttributeEditWidget.setAttributeManager(_this.networkViewer.network.edgeAttributeManager);
-
-                                    _this.configuration.setNodeAttributeManager(_this.networkViewer.network.nodeAttributeManager);
-                                    _this.configuration.setEdgeAttributeManager(_this.networkViewer.network.edgeAttributeManager);
-
-                                    /*LOAD ATTRIBUTES*/
-                                    var attributesDataAdapter = new AttributesDataAdapter({
-                                        dataSource: new StringDataSource(EXAMPLE_ATTR_TEXT),
-                                        handlers: {
-                                            'data:load': function (event) {
-                                                var importAttributesFileWidget = new ImportAttributesFileWidget({
-                                                    "numNodes": _this.networkViewer.getVerticesLength(),
-                                                    handlers: {
-                                                        'okButton:click': function (attrEvent) {
-//                                                _this.networkViewer.importVertexWithAttributes(attrEvent.content);
-                                                        }
-                                                    }
-                                                });
-                                                importAttributesFileWidget.draw();
-                                                importAttributesFileWidget.processData(event.sender);
-                                                _this.networkViewer.importVertexWithAttributes(importAttributesFileWidget.filterColumnsToImport());
-                                                importAttributesFileWidget.panel.close();
-                                            }
-                                        }
-                                    });
-                                    _this.cellbasePlugin.updateAttributeStore();
-
-                                }
-                            }
-                        });
+                        _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_3_JSON));
+                        _this.networkViewer.setLayout('Force directed');
                     }
                 },
                 'click:newsession': function (event) {

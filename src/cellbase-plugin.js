@@ -20,15 +20,17 @@
  */
 
 function CellbasePlugin(args) {
+    var _this = this;
     this.id = Utils.genId('CellMapsConfigurationPanel');
-
 
     this.cellMaps = args.cellMaps;
     this.attributeManager = this.cellMaps.networkViewer.network.nodeAttributeManager;
-
     this.attributeStore = Ext.create('Ext.data.Store', {
         fields: ['name'],
         data: this.attributeManager.attributes
+    });
+    this.attributeManager.on('change:attributes', function () {
+        _this.attributeStore.loadData(_this.attributeManager.attributes);
     });
 
     this.speciesSelected = "hsapiens";
@@ -41,33 +43,33 @@ CellbasePlugin.prototype.draw = function () {
         fields: [ 'name', 'value' ],
         data: [
             {name: "Homo sapiens", value: "hsapiens"},
-            {name: "Mus musculus", value: "mmusculus"},
-            {name: "Rattus norvegicus", value: "rnorvegicus"},
-            {name: "Bos taurus", value: "btaurus"},
-            {name: "Gallus gallus", value: "ggallus"},
-            {name: "Sus scrofa", value: "sscrofa"},
-            {name: "Canis familiaris", value: "cfamiliaris"},
-            {name: "Drosophila melanogaster", value: "dmelanogaster"},
-            {name: "Caenorhabditis elegans", value: "celegans"},
-            {name: "Saccharomyces cerevisiae", value: "scerevisiae"},
-            {name: "Danio rerio", value: "drerio"},
-            {name: "Schizosaccharomyces pombe", value: "spombe"},
-            {name: "Escherichia coli", value: "ecoli"},
-            {name: "Human immunodeficiency virus 1", value: "hiv-1"},
-            {name: "Influenza A virus", value: "flu-a"},
-            {name: "Clostridium botulinum", value: "cbotulinum"},
-            {name: "Arabidopsis thaliana", value: "athaliana"},
-            {name: "Plasmodium falciparum", value: "pfalciparum"},
-            {name: "Dictyostelium discoideum", value: "ddiscoideum"},
-            {name: "Mycobacterium tuberculosis", value: "mtuberculosis"},
-            {name: "Neisseria meningitidis serogroup B", value: "nmeningitidis"},
-            {name: "Chlamydia trachomatis", value: "ctrachomatis"},
-            {name: "Oryza sativa", value: "osativa"},
-            {name: "Toxoplasma gondii", value: "tgondii"},
-            {name: "Xenopus tropicalis", value: "xtropicalis"},
-            {name: "Salmonella typhimurium", value: "styphimurium"},
-            {name: "Taeniopygia guttata", value: "tguttata"},
-            {name: "Staphylococcus aureus N315", value: "saureus"}
+//            {name: "Mus musculus", value: "mmusculus"},
+//            {name: "Rattus norvegicus", value: "rnorvegicus"},
+//            {name: "Bos taurus", value: "btaurus"},
+//            {name: "Gallus gallus", value: "ggallus"},
+//            {name: "Sus scrofa", value: "sscrofa"},
+//            {name: "Canis familiaris", value: "cfamiliaris"},
+//            {name: "Drosophila melanogaster", value: "dmelanogaster"},
+//            {name: "Caenorhabditis elegans", value: "celegans"},
+//            {name: "Saccharomyces cerevisiae", value: "scerevisiae"},
+//            {name: "Danio rerio", value: "drerio"},
+//            {name: "Schizosaccharomyces pombe", value: "spombe"},
+//            {name: "Escherichia coli", value: "ecoli"},
+//            {name: "Human immunodeficiency virus 1", value: "hiv-1"},
+//            {name: "Influenza A virus", value: "flu-a"},
+//            {name: "Clostridium botulinum", value: "cbotulinum"},
+//            {name: "Arabidopsis thaliana", value: "athaliana"},
+//            {name: "Plasmodium falciparum", value: "pfalciparum"},
+//            {name: "Dictyostelium discoideum", value: "ddiscoideum"},
+//            {name: "Mycobacterium tuberculosis", value: "mtuberculosis"},
+//            {name: "Neisseria meningitidis serogroup B", value: "nmeningitidis"},
+//            {name: "Chlamydia trachomatis", value: "ctrachomatis"},
+//            {name: "Oryza sativa", value: "osativa"},
+//            {name: "Toxoplasma gondii", value: "tgondii"},
+//            {name: "Xenopus tropicalis", value: "xtropicalis"},
+//            {name: "Salmonella typhimurium", value: "styphimurium"},
+//            {name: "Taeniopygia guttata", value: "tguttata"},
+//            {name: "Staphylococcus aureus N315", value: "saureus"}
         ]
     });
 
@@ -187,8 +189,8 @@ CellbasePlugin.prototype.draw = function () {
 
     this.progress = Ext.create('Ext.ProgressBar', {
         text: 'Click search to retrieve data...',
-        border:1,
-        margin:3
+        border: 1,
+        margin: 3
     });
 
     this.window = Ext.create('Ext.window.Window', {
@@ -252,11 +254,6 @@ CellbasePlugin.prototype.show = function () {
     this.window.show();
 };
 
-CellbasePlugin.prototype.updateAttributeStore = function () {
-    this.attributeManager = this.cellMaps.networkViewer.network.nodeAttributeManager;
-    this.attributeStore.loadData(this.attributeManager.attributes);
-};
-
 
 CellbasePlugin.prototype.retrieveData = function () {
     var _this = this;
@@ -288,7 +285,13 @@ CellbasePlugin.prototype.retrieveData = function () {
     this.repocheckGroup.items.each(processCheckBoxes);
 
 
-    var queries = this.attributeManager.getValuesByAttribute(this.attributeNameSelected);
+    var values = this.attributeManager.getValuesByAttribute(this.attributeNameSelected);
+
+    var queries = [];
+    for (var i = 0; i < values.length; i++) {
+        var v = values[i];
+        queries.push(v.value);
+    }
 
     CellBaseManager.get({
         species: this.speciesSelected,
@@ -308,10 +311,11 @@ CellbasePlugin.prototype.retrieveData = function () {
             object.data = [];
             for (var r = 0; r < data.response.length; r++) {
                 var response = data.response[r];
+                var attributeId = values[r].id;
                 var xrefs = response.result;
                 if (xrefs.length > 0) {
                     var d = [];
-                    d[0] = response.id;
+                    d[0] = attributeId;
                     for (var i = 0; i < xrefs.length; i++) {
                         var xref = xrefs[i];
 
@@ -350,7 +354,7 @@ CellbasePlugin.prototype.retrieveData = function () {
             _this.progress.updateProgress(0.7, 'Adding attributes');
             _this.cellMaps.networkViewer.importVertexWithAttributes({content: object});
             _this.progress.updateProgress(1, 'Complete!');
-            _this.updateAttributeStore();
+            _this.attributeStore.loadData(_this.attributeManager.attributes);
         }
     });
 };

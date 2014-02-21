@@ -106,51 +106,51 @@ CellMapsConfiguration.prototype = {
         });
 
     },
-    setNodeAttributeManager: function (attrMan) {
-        var _this = this;
-        this.nodeAttributeManager = attrMan;
-
-        this._setNodeComponentsAttributeManager();
-
-        this.nodeAttributeManager.on('change:attributes', function () {
-            _this.reconfigureNodeComponents();
-        });
-        this.reconfigureNodeComponents();
-    },
+//    setNodeAttributeManager: function (attrMan) {
+//        var _this = this;
+//        this.nodeAttributeManager = attrMan;
+//
+//        this._setNodeComponentsAttributeManager();
+//
+//        this.nodeAttributeManager.on('change:attributes', function () {
+//            _this.reconfigureNodeComponents();
+//        });
+//        this.reconfigureNodeComponents();
+//    },
     reconfigureNodeComponents: function () {
         this.nodeComboStore.loadData(this.nodeAttributeManager.attributes);
     },
-    _setNodeComponentsAttributeManager: function () {
-        this.nodeColorAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-        this.nodeStrokeColorAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-        this.nodeSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-        this.nodeStrokeSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-        this.nodeOpacityAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-        this.nodeLabelSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-        this.nodeShapeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-    },
+//    _setNodeComponentsAttributeManager: function () {
+//        this.nodeColorAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+//        this.nodeStrokeColorAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+//        this.nodeSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+//        this.nodeStrokeSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+//        this.nodeOpacityAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+//        this.nodeLabelSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+//        this.nodeShapeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+//    },
 
-    setEdgeAttributeManager: function (attrMan) {
-        var _this = this;
-        this.edgeAttributeManager = attrMan;
-
-        this._setEdgeComponentsAttributeManager();
-
-        this.edgeAttributeManager.on('change:attributes', function () {
-            _this.reconfigureEdgeComponents();
-        });
-        this.reconfigureEdgeComponents();
-    },
+//    setEdgeAttributeManager: function (attrMan) {
+//        var _this = this;
+//        this.edgeAttributeManager = attrMan;
+//
+//        this._setEdgeComponentsAttributeManager();
+//
+//        this.edgeAttributeManager.on('change:attributes', function () {
+//            _this.reconfigureEdgeComponents();
+//        });
+//        this.reconfigureEdgeComponents();
+//    },
     reconfigureEdgeComponents: function () {
         this.edgeComboStore.loadData(this.edgeAttributeManager.attributes);
     },
-    _setEdgeComponentsAttributeManager: function () {
-        this.edgeColorAttributeWidget.setAttributeManager(this.edgeAttributeManager);
-        this.edgeSizeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
-        this.edgeOpacityAttributeWidget.setAttributeManager(this.edgeAttributeManager);
-        this.edgeLabelSizeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
-        this.edgeShapeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
-    },
+//    _setEdgeComponentsAttributeManager: function () {
+//        this.edgeColorAttributeWidget.setAttributeManager(this.edgeAttributeManager);
+//        this.edgeSizeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
+//        this.edgeOpacityAttributeWidget.setAttributeManager(this.edgeAttributeManager);
+//        this.edgeLabelSizeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
+//        this.edgeShapeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
+//    },
 
     createLabelComboComponent: function (args) {
         var _this = this;

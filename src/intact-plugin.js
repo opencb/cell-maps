@@ -20,20 +20,28 @@
  */
 
 function IntActPlugin(args) {
+    var _this = this;
     this.id = Utils.genId('CellMapsConfigurationPanel');
 
 
     this.cellMaps = args.cellMaps;
     this.attributeManager = this.cellMaps.networkViewer.network.nodeAttributeManager;
-
     this.attributeStore = Ext.create('Ext.data.Store', {
         fields: ['name'],
         data: this.attributeManager.attributes
     });
+    this.attributeManager.on('change:attributes', function () {
+        _this.attributeStore.loadData(_this.attributeManager.attributes);
+    });
+    this.cellMaps.networkViewer.on('select:vertices', function () {
+        if (_this.mode === 'selected') {
+            _this.textArea.setValue(_this.getSelectedNetworkVerticesText());
+        }
+    });
 
     this.speciesSelected = "hsapiens";
     this.attributeNameSelected;
-
+    this.mode;
 
     this.listWriteText = "";
     this.listFileText = "";
@@ -118,6 +126,21 @@ IntActPlugin.prototype.draw = function () {
         }
     });
 
+
+    this.uploadField = $('<input type="file" style="visibility:hidden" />');
+    $(this.uploadField).change(function (e) {
+        var file = this.files[0];
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            var content = evt.target.result;
+            _this.listFileText = content;
+            _this.textArea.setValue(_this.listFileText);
+        };
+        reader.readAsText(file);
+
+    });
+
+
     this.selectRadioGroup = Ext.create('Ext.form.RadioGroup', {
 //          toolbar.down('radiogroup').getValue() --> {selection: "all"}
         xtype: 'radiogroup',
@@ -138,30 +161,33 @@ IntActPlugin.prototype.draw = function () {
                 inputValue: 'selected'
             },
             {
-                boxLabel: 'List from file',
-                inputValue: 'file'
-            },
-            {
                 boxLabel: 'List from text',
                 checked: true,
                 inputValue: 'text'
+            },
+            {
+                boxLabel: 'List from file',
+                inputValue: 'file'
             }
         ],
         listeners: {
             change: function (radiogroup, newValue, oldValue, eOpts) {
                 var value = this.getValue();
+                _this.mode = value.from;
                 console.log(value);
+                _this.uploadButton.hide();
                 switch (newValue.from) {
                     case 'network':
-                        _this.textArea.setValue('network');
+                        _this.textArea.setValue(_this.getNetworkVerticesText());
                         _this.textArea.setReadOnly(true);
                         break;
                     case 'selected':
-                        _this.textArea.setValue('selected');
+                        _this.textArea.setValue(_this.getSelectedNetworkVerticesText());
                         _this.textArea.setReadOnly(true);
                         break;
                     case 'file':
-                        _this.textArea.setValue('file');
+                        _this.uploadButton.show();
+                        _this.textArea.setValue(_this.listFileText);
                         _this.textArea.setReadOnly(true);
                         break;
                     case 'text':
@@ -172,6 +198,14 @@ IntActPlugin.prototype.draw = function () {
             }
         }
 
+    });
+
+    this.uploadButton = Ext.create('Ext.button.Button', {
+        text: 'Upload local file',
+        hidden:true,
+        handler: function () {
+            $(_this.uploadField).click();
+        }
     });
 
 
@@ -207,71 +241,76 @@ IntActPlugin.prototype.draw = function () {
 
     this.progress = Ext.create('Ext.ProgressBar', {
         text: 'Click search to retrieve data...',
-        border:1,
-        margin:3
+        border: 1,
+        margin: 3
     });
 
     this.window = Ext.create('Ext.window.Window', {
         title: "IntAct",
         taskbar: Ext.getCmp(this.cellMaps.networkViewer.id + 'uxTaskbar'),
+        bodyStyle: {backgroundColor: 'white'},
         height: 400,
         width: 600,
         closable: false,
         minimizable: true,
         collapsible: true,
         layout: {
-            type: 'hbox',
+            type: 'vbox',
             align: 'stretch'
         },
-//        dockedItems: [
+        dockedItems: [
 //            {
 //                xtype: 'toolbar',
-//                dock: 'top',
-//                items: [speciesCombo]
-//            },
-//            {
-//                xtype: 'toolbar',
-//                dock: 'top',
-//                items: [attributeCombo]
+//                dock: 'bottom',
+//                items: []
 //            }
-//        ],
+        ],
         items: [
             {
-                xtype: 'panel',
-                width: 200,
-                border: 0,
-                bodyPadding: 5,
+                xtype: 'container',
                 layout: {
-                    type: 'vbox',
+                    type: 'hbox',
                     align: 'stretch'
                 },
+                flex: 1,
                 items: [
-                    this.selectRadioGroup,
-                    this.textArea
+                    {
+                        xtype: 'container',
+                        width: 200,
+                        padding: 10,
+                        layout: {
+                            type: 'vbox',
+                            align: 'stretch'
+                        },
+                        items: [
+                            speciesCombo,
+                            attributeCombo,
+                            this.selectRadioGroup,
+                            this.uploadButton
+                        ]
+                    },
+                    {
+                        xtype: 'container',
+                        flex: 1,
+                        padding: 5,
+                        layout: {
+                            type: 'hbox',
+                            align: 'stretch'
+                        },
+                        items: [
+                            this.textArea
+                        ]
+                    }
                 ]
             },
-            {
-                xtype: 'panel',
-                flex: 1,
-                border: 0,
-                bodyPadding: 5,
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                },
-                items: [
-                    speciesCombo,
-                    attributeCombo,
-                    this.progress
-                ]
-            }
+            this.progress
+
         ],
         buttons: [
             {
                 text: 'Search',
                 handler: function () {
                     _this.retrieveData();
-                    _this.progress.updateProgress(0.1, 'Requesting data');
                 }
             }
         ],
@@ -284,13 +323,38 @@ IntActPlugin.prototype.draw = function () {
     /**/
 };
 
+
 IntActPlugin.prototype.show = function () {
     this.window.show();
 };
 
 IntActPlugin.prototype.updateAttributeStore = function () {
+    var _this = this;
     this.attributeManager = this.cellMaps.networkViewer.network.nodeAttributeManager;
     this.attributeStore.loadData(this.attributeManager.attributes);
+    this.attributeManager.on('change:attributes', function () {
+        _this.attributeStore.loadData(_this.attributeManager.attributes);
+    });
+};
+
+IntActPlugin.prototype.getNetworkVerticesText = function () {
+    var values = this.attributeManager.getValuesByAttribute(this.attributeNameSelected);
+    var queries = [];
+    for (var i = 0; i < values.length; i++) {
+        var v = values[i];
+        queries.push(v.value);
+    }
+    return queries.join('\n');
+};
+
+IntActPlugin.prototype.getSelectedNetworkVerticesText = function () {
+    var values = this.attributeManager.getSelectedValuesByAttribute(this.attributeNameSelected);
+    var queries = [];
+    for (var i = 0; i < values.length; i++) {
+        var v = values[i];
+        queries.push(v.value);
+    }
+    return queries.join('\n');
 };
 
 
@@ -298,9 +362,12 @@ IntActPlugin.prototype.retrieveData = function () {
     var _this = this;
 
 
-    var queries = this.textArea.getValue().split('\n');
+    var queryStr= this.textArea.getValue().split('\n').toString();
+    if(queryStr.length <= 0){
+        return;
+    }
 
-
+    _this.progress.updateProgress(0.1, 'Requesting data');
     CellBaseManager.get({
         species: this.speciesSelected,
         category: 'network',
@@ -308,7 +375,7 @@ IntActPlugin.prototype.retrieveData = function () {
 //        query: queries.toString(),
         resource: 'all',
         params: {
-            interactor: queries.toString(),
+            interactor: queryStr,
             include: "interactorA.id,interactorB.id"
         },
         success: function (data) {
@@ -352,6 +419,7 @@ IntActPlugin.prototype.retrieveData = function () {
 
                 /** create edge **/
                 var edgeId = sourceName + '_' + edgeName + '_' + targetName;
+                console.log(edgeId)
                 if (typeof edgesMap[edgeId] === 'undefined') {
                     var edge = new Edge({
                         id: edgeId,
