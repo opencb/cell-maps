@@ -102,7 +102,8 @@ module.exports = function (grunt) {
                             'build/<%= meta.version %>/vendor/jquery.mousewheel*.js',
                             'build/<%= meta.version %>/vendor/gl-matrix-min*.js',
                             'build/<%= meta.version %>/vendor/ChemDoodleWeb*.js',
-                            'build/<%= meta.version %>/vendor/jquery.simplecolorpicker.js'
+                            'build/<%= meta.version %>/vendor/jquery.simplecolorpicker.js',
+                            'build/<%= meta.version %>/vendor/d3.min.js'
 
                         ],
                         nv: [
