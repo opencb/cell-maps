@@ -29,6 +29,7 @@ function CellMaps(args) {
     this.suiteId = 10;
     this.title = 'Cell Maps';
     this.description = "Systems Biology Visualization";
+    this.tools = ["hpg-variant.effect"];
     this.version = "2.0.0";
     this.border = true;
     this.resizable = true;
@@ -69,6 +70,18 @@ CellMaps.prototype = {
 
         this.rightSidebarDiv = $('<div id="rightsidebar-' + this.id + '" style="position:absolute; z-index:50;right:0px;"></div>')[0];
         $("#cm-network-viewer").append(this.rightSidebarDiv);
+
+        this.configureDiv = $('<div id="configure-' + this.id + '"></div>')[0];
+        this.jobsDiv = $('<div id="jobs-' + this.id + '"></div>')[0];
+        $(this.configureDiv).css({
+            float:'left',
+            marginRight:'2px'
+        });
+        $(this.jobsDiv).css({
+            float:'left'
+        });
+        $(this.rightSidebarDiv).append(this.configureDiv);
+        $(this.rightSidebarDiv).append( this.jobsDiv);
 
         this.width = ($(this.div).width());
 
@@ -117,9 +130,13 @@ CellMaps.prototype = {
         this.networkViewer = this._createNetworkViewer('cm-network-viewer');
 
         /* Side Panel  */
-        this.configuration = this._createConfiguration('rightsidebar-' + this.id);
-
+        this.configuration = this._createConfiguration($(this.configureDiv).attr('id'));
         this.configuration.panel.show();
+
+
+        /* Job List Widget */
+        this.jobListWidget = this._createJobListWidget($(this.jobsDiv).attr('id'));
+        this.jobListWidget.hide();
 
         /* status bar  */
         this.statusBar = this._createStatusBar('status');
@@ -411,6 +428,13 @@ CellMaps.prototype = {
                     } else {
                         _this.configuration.panel.hide();
                     }
+                },
+                'jobs-button:change': function (event) {
+                    if (event.selected) {
+                        _this.jobListWidget.show();
+                    } else {
+                        _this.jobListWidget.hide();
+                    }
                 }
             }
         });
@@ -505,13 +529,52 @@ CellMaps.prototype = {
         var statusBar;
         return  statusBar;
     },
+
+    _createJobListWidget: function (targetId) {
+        var _this = this;
+
+        var jobListWidget = new JobListWidget({
+            'timeout': 4000,
+            'suiteId': this.suiteId,
+            'tools': this.tools,
+            'pagedViewList': {
+                'title': 'Jobs',
+                'pageSize': 7,
+                'targetId': targetId,
+                'order': 0,
+                'width': 280,
+                'height': 625,
+                border: true,
+                'mode': 'view',
+//                headerConfig: {
+//                    baseCls: 'home-header-dark'
+//                }
+            }
+        });
+
+        /**Atach events i listen**/
+        jobListWidget.pagedListViewWidget.on('item:click', function (data) {
+            _this.jobItemClick(data.item);
+        });
+        jobListWidget.draw();
+
+        return jobListWidget;
+    },
+
     sessionInitiated: function () {
 
     },
     sessionFinished: function () {
-
+        this.jobListWidget.clean();
+        this.accountData = null;
     },
     setAccountData: function (response) {
         this.accountData = response;
+        this.jobListWidget.setAccountData(this.accountData);
+    },
+    jobItemClick: function (record) {
+        var _this = this;
+        console.log(record)
+
     }
 }

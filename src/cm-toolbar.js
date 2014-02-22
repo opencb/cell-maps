@@ -230,13 +230,24 @@ CmToolBar.prototype = {
                 {
                     tooltip: 'Configure',
                     text: '<span class="emph"> Configure</span>',
-                    margin: '0 0 0 15',
                     enableToggle: true,
                     iconCls: 'ocb-icon-gear',
                     pressed: true,
                     hidden: false,
                     toggleHandler: function () {
                         _this.trigger('configuration-button:change', {selected: this.pressed, sender: _this});
+                    }
+                },
+                {
+                    tooltip: 'Jobs',
+                    text: '<span class="emph"> Jobs</span>',
+                    margin: '0 5 0 0',
+                    enableToggle: true,
+//                    iconCls: 'ocb-icon-gear',
+                    pressed: false,
+                    hidden: false,
+                    toggleHandler: function () {
+                        _this.trigger('jobs-button:change', {selected: this.pressed, sender: _this});
                     }
                 }
 
