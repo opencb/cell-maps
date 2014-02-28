@@ -228,7 +228,6 @@ CellMaps.prototype = {
             cellMaps: _this
         });
         this.topologicalStudyPlugin.draw();
-        this.topologicalStudyPlugin.show();
 
 
         /* Job forms */
