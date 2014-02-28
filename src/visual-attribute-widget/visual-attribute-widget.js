@@ -54,6 +54,18 @@ VisualAttributeWidget.prototype.setAttributeManager = function (attributeManager
     }
 }
 
+VisualAttributeWidget.prototype.applyVisualSet = function (attributeName, type) {
+    this.button.el.dom.click();
+    this.attributeNameCombo.select(attributeName);
+    this.attributeTypeCombo.select(type);
+    var grid = this.gridMap[attributeName][type];
+    grid.down('button[text~=Apply]').el.dom.click();
+    this.window.down('button[text~=Ok]').el.dom.click();
+}
+VisualAttributeWidget.prototype.removeVisualSet = function () {
+    this.removeButton.el.dom.click();
+}
+
 VisualAttributeWidget.prototype.defaultValueChanged = function () {
     this.trigger('change:default', {value: this.defaultValue});
     if (typeof this.visualSet !== 'undefined') {
@@ -68,8 +80,11 @@ VisualAttributeWidget.prototype.visualSetChanged = function () {
 }
 
 VisualAttributeWidget.prototype.render = function () {
-    this._createWindow();
-    this._createComponent();
+    if (this.rendered !== true) {
+        this._createWindow();
+        this._createComponent();
+        this.rendered = true;
+    }
 }
 
 VisualAttributeWidget.prototype.getComponent = function () {
@@ -126,68 +141,71 @@ VisualAttributeWidget.prototype._createWindow = function () {
         layout: 'fit'
     });
 
+
+    this.attributeNameCombo = Ext.create('Ext.form.field.ComboBox', {
+        margin: '0 0 0 10',
+        width: 200,
+        labelWidth: 80,
+        fieldLabel: 'Attribute name',
+        store: this.attributesStore,
+        queryMode: 'local',
+        qid: 'attrCombo',
+        displayField: 'name',
+        valueField: 'name',
+        forceSelection: true,
+        editable: false,
+        listeners: {
+            afterrender: function () {
+                this.select(this.getStore().getAt(0));
+            },
+            change: function (combo, select) {
+                _this.lastAttributeName = select;
+                if (typeof _this.lastType === 'undefined') {
+                    _this.lastType = 'String';
+                }
+                var grid = _this._createGrid(_this.lastAttributeName, _this.lastType);
+                _this.lastStore = _this.gridMap[_this.lastAttributeName][_this.lastType].getStore();
+
+                console.log(_this.lastAttributeName + ' - ' + _this.lastType);
+                container.removeAll(false);
+                container.add(grid);
+            }
+        }
+    });
+
+    this.attributeTypeCombo = Ext.create('Ext.form.field.ComboBox', {
+        margin: '0 0 0 10',
+        width: 200,
+        labelWidth: 70,
+        fieldLabel: 'Attribute type',
+        qid: 'typeCombo',
+        store: ['String', 'Integer', 'Float'/*, 'List string','List number'*/],
+        queryMode: 'local',
+        displayField: 'name',
+        valueField: 'id',
+        forceSelection: true,
+        editable: false,
+        listeners: {
+            afterrender: function () {
+                this.select(this.getStore().getAt(0));
+            },
+            change: function (combo, select) {
+                _this.lastType = select;
+
+                var grid = _this._createGrid(_this.lastAttributeName, _this.lastType);
+                _this.lastStore = _this.gridMap[_this.lastAttributeName][_this.lastType].getStore();
+
+                console.log(_this.lastAttributeName + ' - ' + _this.lastType);
+                container.removeAll(false);
+                container.add(grid);
+            }
+        }
+    });
+
     var toolbar = Ext.create('Ext.toolbar.Toolbar', {
         items: [
-            {
-                xtype: 'combo',
-                margin: '0 0 0 10',
-                width: 200,
-                labelWidth: 80,
-                fieldLabel: 'Attribute name',
-                store: this.attributesStore,
-                queryMode: 'local',
-                qid: 'attrCombo',
-                displayField: 'name',
-                valueField: 'name',
-                forceSelection: true,
-                editable: false,
-                listeners: {
-                    afterrender: function () {
-                        this.select(this.getStore().getAt(0));
-                    },
-                    change: function (combo, select) {
-                        _this.lastAttributeName = select;
-                        if (typeof _this.lastType === 'undefined') {
-                            _this.lastType = 'String';
-                        }
-                        var grid = _this._createGrid(_this.lastAttributeName, _this.lastType);
-                        _this.lastStore = _this.gridMap[_this.lastAttributeName][_this.lastType].getStore();
-
-                        console.log(_this.lastAttributeName + ' - ' + _this.lastType);
-                        container.removeAll(false);
-                        container.add(grid);
-                    }
-                }
-            },
-            {
-                xtype: 'combo',
-                margin: '0 0 0 10',
-                width: 200,
-                labelWidth: 70,
-                fieldLabel: 'Attribute type',
-                qid: 'typeCombo',
-                store: ['String', 'Integer', 'Float'/*, 'List string','List number'*/],
-                queryMode: 'local',
-                displayField: 'name',
-                valueField: 'id',
-                forceSelection: true,
-                editable: false,
-                listeners: {
-                    afterrender: function () {
-                        this.select(this.getStore().getAt(0));
-                    },
-                    change: function (combo, select) {
-                        _this.lastType = select;
-
-                        var grid = _this._createGrid(_this.lastAttributeName, _this.lastType);
-                        _this.lastStore = _this.gridMap[_this.lastAttributeName][_this.lastType].getStore();
-
-                        console.log(_this.lastAttributeName + ' - ' + _this.lastType);
-                        container.removeAll(false);
-                        container.add(grid);
-                    }
-                }
-            }
+            this.attributeNameCombo,
+            this.attributeTypeCombo
         ]
     });
 
@@ -341,6 +359,23 @@ VisualAttributeWidget.prototype._createStringGrid = function (attributeName) {
                         text: 'Deselect all',
                         handler: function (bt) {
                             bt.up('grid').getSelectionModel().deselectAll();
+                        }
+                    },
+                    '-',
+                    {
+                        text: 'Apply direct',
+                        handler: function (bt) {
+                            var store = bt.up('grid').store;
+                            //restore value on records
+                            var data = store.snapshot || store.data;
+                            var records = data.items;
+                            store.suspendEvents();
+                            for (var i = 0; i < records.length; i++) {
+                                var record = records[i];
+                                record.set('visualParam', record.get('value'));
+                            }
+                            store.resumeEvents();
+                            store.fireEvent('refresh');
                         }
                     },
                     '->',

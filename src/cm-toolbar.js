@@ -245,7 +245,7 @@ CmToolBar.prototype = {
                     enableToggle: true,
 //                    iconCls: 'ocb-icon-gear',
                     pressed: false,
-                    hidden: false,
+                    hidden: true,
                     toggleHandler: function () {
                         _this.trigger('jobs-button:change', {selected: this.pressed, sender: _this});
                     }
@@ -384,14 +384,14 @@ CmToolBar.prototype = {
                     text: "Reactome...",
 //		        	disabled: true,
                     handler: function () {
-                        _this.trigger('reactome:click', {sender: _this});
+                        _this.trigger('click:reactome', {sender: _this});
                     }
                 },
                 {
                     text: "IntAct",
 //                    disabled: true,
                     handler: function () {
-                        _this.trigger('intact:click', {sender: _this});
+                        _this.trigger('click:intact', {sender: _this});
                     }
                 }
 //                ,
@@ -405,32 +405,45 @@ CmToolBar.prototype = {
         });
 
         var networkMenu = Ext.create('Ext.menu.Menu', {
+            plain: true,
             items: [
                 {
-                    text: "Cellular localization network",
+                    text: "Communities structure detection",
                     handler: function () {
+                        _this.trigger('click:communitiesStructureDetection', {sender: _this});
                     }
                 },
                 {
-                    text: "Genome structure network",
+                    text: "Topological study",
                     handler: function () {
-                    }
-                },
-                {
-                    text: "Shortestspath",
-                    handler: function () {
-                    }
-                },
-                {
-                    text: "Merge",
-                    handler: function () {
-                    }
-                },
-                {
-                    text: "Network generator",
-                    handler: function () {
+                        _this.trigger('click:topologicalStudy', {sender: _this});
                     }
                 }
+//                {
+//                    text: "Cellular localization network",
+//                    handler: function () {
+//                    }
+//                },
+//                {
+//                    text: "Genome structure network",
+//                    handler: function () {
+//                    }
+//                },
+//                {
+//                    text: "Shortestspath",
+//                    handler: function () {
+//                    }
+//                },
+//                {
+//                    text: "Merge",
+//                    handler: function () {
+//                    }
+//                },
+//                {
+//                    text: "Network generator",
+//                    handler: function () {
+//                    }
+//                }
             ]
         });
 
@@ -529,12 +542,11 @@ CmToolBar.prototype = {
                 {
                     text: 'Import Data',
                     menu: importMenu
-                }
-//                {
-//                    text: 'Network analysis',
-//                    disabled: true,
-//                    menu: networkMenu
-//                },
+                },
+                {
+                    text: 'Network analysis',
+                    menu: networkMenu
+                },
 //                {
 //                    text: 'Functional enrichment',
 ////					disabled: true,

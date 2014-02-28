@@ -26,10 +26,10 @@ function CellMaps(args) {
     this.id = Utils.genId("CellMaps");
 
     //set default args
-    this.suiteId = 10;
+    this.suiteId = "cellmaps";
     this.title = 'Cell Maps';
     this.description = "Systems Biology Visualization";
-    this.tools = ["hpg-variant.effect"];
+    this.tools = ["communities-structure-detection.communities-structure-detection"];
     this.version = "2.0.0";
     this.border = true;
     this.resizable = true;
@@ -74,14 +74,14 @@ CellMaps.prototype = {
         this.configureDiv = $('<div id="configure-' + this.id + '"></div>')[0];
         this.jobsDiv = $('<div id="jobs-' + this.id + '"></div>')[0];
         $(this.configureDiv).css({
-            float:'left',
-            marginRight:'2px'
+            float: 'left',
+            marginRight: '2px'
         });
         $(this.jobsDiv).css({
-            float:'left'
+            float: 'left'
         });
         $(this.rightSidebarDiv).append(this.configureDiv);
-        $(this.rightSidebarDiv).append( this.jobsDiv);
+        $(this.rightSidebarDiv).append(this.jobsDiv);
 
         this.width = ($(this.div).width());
 
@@ -136,20 +136,9 @@ CellMaps.prototype = {
 
         /* Job List Widget */
         this.jobListWidget = this._createJobListWidget($(this.jobsDiv).attr('id'));
-        this.jobListWidget.hide();
 
         /* status bar  */
         this.statusBar = this._createStatusBar('status');
-
-
-        this.cellbasePlugin = new CellbasePlugin({
-            cellMaps: _this
-        });
-        this.cellbasePlugin.draw();
-        this.intActPlugin = new IntActPlugin({
-            cellMaps: _this
-        });
-        this.intActPlugin.draw();
 
 
         this.nodeAttributeEditWidget = new AttributeEditWidget({
@@ -217,6 +206,33 @@ CellMaps.prototype = {
 //        this.headerWidget.setDescription(text);
 
         //check login
+
+
+        /* Plugins */
+        this.cellbasePlugin = new CellbasePlugin({
+            cellMaps: _this
+        });
+        this.cellbasePlugin.draw();
+
+        this.intActPlugin = new IntActPlugin({
+            cellMaps: _this
+        });
+        this.intActPlugin.draw();
+
+        this.communitiesStructureDetectionPlugin = new CommunitiesStructureDetectionPlugin({
+            cellMaps: _this
+        });
+        this.communitiesStructureDetectionPlugin.draw();
+
+        this.topologicalStudyPlugin = new TopologicalStudyPlugin({
+            cellMaps: _this
+        });
+        this.topologicalStudyPlugin.draw();
+        this.topologicalStudyPlugin.show();
+
+
+        /* Job forms */
+
 
 
         if ($.cookie('bioinfo_sid') != null) {
@@ -378,13 +394,13 @@ CellMaps.prototype = {
                     importAttributesFileWidget.draw();
                 },
                 'editNodeAttributes:click': function (event) {
-                    _this.nodeAttributeEditWidget.draw(_this.networkViewer.getSelectedVertices());
+                    _this.nodeAttributeEditWidget.draw();
                 },
                 'editEdgeAttributes:click': function (event) {
-                    _this.edgeAttributeEditWidget.draw(_this.networkViewer.getSelectedVertices());
+                    _this.edgeAttributeEditWidget.draw();
                 },
                 'filterNodeAttributes:click': function (event) {
-                    _this.nodeAttributeFilterWidget.draw(_this.networkViewer.getSelectedVertices());
+                    _this.nodeAttributeFilterWidget.draw();
                 },
 
 
@@ -395,12 +411,18 @@ CellMaps.prototype = {
 //                },
 
 
-                'reactome:click': function (event) {
+                'click:reactome': function (event) {
                     var reactome = new ReactomePlugin(_this);
                     reactome.draw();
                 },
-                'intact:click': function (event) {
+                'click:intact': function (event) {
                     _this.intActPlugin.show(_this);
+                },
+                'click:communitiesStructureDetection': function (event) {
+                    _this.communitiesStructureDetectionPlugin.show();
+                },
+                'click:topologicalStudy': function (event) {
+                    _this.topologicalStudyPlugin.show();
                 },
                 'example:click': function (event) {
 
@@ -570,7 +592,7 @@ CellMaps.prototype = {
     },
     setAccountData: function (response) {
         this.accountData = response;
-        this.jobListWidget.setAccountData(this.accountData);
+//        this.jobListWidget.setAccountData(this.accountData);
     },
     jobItemClick: function (record) {
         var _this = this;
