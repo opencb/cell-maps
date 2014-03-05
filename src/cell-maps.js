@@ -141,18 +141,18 @@ CellMaps.prototype = {
         this.statusBar = this._createStatusBar('status');
 
 
-        this.nodeAttributeEditWidget = new AttributeEditWidget({
-            attrMan: this.networkViewer.network.nodeAttributeManager,
-            type: 'Node',
+        this.vertexAttributeEditWidget = new AttributeEditWidget({
+            attrMan: this.networkViewer.network.vertexAttributeManager,
+            type: 'Vertex',
             autoRender: true,
 //            handlers: {
 //                '': function (event) {
 //                }
 //            }
         });
-        this.nodeAttributeFilterWidget = new AttributeFilterWidget({
-            attrMan: this.networkViewer.network.nodeAttributeManager,
-            type: 'Node',
+        this.vertexAttributeFilterWidget = new AttributeFilterWidget({
+            attrMan: this.networkViewer.network.vertexAttributeManager,
+            type: 'Vertex',
             handlers: {
                 'vertices:select': function (event) {
                     _this.networkViewer.selectVerticesByIds(event.vertices);
@@ -392,7 +392,7 @@ CellMaps.prototype = {
                     _this.networkEditWidget.show();
                 },
                 /* Attributes */
-                'importNodeAttributes:click': function (event) {
+                'importVertexAttributes:click': function (event) {
                     var importAttributesFileWidget = new ImportAttributesFileWidget({
                         handlers: {
                             'okButton:click': function (attrEvent) {
@@ -412,14 +412,14 @@ CellMaps.prototype = {
                     });
                     importAttributesFileWidget.draw();
                 },
-                'editNodeAttributes:click': function (event) {
-                    _this.nodeAttributeEditWidget.draw();
+                'editVertexAttributes:click': function (event) {
+                    _this.vertexAttributeEditWidget.draw();
                 },
                 'editEdgeAttributes:click': function (event) {
                     _this.edgeAttributeEditWidget.draw();
                 },
-                'filterNodeAttributes:click': function (event) {
-                    _this.nodeAttributeFilterWidget.draw();
+                'filterVertexAttributes:click': function (event) {
+                    _this.vertexAttributeFilterWidget.draw();
                 },
 
                 /* Plugins */
@@ -476,10 +476,10 @@ CellMaps.prototype = {
                 },
 
                 /* Selection */
-                'click:selectAllNodes': function (event) {
+                'click:selectAllVertices': function (event) {
                     _this.networkViewer.selectAllVertices();
                 },
-                'click:selectNodesNeighbour': function (event) {
+                'click:selectVerticesNeighbour': function (event) {
                     _this.networkViewer.selectVerticesNeighbour()
                 },
                 'click:selectVerticesInvert': function (event) {
@@ -512,7 +512,7 @@ CellMaps.prototype = {
             border: false,
             handlers: {
                 'select:vertices': function (e) {
-                    _this.nodeAttributeEditWidget.checkSelectedFilter();
+                    _this.vertexAttributeEditWidget.checkSelectedFilter();
                 },
                 'select:edges': function (e) {
                     _this.edgeAttributeEditWidget.checkSelectedFilter();
@@ -528,31 +528,31 @@ CellMaps.prototype = {
         var configuration = new CellMapsConfiguration({
             autoRender: true,
             targetId: targetId,
-            nodeAttributeManager: this.networkViewer.network.nodeAttributeManager,
+            vertexAttributeManager: this.networkViewer.network.vertexAttributeManager,
             edgeAttributeManager: this.networkViewer.network.edgeAttributeManager,
             handlers: {
-                'change:nodeColor': function (e) {
+                'change:vertexColor': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('color', e.value);
                 },
-                'change:nodeStrokeColor': function (e) {
+                'change:vertexStrokeColor': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('strokeColor', e.value);
                 },
-                'change:nodeSize': function (e) {
+                'change:vertexSize': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('size', e.value, true);
                 },
-                'change:nodeStrokeSize': function (e) {
+                'change:vertexStrokeSize': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('strokeSize', e.value, true);
                 },
-                'change:nodeShape': function (e) {
+                'change:vertexShape': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('shape', e.value);
                 },
-                'change:nodeOpacity': function (e) {
+                'change:vertexOpacity': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('opacity', e.value);
                 },
-                'change:nodeLabelSize': function (e) {
+                'change:vertexLabelSize': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('labelSize', e.value);
                 },
-                'change:nodeLabel': function (e) {
+                'change:vertexLabel': function (e) {
                     _this.networkViewer.network.setVertexLabelByAttribute(e.value);
                 },
 
@@ -577,7 +577,7 @@ CellMaps.prototype = {
                 },
 
 
-                'change:nodeDisplayAttribute': function (e) {
+                'change:vertexDisplayAttribute': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttributeMap(e.diplayAttribute, e.attribute, e.map);
                 },
                 'change:edgeDisplayAttribute': function (e) {

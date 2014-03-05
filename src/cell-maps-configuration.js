@@ -29,14 +29,14 @@ function CellMapsConfiguration(args) {
     this.width = 300;
     this.height = 600;
 
-    this.nodeAttributeManager;
+    this.vertexAttributeManager;
     this.edgeAttributeManager;
 
     //set instantiation args, must be last
     _.extend(this, args);
 
     this.panel;
-    this.nodeComboStore;
+    this.vertexComboStore;
     this.edgeComboStore;
 
     this.vertexDefaults = {
@@ -76,16 +76,16 @@ CellMapsConfiguration.prototype = {
 
             return;
         }
-        this.nodeAttributeManager.on('change:attributes', function () {
-            _this.reconfigureNodeComponents();
+        this.vertexAttributeManager.on('change:attributes', function () {
+            _this.reconfigureVertexComponents();
         });
         this.edgeAttributeManager.on('change:attributes', function () {
             _this.reconfigureEdgeComponents();
         });
 
-        this.nodeComboStore = Ext.create('Ext.data.Store', {
+        this.vertexComboStore = Ext.create('Ext.data.Store', {
             fields: ['name'],
-            data: this.nodeAttributeManager.attributes
+            data: this.vertexAttributeManager.attributes
         });
         this.edgeComboStore = Ext.create('Ext.data.Store', {
             fields: ['name'],
@@ -106,28 +106,28 @@ CellMapsConfiguration.prototype = {
         });
 
     },
-//    setNodeAttributeManager: function (attrMan) {
+//    setVertexAttributeManager: function (attrMan) {
 //        var _this = this;
-//        this.nodeAttributeManager = attrMan;
+//        this.vertexAttributeManager = attrMan;
 //
-//        this._setNodeComponentsAttributeManager();
+//        this._setVertexComponentsAttributeManager();
 //
-//        this.nodeAttributeManager.on('change:attributes', function () {
-//            _this.reconfigureNodeComponents();
+//        this.vertexAttributeManager.on('change:attributes', function () {
+//            _this.reconfigureVertexComponents();
 //        });
-//        this.reconfigureNodeComponents();
+//        this.reconfigureVertexComponents();
 //    },
-    reconfigureNodeComponents: function () {
-        this.nodeComboStore.loadData(this.nodeAttributeManager.attributes);
+    reconfigureVertexComponents: function () {
+        this.vertexComboStore.loadData(this.vertexAttributeManager.attributes);
     },
-//    _setNodeComponentsAttributeManager: function () {
-//        this.nodeColorAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-//        this.nodeStrokeColorAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-//        this.nodeSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-//        this.nodeStrokeSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-//        this.nodeOpacityAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-//        this.nodeLabelSizeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
-//        this.nodeShapeAttributeWidget.setAttributeManager(this.nodeAttributeManager);
+//    _setVertexComponentsAttributeManager: function () {
+//        this.vertexColorAttributeWidget.setAttributeManager(this.vertexAttributeManager);
+//        this.vertexStrokeColorAttributeWidget.setAttributeManager(this.vertexAttributeManager);
+//        this.vertexSizeAttributeWidget.setAttributeManager(this.vertexAttributeManager);
+//        this.vertexStrokeSizeAttributeWidget.setAttributeManager(this.vertexAttributeManager);
+//        this.vertexOpacityAttributeWidget.setAttributeManager(this.vertexAttributeManager);
+//        this.vertexLabelSizeAttributeWidget.setAttributeManager(this.vertexAttributeManager);
+//        this.vertexShapeAttributeWidget.setAttributeManager(this.vertexAttributeManager);
 //    },
 
 //    setEdgeAttributeManager: function (attrMan) {
@@ -197,116 +197,116 @@ CellMapsConfiguration.prototype = {
     createPropertiesPanel: function () {
         var _this = this;
 
-        this.nodeColorAttributeWidget = new ColorAttributeWidget({
+        this.vertexColorAttributeWidget = new ColorAttributeWidget({
             displayAttribute: 'Color',
-            attributeManager: this.nodeAttributeManager,
-            attributesStore: this.nodeComboStore,
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
             defaultValue: this.vertexDefaults.color,
             handlers: {
                 'change:default': function (e) {
-                    _this.trigger('change:nodeColor', e);
+                    _this.trigger('change:vertexColor', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.trigger('change:nodeDisplayAttribute', e);
+                    _this.trigger('change:vertexDisplayAttribute', e);
                 }
             }
         });
 
-        this.nodeStrokeColorAttributeWidget = new ColorAttributeWidget({
+        this.vertexStrokeColorAttributeWidget = new ColorAttributeWidget({
             displayAttribute: 'Stroke color',
-            attributeManager: this.nodeAttributeManager,
-            attributesStore: this.nodeComboStore,
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
             defaultValue: this.vertexDefaults.strokeColor,
             handlers: {
                 'change:default': function (e) {
-                    _this.trigger('change:nodeStrokeColor', e);
+                    _this.trigger('change:vertexStrokeColor', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.trigger('change:nodeDisplayAttribute', e);
+                    _this.trigger('change:vertexDisplayAttribute', e);
                 }
             }
         });
-        this.nodeSizeAttributeWidget = new NumberAttributeWidget({
+        this.vertexSizeAttributeWidget = new NumberAttributeWidget({
             displayAttribute: 'Size',
-            attributeManager: this.nodeAttributeManager,
-            attributesStore: this.nodeComboStore,
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
             defaultValue: this.vertexDefaults.size,
             maxValue: 160,
             minValue: 0,
             step: 1,
             handlers: {
                 'change:default': function (e) {
-                    _this.trigger('change:nodeSize', e);
+                    _this.trigger('change:vertexSize', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.trigger('change:nodeDisplayAttribute', e);
+                    _this.trigger('change:vertexDisplayAttribute', e);
                 }
             }
         });
-        this.nodeStrokeSizeAttributeWidget = new NumberAttributeWidget({
+        this.vertexStrokeSizeAttributeWidget = new NumberAttributeWidget({
             displayAttribute: 'Stroke size',
-            attributeManager: this.nodeAttributeManager,
-            attributesStore: this.nodeComboStore,
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
             defaultValue: this.vertexDefaults.strokeSize,
             maxValue: 10,
             minValue: 0,
             step: 1,
             handlers: {
                 'change:default': function (e) {
-                    _this.trigger('change:nodeStrokeSize', e);
+                    _this.trigger('change:vertexStrokeSize', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.trigger('change:nodeDisplayAttribute', e);
+                    _this.trigger('change:vertexDisplayAttribute', e);
                 }
             }
         });
 
-        this.nodeOpacityAttributeWidget = new NumberAttributeWidget({
+        this.vertexOpacityAttributeWidget = new NumberAttributeWidget({
             displayAttribute: 'Opacity',
-            attributeManager: this.nodeAttributeManager,
-            attributesStore: this.nodeComboStore,
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
             defaultValue: this.vertexDefaults.opacity,
             maxValue: 1,
             minValue: 0,
             step: 0.1,
             handlers: {
                 'change:default': function (e) {
-                    _this.trigger('change:nodeOpacity', e);
+                    _this.trigger('change:vertexOpacity', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.trigger('change:nodeDisplayAttribute', e);
+                    _this.trigger('change:vertexDisplayAttribute', e);
                 }
             }
         });
-        this.nodeLabelSizeAttributeWidget = new NumberAttributeWidget({
+        this.vertexLabelSizeAttributeWidget = new NumberAttributeWidget({
             displayAttribute: 'Label size',
-            attributeManager: this.nodeAttributeManager,
-            attributesStore: this.nodeComboStore,
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
             defaultValue: this.vertexDefaults.labelSize,
             maxValue: 16,
             minValue: 0,
             step: 1,
             handlers: {
                 'change:default': function (e) {
-                    _this.trigger('change:nodeLabelSize', e);
+                    _this.trigger('change:vertexLabelSize', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.trigger('change:nodeDisplayAttribute', e);
+                    _this.trigger('change:vertexDisplayAttribute', e);
                 }
             }
         });
-        this.nodeShapeAttributeWidget = new SelectAttributeWidget({
+        this.vertexShapeAttributeWidget = new SelectAttributeWidget({
             displayAttribute: 'Shape',
-            attributeManager: this.nodeAttributeManager,
-            attributesStore: this.nodeComboStore,
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
             defaultValue: this.vertexDefaults.shape,
             comboValues: ["circle", "square", "ellipse", "rectangle"],
             handlers: {
                 'change:default': function (e) {
-                    _this.trigger('change:nodeShape', e);
+                    _this.trigger('change:vertexShape', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.trigger('change:nodeDisplayAttribute', e);
+                    _this.trigger('change:vertexDisplayAttribute', e);
                 }
             }
         });
@@ -431,13 +431,13 @@ CellMapsConfiguration.prototype = {
                                 {xtype: 'text', width: 100, text: 'Attribute'}
                             ]
                         },
-                        this.nodeColorAttributeWidget.getComponent(),
-                        this.nodeStrokeColorAttributeWidget.getComponent(),
-                        this.nodeSizeAttributeWidget.getComponent(),
-                        this.nodeStrokeSizeAttributeWidget.getComponent(),
-                        this.nodeOpacityAttributeWidget.getComponent(),
-                        this.nodeLabelSizeAttributeWidget.getComponent(),
-                        this.nodeShapeAttributeWidget.getComponent(),
+                        this.vertexColorAttributeWidget.getComponent(),
+                        this.vertexStrokeColorAttributeWidget.getComponent(),
+                        this.vertexSizeAttributeWidget.getComponent(),
+                        this.vertexStrokeSizeAttributeWidget.getComponent(),
+                        this.vertexOpacityAttributeWidget.getComponent(),
+                        this.vertexLabelSizeAttributeWidget.getComponent(),
+                        this.vertexShapeAttributeWidget.getComponent(),
                         {
                             xtype: 'container',
                             layout: 'hbox',
@@ -455,8 +455,8 @@ CellMapsConfiguration.prototype = {
                             ]
                         },
                         this.createLabelComboComponent({
-                            comboStore: this.nodeComboStore,
-                            eventName: 'change:nodeLabel'
+                            comboStore: this.vertexComboStore,
+                            eventName: 'change:vertexLabel'
                         })
                     ]
                 },

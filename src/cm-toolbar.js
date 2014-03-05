@@ -108,7 +108,7 @@ CmToolBar.prototype = {
                 {
                     text: 'Node attributes...',
                     handler: function () {
-                        _this.trigger('importNodeAttributes:click', {sender: _this});
+                        _this.trigger('importVertexAttributes:click', {sender: _this});
                     }
                 },
                 {
@@ -293,12 +293,12 @@ CmToolBar.prototype = {
                             {
                                 text: 'All nodes',
                                 handler: function () {
-                                    _this.trigger('click:selectAllNodes', {sender: _this});
+                                    _this.trigger('click:selectAllVertices', {sender: _this});
                                 }
                             },                            {
                                 text: 'First neighbour nodes',
                                 handler: function () {
-                                    _this.trigger('click:selectNodesNeighbour', {sender: _this});
+                                    _this.trigger('click:selectVerticesNeighbour', {sender: _this});
                                 }
                             },                            {
                                 text: 'Invert node selection',
@@ -340,21 +340,21 @@ CmToolBar.prototype = {
     getAttributesMenu: function () {
         var _this = this;
 
-        var nodeFiltersMenu = Ext.create('Ext.menu.Menu', {
+        var vertexFiltersMenu = Ext.create('Ext.menu.Menu', {
             plain: true,
-            id: "filtersNodeAttrMenu",
+            id: "filtersVertexAttrMenu",
             items: [
                 {
                     text: "Edit...",
                     handler: function () {
-                        _this.trigger('filterNodeAttributes:click', {sender: _this});
+                        _this.trigger('filterVertexAttributes:click', {sender: _this});
                     }
                 },
                 '-'
             ]
         });
 
-        var nodeMenu = Ext.create('Ext.menu.Menu', {
+        var vertexMenu = Ext.create('Ext.menu.Menu', {
             plain: true,
             margin: '0 0 10 0',
             floating: true,
@@ -362,15 +362,15 @@ CmToolBar.prototype = {
 //                {
 //                    text: 'Import...',
 //                    handler: function () {
-//                        _this.trigger('importNodeAttributes:click', {sender: _this});
+//                        _this.trigger('importVertexAttributes:click', {sender: _this});
 //                    }
 //                },
 //                '-',
                 {
                     text: 'Filters',
-                    menu: nodeFiltersMenu,
+                    menu: vertexFiltersMenu,
                     handler: function () {
-                        _this.trigger('filterNodeAttributes:click', {sender: _this});
+                        _this.trigger('filterVertexAttributes:click', {sender: _this});
                     }
                 }
             ]
@@ -384,7 +384,7 @@ CmToolBar.prototype = {
                     text: "Edit...",
                     handler: function () {
                         if (!Ext.getCmp("filterEdgeAttrWindow")) {
-                            _this.edgeAttributeFilterWidget.draw(_this.networkViewer.getSelectedNodes());
+                            _this.edgeAttributeFilterWidget.draw(_this.networkViewer.getSelectedVertices());
                         }
                     }
                 },
@@ -400,7 +400,7 @@ CmToolBar.prototype = {
 //		         {
 //		        	 text : 'Import...',
 //		        	 handler : function() {
-//		        		 var importAttributesFileWidget =  new ImportAttributesFileWidget({"numNodes": _this.networkViewer.getNumNodes()});
+//		        		 var importAttributesFileWidget =  new ImportAttributesFileWidget({"numVertices": _this.networkViewer.getNumVertices()});
 //		        		 importAttributesFileWidget.draw();
 //		        		 importAttributesFileWidget.onOk.addEventListener(function(sender, data){
 //		        			 _this.networkViewer.importAttributes(data);
@@ -412,7 +412,7 @@ CmToolBar.prototype = {
                     menu: edgeFiltersMenu,
                     handler: function () {
                         if (!Ext.getCmp("filterEdgeAttrWindow")) {
-                            _this.edgeAttributeFilterWidget.draw(_this.networkViewer.getSelectedNodes());
+                            _this.edgeAttributeFilterWidget.draw(_this.networkViewer.getSelectedVertices());
                         }
                     }
                 }
@@ -425,7 +425,7 @@ CmToolBar.prototype = {
                 {
                     text: 'Edit nodes...',
                     handler: function () {
-                        _this.trigger('editNodeAttributes:click', {sender: _this});
+                        _this.trigger('editVertexAttributes:click', {sender: _this});
                     }
                 },
                 {

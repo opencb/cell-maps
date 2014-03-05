@@ -24,7 +24,7 @@ function CellbasePlugin(args) {
     this.id = Utils.genId('CellMapsConfigurationPanel');
 
     this.cellMaps = args.cellMaps;
-    this.attributeManager = this.cellMaps.networkViewer.network.nodeAttributeManager;
+    this.attributeManager = this.cellMaps.networkViewer.network.vertexAttributeManager;
     this.attributeStore = Ext.create('Ext.data.Store', {
         fields: ['name'],
         data: this.attributeManager.attributes

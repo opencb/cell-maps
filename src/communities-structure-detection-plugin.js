@@ -185,7 +185,7 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
                 xtype: 'button',
                 text: 'Show node attributes',
                 handler: function () {
-                    _this.cellMaps.nodeAttributeEditWidget.show();
+                    _this.cellMaps.vertexAttributeEditWidget.show();
                 }
             },
             {
@@ -201,9 +201,9 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
                 pressed: false,
                 toggleHandler: function () {
                     if (this.pressed) {
-                        _this.cellMaps.configuration.nodeColorAttributeWidget.applyVisualSet("Community color", "String");
+                        _this.cellMaps.configuration.vertexColorAttributeWidget.applyVisualSet("Community color", "String");
                     } else {
-                        _this.cellMaps.configuration.nodeColorAttributeWidget.removeVisualSet();
+                        _this.cellMaps.configuration.vertexColorAttributeWidget.removeVisualSet();
                     }
                 }
             },

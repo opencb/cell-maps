@@ -169,7 +169,7 @@ TopologicalStudyPlugin.prototype.draw = function () {
                 xtype: 'button',
                 text: 'Show node attributes',
                 handler: function () {
-                    _this.cellMaps.nodeAttributeEditWidget.show();
+                    _this.cellMaps.vertexAttributeEditWidget.show();
                 }
             },
             this.globalResult

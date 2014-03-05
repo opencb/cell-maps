@@ -25,7 +25,7 @@ function IntActPlugin(args) {
 
 
     this.cellMaps = args.cellMaps;
-    this.attributeManager = this.cellMaps.networkViewer.network.nodeAttributeManager;
+    this.attributeManager = this.cellMaps.networkViewer.network.vertexAttributeManager;
     this.attributeStore = Ext.create('Ext.data.Store', {
         fields: ['name'],
         data: this.attributeManager.attributes
@@ -330,7 +330,7 @@ IntActPlugin.prototype.show = function () {
 
 IntActPlugin.prototype.updateAttributeStore = function () {
     var _this = this;
-    this.attributeManager = this.cellMaps.networkViewer.network.nodeAttributeManager;
+    this.attributeManager = this.cellMaps.networkViewer.network.vertexAttributeManager;
     this.attributeStore.loadData(this.attributeManager.attributes);
     this.attributeManager.on('change:attributes', function () {
         _this.attributeStore.loadData(_this.attributeManager.attributes);
