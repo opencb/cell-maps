@@ -76,7 +76,7 @@ CellbasePlugin.prototype.draw = function () {
     var speciesCombo = Ext.create('Ext.form.field.ComboBox', {
         margin: "0 0 0 5",
         width: 300,
-        labelWidth: 60,
+        labelWidth: 125,
         fieldLabel: 'Species',
         store: speciesStore,
         allowBlank: false,
@@ -96,9 +96,9 @@ CellbasePlugin.prototype.draw = function () {
     });
 
     var attributeCombo = Ext.create('Ext.form.field.ComboBox', {
-        margin: "0 0 0 5",
+        margin: "5 0 0 5",
         width: 300,
-        labelWidth: 60,
+        labelWidth: 125,
         fieldLabel: 'Node attribute',
         store: this.attributeStore,
         allowBlank: false,
@@ -190,14 +190,16 @@ CellbasePlugin.prototype.draw = function () {
     this.progress = Ext.create('Ext.ProgressBar', {
         text: 'Click search to retrieve data...',
         border: 1,
+        width: 280,
         margin: 3
     });
 
     this.window = Ext.create('Ext.window.Window', {
         title: "Cellbase",
         taskbar: Ext.getCmp(this.cellMaps.networkViewer.id + 'uxTaskbar'),
+        bodyStyle: {backgroundColor: 'white'},
         height: 600,
-        width: 500,
+        width: 400,
         closable: false,
         minimizable: true,
         collapsible: true,
@@ -205,34 +207,48 @@ CellbasePlugin.prototype.draw = function () {
             type: 'vbox',
             align: 'stretch'
         },
-        dockedItems: [
-            {
-                xtype: 'toolbar',
-                dock: 'top',
-                items: [speciesCombo]
-            },
-            {
-                xtype: 'toolbar',
-                dock: 'top',
-                items: [attributeCombo]
-            }
-        ],
+//        dockedItems: [
+//            {
+//                xtype: 'toolbar',
+//                dock: 'top',
+//                items: []
+//            },
+//            {
+//                xtype: 'toolbar',
+//                dock: 'top',
+//                items: []
+//            }
+//        ],
         items: [
+            {
+                xtype: 'container',
+                padding: 10,
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [
+                    speciesCombo,
+                    attributeCombo,
+                ]
+            },
             {
                 xtype: 'tabpanel',
                 border: false,
                 flex: 1,
                 buttonAlign: 'center',
                 bodyPadding: 10,
+                plain:true,
                 items: [
                     this.extCheckGroup,
                     this.funcCheckGroup,
                     this.repocheckGroup
                 ]
-            },
-            this.progress
+            }
         ],
         buttons: [
+            this.progress,
+            '->',
             {
                 text: 'Search',
                 handler: function () {

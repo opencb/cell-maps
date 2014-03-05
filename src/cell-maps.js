@@ -207,6 +207,13 @@ CellMaps.prototype = {
 
         //check login
 
+        /* Edit network */
+        this.networkEditWidget = new NetworkEditWidget({
+            autoRender: true,
+            networkViewer: _this.networkViewer,
+            network: _this.networkViewer.network
+        });
+        this.networkEditWidget.draw();
 
         /* Plugins */
         this.cellbasePlugin = new CellbasePlugin({
@@ -231,7 +238,6 @@ CellMaps.prototype = {
 
 
         /* Job forms */
-
 
 
         if ($.cookie('bioinfo_sid') != null) {
@@ -279,6 +285,7 @@ CellMaps.prototype = {
             targetId: targetId,
             autoRender: true,
             handlers: {
+                /* File */
                 'saveJSON:click': function (event) {
                     var content = JSON.stringify(_this.networkViewer.toJSON());
                     event.a.set({
@@ -372,6 +379,19 @@ CellMaps.prototype = {
                         download: "network.svg"
                     });
                 },
+                'saveSIF:click': function (event) {
+                    var content = _this.networkViewer.getAsSIF();
+                    event.a.set({
+                        href: 'data:text/tsv,' + encodeURIComponent(content),
+                        target: "_blank",
+                        download: "network.sif"
+                    });
+                },
+                /* Network */
+                'click:editNetwork': function (event) {
+                    _this.networkEditWidget.show();
+                },
+                /* Attributes */
                 'importNodeAttributes:click': function (event) {
                     var importAttributesFileWidget = new ImportAttributesFileWidget({
                         handlers: {
@@ -402,13 +422,10 @@ CellMaps.prototype = {
                     _this.nodeAttributeFilterWidget.draw();
                 },
 
-
-                'cellbase:click': function (event) {
+                /* Plugins */
+                'click:cellbase': function (event) {
                     _this.cellbasePlugin.show();
                 },
-//                '': function (event) {
-//                },
-
 
                 'click:reactome': function (event) {
                     var reactome = new ReactomePlugin(_this);
@@ -456,7 +473,32 @@ CellMaps.prototype = {
                     } else {
                         _this.jobListWidget.hide();
                     }
-                }
+                },
+
+                /* Selection */
+                'click:selectAllNodes': function (event) {
+                    _this.networkViewer.selectAllVertices();
+                },
+                'click:selectNodesNeighbour': function (event) {
+                    _this.networkViewer.selectVerticesNeighbour()
+                },
+                'click:selectVerticesInvert': function (event) {
+                    _this.networkViewer.selectVerticesInvert();
+                },
+                'click:selectAllEdges': function (event) {
+                    _this.networkViewer.selectAllEdges();
+                },
+                'click:selectEdgesNeighbour': function (event) {
+                    _this.networkViewer.selectEdgesNeighbour();
+                },
+                'click:selectAll': function (event) {
+                    _this.networkViewer.selectAll();
+                },
+
+//                '': function (event) {
+//                },
+
+
             }
         });
         return cmToolBar;

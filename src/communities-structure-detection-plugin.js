@@ -25,7 +25,7 @@ function CommunitiesStructureDetectionPlugin(args) {
 
 
     this.cellMaps = args.cellMaps;
-    this.attributeManager = this.cellMaps.networkViewer.network.nodeAttributeManager;
+    this.attributeManager = this.cellMaps.networkViewer.network.edgeAttributeManager;
     this.attributeStore = Ext.create('Ext.data.Store', {
         fields: ['name'],
         data: this.attributeManager.attributes
@@ -50,25 +50,27 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
     var _this = this;
 
     this.methodCombo = Ext.create('Ext.form.field.ComboBox', {
-        width: 200,
-        labelWidth: 100,
-        fieldLabel: 'Select method',
+        width: 300,
+        labelWidth: 175,
+        fieldLabel: 'Community detection method',
         id: this.id + "methodCombo",
-        store: ['infomap', 'walktrap', 'edge.betweenness'],
+        store: ['fastgreedy', 'walktrap', 'infomap'],
         queryMode: 'local',
         forceSelection: true,
         editable: false,
         name: 'method',
         listeners: {
             afterrender: function () {
-                this.select(this.getStore().getAt(1));
+                this.select(this.getStore().getAt(0));
             }
         }
     });
 
     var attributeCombo = Ext.create('Ext.form.field.ComboBox', {
 //        labelAlign: 'top',
-        fieldLabel: 'Node attribute',
+        labelWidth: 125,
+        margin: '0 0 0 50',
+        fieldLabel: 'Select edge weight',
         store: this.attributeStore,
         allowBlank: false,
         editable: false,
@@ -107,8 +109,9 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
     ];
     this.directedRadioGroup = Ext.create('Ext.form.RadioGroup', {
 //        layout: 'vbox',
-        fieldLabel: 'Directed',
-        width: 250,
+        labelWidth: 175,
+        fieldLabel: 'Consider network as directed',
+        width: 400,
         defaults: {
             name: 'directed'
         },
@@ -132,8 +135,9 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
     ];
     this.weightedRadioGroup = Ext.create('Ext.form.RadioGroup', {
 //        layout: 'vbox',
-        fieldLabel: 'Weighted',
-        width: 200,
+        labelWidth: 175,
+        fieldLabel: 'Consider network as weighted',
+        width: 400,
         defaults: {
             name: 'weighted'
         },
@@ -151,21 +155,31 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
     });
 
     this.progress = Ext.create('Ext.ProgressBar', {
-        text: 'Click search to retrieve data...',
-        width: 200,
+        text: 'Click run to start the analysis...',
+        width: 350,
         border: 1,
         margin: 3
     });
 
-    this.resultContainer = Ext.create('Ext.container.Container', {
+    this.results = Ext.create('Ext.Component', {
+        margin: '20 0 0 0',
+        html: ''
+    });
+
+    this.resultContainer = Ext.create('Ext.panel.Panel', {
         hidden: true,
         xtype: 'container',
-        padding: 3,
+        title:'Results',
+        padding: 10,
+        bodyPadding: 10,
+        layout: {
+            type: 'vbox',
+            align: 'center'
+        },
         items: [
             {
                 xtype: 'box',
-                padding: 3,
-                html: 'Community dectection results are available as node attribute <span style="font-weight: bold">Community id</span>',
+                html: 'Community dectection results are available as node attribute <span style="font-weight: bold">Community id</span>.'
             },
             {
                 xtype: 'button',
@@ -175,11 +189,16 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
                 }
             },
             {
+                xtype: 'box',
+                margin: '20 0 0 0',
+                align: 'center',
+                html: 'A color has been assigned to the top communities.'
+            },
+            {
                 xtype: 'button',
                 text: 'Apply as color',
                 enableToggle: true,
                 pressed: false,
-                margin:'0 0 0 5',
                 toggleHandler: function () {
                     if (this.pressed) {
                         _this.cellMaps.configuration.nodeColorAttributeWidget.applyVisualSet("Community color", "String");
@@ -187,7 +206,8 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
                         _this.cellMaps.configuration.nodeColorAttributeWidget.removeVisualSet();
                     }
                 }
-            }
+            },
+            this.results
         ]
     });
 
@@ -195,7 +215,7 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
         title: "Network analysis: Communities structure detection",
         taskbar: Ext.getCmp(this.cellMaps.networkViewer.id + 'uxTaskbar'),
         bodyStyle: {backgroundColor: 'white'},
-        width: 330,
+        width: 470,
         closable: false,
         minimizable: true,
         collapsible: true,
@@ -230,7 +250,7 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
                 handler: function () {
                     _this.retrieveData();
                 }
-            },
+            }
         ],
         listeners: {
             minimize: function () {
@@ -265,11 +285,9 @@ CommunitiesStructureDetectionPlugin.prototype.retrieveData = function () {
         data: data,
         dataType: 'json',//still firefox 20 does not auto serialize JSON, You can force it to always do the parsing by adding dataType: 'json' to your call.
         success: function (data, textStatus, jqXHR) {
-            console.log('success')
-            console.log('reponse: ' + data.response);
-            if (data.response !== 'error') {
+            if (typeof data.response.error === 'undefined') {
                 var attributesDataAdapter = new AttributesDataAdapter({
-                    dataSource: new StringDataSource(data.response),
+                    dataSource: new StringDataSource(data.response.attributes),
                     handlers: {
                         'data:load': function (event) {
                             _this.progress.updateProgress(0.4, 'processing data');
@@ -284,6 +302,7 @@ CommunitiesStructureDetectionPlugin.prototype.retrieveData = function () {
                         }
                     }
                 });
+                _this.results.update(Utils.htmlTable(data.response.results));
             } else {
                 _this.progress.updateProgress(0, 'Error');
             }
@@ -293,3 +312,30 @@ CommunitiesStructureDetectionPlugin.prototype.retrieveData = function () {
         }
     });
 };
+
+//
+//console.log('success')
+//console.log(data.response);
+//if (typeof data.response.error === 'undefined') {
+//    var attributesDataAdapter = new AttributesDataAdapter({
+//        dataSource: new StringDataSource(data.response.local),
+//        handlers: {
+//            'data:load': function (event) {
+//                _this.progress.updateProgress(0.4, 'processing data');
+//                var json = event.sender.getAttributesJSON();
+//                json.attributes[1].name = "Degree";
+//                json.attributes[2].name = "Betweenness";
+//                json.attributes[3].name = "Closeness centrality";
+//                json.attributes[4].name = "Clustering coefficient";
+//                console.log(json)
+//                _this.progress.updateProgress(0.7, 'creating attributes');
+//                _this.cellMaps.networkViewer.importVertexWithAttributes({content: json});
+//                _this.progress.updateProgress(1, 'Topology information retrieved successfully');
+//                _this.resultContainer.show()
+//            }
+//        }
+//    });
+//    _this.globalResult.update(Utils.htmlTable('Global result', data.response.global));
+//} else {
+//    _this.progress.updateProgress(0, data.response.error);
+//}

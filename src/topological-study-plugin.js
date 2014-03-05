@@ -25,7 +25,7 @@ function TopologicalStudyPlugin(args) {
 
 
     this.cellMaps = args.cellMaps;
-    this.attributeManager = this.cellMaps.networkViewer.network.nodeAttributeManager;
+    this.attributeManager = this.cellMaps.networkViewer.network.edgeAttributeManager;
     this.attributeStore = Ext.create('Ext.data.Store', {
         fields: ['name'],
         data: this.attributeManager.attributes
@@ -51,7 +51,9 @@ TopologicalStudyPlugin.prototype.draw = function () {
 
     var attributeCombo = Ext.create('Ext.form.field.ComboBox', {
 //        labelAlign: 'top',
-        fieldLabel: 'Node attribute',
+        labelWidth: 125,
+        margin: '0 0 0 50',
+        fieldLabel: 'Select edge weight',
         store: this.attributeStore,
         allowBlank: false,
         editable: false,
@@ -90,8 +92,9 @@ TopologicalStudyPlugin.prototype.draw = function () {
     ];
     this.directedRadioGroup = Ext.create('Ext.form.RadioGroup', {
 //        layout: 'vbox',
-        fieldLabel: 'Directed',
-        width: 200,
+        labelWidth: 175,
+        fieldLabel: 'Consider network as directed',
+        width: 300,
         defaults: {
             name: 'directed'
         },
@@ -115,17 +118,28 @@ TopologicalStudyPlugin.prototype.draw = function () {
     ];
     this.weightedRadioGroup = Ext.create('Ext.form.RadioGroup', {
 //        layout: 'vbox',
-        fieldLabel: 'Weighted',
-        width: 200,
+        labelWidth: 175,
+        fieldLabel: 'Consider network as weighted',
+        width: 300,
         defaults: {
             name: 'weighted'
         },
-        items: weightedItems
+        items: weightedItems,
+        listeners: {
+            change: function (radiogroup, newValue, oldValue, eOpts) {
+                console.log(newValue);
+                if (newValue['weighted'] === 'T') {
+                    attributeCombo.show();
+                } else {
+                    attributeCombo.hide();
+                }
+            }
+        }
     });
 
     this.progress = Ext.create('Ext.ProgressBar', {
-        text: 'Click search to retrieve data...',
-        width: 200,
+        text: 'Click run to start the analysis...',
+        width: 240,
         border: 1,
         margin: 3
     });
@@ -135,10 +149,16 @@ TopologicalStudyPlugin.prototype.draw = function () {
         html: ''
     });
 
-    this.resultContainer = Ext.create('Ext.container.Container', {
+    this.resultContainer = Ext.create('Ext.panel.Panel', {
         hidden: true,
         xtype: 'container',
-        padding: 3,
+        title:'Results',
+        padding: 10,
+        bodyPadding: 10,
+        layout: {
+            type: 'vbox',
+            align: 'center'
+        },
         items: [
             {
                 xtype: 'box',
@@ -161,7 +181,7 @@ TopologicalStudyPlugin.prototype.draw = function () {
         taskbar: Ext.getCmp(this.cellMaps.networkViewer.id + 'uxTaskbar'),
         bodyStyle: {backgroundColor: 'white'},
 //        height: 200,
-        width: 310,
+        width: 350,
         closable: false,
         minimizable: true,
         collapsible: true,
@@ -249,7 +269,7 @@ TopologicalStudyPlugin.prototype.retrieveData = function () {
                         }
                     }
                 });
-                _this.globalResult.update(Utils.htmlTable('Global result', data.response.global));
+                _this.globalResult.update(Utils.htmlTable(data.response.global));
             } else {
                 _this.progress.updateProgress(0, data.response.error);
             }

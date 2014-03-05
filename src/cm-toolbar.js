@@ -160,7 +160,6 @@ CmToolBar.prototype = {
                                     _this.trigger('saveJSON:click', {a: this.getEl().child("a"), sender: _this});
                                 }
                             },
-                            ,
                             '-',
                             {
                                 text: 'Import',
@@ -172,9 +171,17 @@ CmToolBar.prototype = {
                                 menu: {
                                     plain: true,
                                     items: [
-
                                         {
-                                            text: "SVG image",
+                                            text: "Network as SIF",
+                                            href: "none",
+                                            icon: Utils.images.r,
+                                            handler: function () {
+                                                _this.trigger('saveSIF:click', {a: this.getEl().child("a"), sender: _this});
+                                            }
+                                        },
+                                        '-',
+                                        {
+                                            text: "Network as SVG",
                                             href: "none",
                                             iconCls: 'icon-blue-box',
                                             handler: function () {
@@ -206,8 +213,11 @@ CmToolBar.prototype = {
                         ]
                     }
                 },
+                {
 
-
+                    text: 'Network',
+                    menu: this.getNetworkMenu()
+                },
                 {
 
                     text: 'Attributes',
@@ -260,6 +270,70 @@ CmToolBar.prototype = {
 
     getHeight: function () {
         return this.toolbar.getHeight();
+    },
+
+
+    getNetworkMenu: function () {
+        var _this = this;
+
+        var menu = Ext.create('Ext.menu.Menu', {
+            plain: true,
+            items: [
+                {
+                    text: 'Edit network...',
+                    handler: function () {
+                        _this.trigger('click:editNetwork', {sender: _this});
+                    }
+                },
+                {
+                    text: 'Select',
+                    menu: {
+                        plain: true,
+                        items: [
+                            {
+                                text: 'All nodes',
+                                handler: function () {
+                                    _this.trigger('click:selectAllNodes', {sender: _this});
+                                }
+                            },                            {
+                                text: 'First neighbour nodes',
+                                handler: function () {
+                                    _this.trigger('click:selectNodesNeighbour', {sender: _this});
+                                }
+                            },                            {
+                                text: 'Invert node selection',
+                                handler: function () {
+                                    _this.trigger('click:selectVerticesInvert', {sender: _this});
+                                }
+                            },
+
+                            '-',
+                            {
+                                text: 'All edges',
+                                handler: function () {
+                                    _this.trigger('click:selectAllEdges', {sender: _this});
+                                }
+                            },
+                            {
+                                text: 'Adjacent edges',
+                                handler: function () {
+                                    _this.trigger('click:selectEdgesNeighbour', {sender: _this});
+                                }
+                            },
+                            '-',
+                            {
+                                text: 'Everything',
+                                handler: function () {
+                                    _this.trigger('click:selectAll', {sender: _this});
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        });
+
+        return menu;
     },
 
 
@@ -364,7 +438,7 @@ CmToolBar.prototype = {
                 {
                     text: 'Cellbase...',
                     handler: function () {
-                        _this.trigger('cellbase:click', {sender: _this});
+                        _this.trigger('click:cellbase', {sender: _this});
                     }
                 }
             ]
