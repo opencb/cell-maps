@@ -118,9 +118,9 @@ CellMaps.prototype = {
         /* Header Widget */
         this.headerWidget = this._createHeaderWidget('cm-header-widget');
 
-        this.cmToolBar = this._createCbToolBar('cm-tool-bar');
+        this.toolbar = this._createToolBar('cm-tool-bar');
 
-        var centerHeight = $(window).height() - this.headerWidget.height - this.cmToolBar.getHeight() - $('#status').height() - 12;
+        var centerHeight = $(window).height() - this.headerWidget.height - this.toolbar.getHeight() - $('#status').height() - 12;
 
         $('#cm-network-viewer').css({
             height: centerHeight
@@ -143,7 +143,7 @@ CellMaps.prototype = {
 
         this.vertexAttributeEditWidget = new AttributeEditWidget({
             attrMan: this.networkViewer.network.vertexAttributeManager,
-            type: 'Vertex',
+            type: 'node',
             autoRender: true,
 //            handlers: {
 //                '': function (event) {
@@ -172,7 +172,7 @@ CellMaps.prototype = {
 
         this.edgeAttributeEditWidget = new AttributeEditWidget({
             attrMan: this.networkViewer.network.edgeAttributeManager,
-            type: 'Edge',
+            type: 'edge',
             autoRender: true,
 //            handlers: {
 //                '': function (event) {
@@ -279,7 +279,7 @@ CellMaps.prototype = {
 
         return headerWidget;
     },
-    _createCbToolBar: function (targetId) {
+    _createToolBar: function (targetId) {
         var _this = this;
         var cmToolBar = new CmToolBar({
             targetId: targetId,
@@ -316,17 +316,29 @@ CellMaps.prototype = {
                     dotNetworkFileWidget.draw();
                 },
                 'openSIF:click': function (event) {
-                    _this.networkViewer.clean();
+//                    _this.networkViewer.clean();
                     var sifNetworkFileWidget = new SIFNetworkFileWidget({
-                        network: _this.networkViewer.network,
                         handlers: {
                             'okButton:click': function (widgetEvent) {
-                                _this.networkViewer.drawNetwork();
+                                var graph = widgetEvent.content;
+                                _this.networkViewer.setGraph(graph);
                                 _this.networkViewer.setLayout('Force directed');
                             }
                         }
                     });
                     sifNetworkFileWidget.draw();
+                },
+                'click:openXLSX': function (event) {
+                    var xlsxNetworkFileWidget = new XLSXNetworkFileWidget({
+                        handlers: {
+                            'okButton:click': function (widgetEvent) {
+                                var graph = widgetEvent.content;
+                                _this.networkViewer.setGraph(graph);
+                                _this.networkViewer.setLayout('Force directed');
+                            }
+                        }
+                    });
+                    xlsxNetworkFileWidget.draw();
                 },
                 'savePNG:click': function (event) {
                     var svgEl = _this.networkViewer.networkSvgLayout.getSvgEl();
@@ -385,6 +397,22 @@ CellMaps.prototype = {
                         href: 'data:text/tsv,' + encodeURIComponent(content),
                         target: "_blank",
                         download: "network.sif"
+                    });
+                },
+                'click:exportVertexAttributes': function (event) {
+                    var content = _this.networkViewer.network.vertexAttributeManager.getAsFile();
+                    event.a.set({
+                        href: 'data:text/tsv,' + encodeURIComponent(content),
+                        target: "_blank",
+                        download: "node.attr"
+                    });
+                },
+                'click:exportEdgeAttributes': function (event) {
+                    var content = _this.networkViewer.network.edgeAttributeManager.getAsFile();
+                    event.a.set({
+                        href: 'data:text/tsv,' + encodeURIComponent(content),
+                        target: "_blank",
+                        download: "edge.attr"
                     });
                 },
                 /* Network */
@@ -494,6 +522,10 @@ CellMaps.prototype = {
                 'click:selectAll': function (event) {
                     _this.networkViewer.selectAll();
                 },
+                'click:layout': function (event) {
+                    _this.networkViewer.setLayout(event.option, event);
+                },
+
 
 //                '': function (event) {
 //                },
@@ -516,6 +548,12 @@ CellMaps.prototype = {
                 },
                 'select:edges': function (e) {
                     _this.edgeAttributeEditWidget.checkSelectedFilter();
+                },
+                'change:vertexAttributes': function (e) {
+                    _this.toolbar.setVertexAttributes(e.sender);
+                },
+                'change:edgeAttributes': function (e) {
+
                 }
             }
         });

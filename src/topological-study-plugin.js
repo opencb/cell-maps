@@ -139,9 +139,9 @@ TopologicalStudyPlugin.prototype.draw = function () {
 
     this.progress = Ext.create('Ext.ProgressBar', {
         text: 'Click run to start the analysis...',
-        width: 240,
         border: 1,
-        margin: 3
+        flex:1,
+        margin: '0 10 0 0'
     });
 
     this.globalResult = Ext.create('Ext.Component', {
@@ -176,9 +176,8 @@ TopologicalStudyPlugin.prototype.draw = function () {
         ]
     });
 
-    this.window = Ext.create('Ext.ux.Window', {
+    this.window = Ext.create('Ext.window.Window', {
         title: "Network analysis: Topological study",
-        taskbar: Ext.getCmp(this.cellMaps.networkViewer.id + 'uxTaskbar'),
         bodyStyle: {backgroundColor: 'white'},
 //        height: 200,
         width: 350,
@@ -209,7 +208,12 @@ TopologicalStudyPlugin.prototype.draw = function () {
         ],
         buttons: [
             this.progress,
-            '->',
+            {
+                text: 'Close',
+                handler: function (bt) {
+                    bt.up('window').hide();
+                }
+            },
             {
                 text: 'Run',
                 handler: function () {

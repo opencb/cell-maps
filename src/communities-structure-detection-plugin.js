@@ -156,9 +156,9 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
 
     this.progress = Ext.create('Ext.ProgressBar', {
         text: 'Click run to start the analysis...',
-        width: 350,
         border: 1,
-        margin: 3
+        flex:1,
+        margin: '0 10 0 0'
     });
 
     this.results = Ext.create('Ext.Component', {
@@ -211,9 +211,8 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
         ]
     });
 
-    this.window = Ext.create('Ext.ux.Window', {
+    this.window = Ext.create('Ext.window.Window', {
         title: "Network analysis: Communities structure detection",
-        taskbar: Ext.getCmp(this.cellMaps.networkViewer.id + 'uxTaskbar'),
         bodyStyle: {backgroundColor: 'white'},
         width: 470,
         closable: false,
@@ -244,7 +243,12 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
         ],
         buttons: [
             this.progress,
-            '->',
+            {
+                text: 'Close',
+                handler: function (bt) {
+                    bt.up('window').hide();
+                }
+            },
             {
                 text: 'Run',
                 handler: function () {

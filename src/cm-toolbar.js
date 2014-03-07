@@ -66,6 +66,12 @@ CmToolBar.prototype = {
                     }
                 },
                 {
+                    text: 'Network from XLSX...',
+                    handler: function () {
+                        _this.trigger('click:openXLSX', {sender: _this});
+                    }
+                },
+                {
                     text: 'Network from DOT...',
                     hidden: true,
                     handler: function () {
@@ -205,6 +211,23 @@ CmToolBar.prototype = {
                                             handler: function () {
                                                 _this.trigger('saveJPG:click', {a: this.getEl().child("a"), sender: _this});
                                             }
+                                        },
+                                        '-',
+                                        {
+                                            text: 'Node attributes as file',
+                                            href: "none",
+                                            icon: Utils.images.r,
+                                            handler: function () {
+                                                _this.trigger('click:exportVertexAttributes', {a: this.getEl().child("a"), sender: _this});
+                                            }
+                                        },
+                                        {
+                                            text: 'Edge attributes as file',
+                                            href: "none",
+                                            icon: Utils.images.r,
+                                            handler: function () {
+                                                _this.trigger('click:exportEdgeAttributes', {a: this.getEl().child("a"), sender: _this});
+                                            }
                                         }
                                     ]
                                 }
@@ -276,6 +299,12 @@ CmToolBar.prototype = {
     getNetworkMenu: function () {
         var _this = this;
 
+
+        this.circleLayoutMenu = Ext.create('Ext.menu.Menu', {
+            plain: true,
+            items: []
+        });
+
         var menu = Ext.create('Ext.menu.Menu', {
             plain: true,
             items: [
@@ -295,12 +324,14 @@ CmToolBar.prototype = {
                                 handler: function () {
                                     _this.trigger('click:selectAllVertices', {sender: _this});
                                 }
-                            },                            {
+                            },
+                            {
                                 text: 'First neighbour nodes',
                                 handler: function () {
                                     _this.trigger('click:selectVerticesNeighbour', {sender: _this});
                                 }
-                            },                            {
+                            },
+                            {
                                 text: 'Invert node selection',
                                 handler: function () {
                                     _this.trigger('click:selectVerticesInvert', {sender: _this});
@@ -327,6 +358,34 @@ CmToolBar.prototype = {
                                     _this.trigger('click:selectAll', {sender: _this});
                                 }
                             }
+                        ]
+                    }
+                },
+                {
+                    text: 'Layout',
+                    menu: {
+                        plain: true,
+                        items: [
+                            {
+                                text: 'Force directed',
+                                handler: function () {
+                                    _this.trigger('click:layout', {option: this.text, sender: _this});
+                                }
+                            },
+                            {
+                                text: 'Circle',
+                                menu: this.circleLayoutMenu,
+                                handler: function () {
+                                    _this.trigger('click:layout', {option: this.text, sender: _this});
+                                }
+                            },
+                            {
+                                text: 'Random',
+                                handler: function () {
+                                    _this.trigger('click:layout', {option: this.text, sender: _this});
+                                }
+                            },
+                            '-'
                         ]
                     }
                 }
@@ -680,5 +739,24 @@ CmToolBar.prototype = {
             ]
         });
         return examplesMenu;
+    },
+
+
+    setVertexAttributes: function (attributeManager) {
+        this._setCircleLayoutMenu(attributeManager);
+    },
+    _setCircleLayoutMenu: function (attributeManager) {
+        var _this = this;
+        this.circleLayoutMenu.removeAll();
+        var attributes = attributeManager.attributes;
+        for (var a in attributes) {
+            var name = attributes[a].name;
+            this.circleLayoutMenu.add({
+                text: name,
+                handler: function () {
+                    _this.trigger('click:layout', {option: 'Circle', attributeName: name, sender: _this});
+                }
+            });
+        }
     }
 }
