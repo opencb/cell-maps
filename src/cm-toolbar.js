@@ -72,6 +72,12 @@ CmToolBar.prototype = {
                     }
                 },
                 {
+                    text: 'Network from Text...',
+                    handler: function () {
+                        _this.trigger('click:openText', {sender: _this});
+                    }
+                },
+                {
                     text: 'Network from DOT...',
                     hidden: true,
                     handler: function () {

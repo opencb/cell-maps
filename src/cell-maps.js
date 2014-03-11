@@ -294,7 +294,7 @@ CellMaps.prototype = {
                     });
                 },
                 'openJSON:click': function (event) {
-                    var networkFileWidget = new NetworkFileWidget({
+                    var jsonNetworkFileWidget = new JSONNetworkFileWidget({
                         handlers: {
                             'okButton:click': function (widgetEvent) {
                                 _this.networkViewer.loadJSON(widgetEvent.content);
@@ -302,9 +302,10 @@ CellMaps.prototype = {
                             }
                         }
                     });
-                    networkFileWidget.draw();
+                    jsonNetworkFileWidget.draw();
                 },
                 'openDOT:click': function (event) {
+                    //TODO fix
                     var dotNetworkFileWidget = new DOTNetworkFileWidget({
                         handlers: {
                             'okButton:click': function (widgetEvent) {
@@ -339,6 +340,18 @@ CellMaps.prototype = {
                         }
                     });
                     xlsxNetworkFileWidget.draw();
+                },
+                'click:openText': function (event) {
+                    var textNetworkFileWidget = new TextNetworkFileWidget({
+                        handlers: {
+                            'okButton:click': function (widgetEvent) {
+                                var graph = widgetEvent.content;
+                                _this.networkViewer.setGraph(graph);
+                                _this.networkViewer.setLayout('Force directed');
+                            }
+                        }
+                    });
+                    textNetworkFileWidget.draw();
                 },
                 'savePNG:click': function (event) {
                     var svgEl = _this.networkViewer.networkSvgLayout.getSvgEl();
@@ -421,24 +434,24 @@ CellMaps.prototype = {
                 },
                 /* Attributes */
                 'importVertexAttributes:click': function (event) {
-                    var importAttributesFileWidget = new ImportAttributesFileWidget({
+                    var attributeNetworkFileWidget = new AttributeNetworkFileWidget({
                         handlers: {
                             'okButton:click': function (attrEvent) {
                                 _this.networkViewer.importVertexWithAttributes(attrEvent.content);
                             }
                         }
                     });
-                    importAttributesFileWidget.draw();
+                    attributeNetworkFileWidget.draw();
                 },
                 'importEdgeAttributes:click': function (event) {
-                    var importAttributesFileWidget = new ImportAttributesFileWidget({
+                    var attributeNetworkFileWidget = new AttributeNetworkFileWidget({
                         handlers: {
                             'okButton:click': function (attrEvent) {
                                 _this.networkViewer.importEdgesWithAttributes(attrEvent.content);
                             }
                         }
                     });
-                    importAttributesFileWidget.draw();
+                    attributeNetworkFileWidget.draw();
                 },
                 'editVertexAttributes:click': function (event) {
                     _this.vertexAttributeEditWidget.draw();
