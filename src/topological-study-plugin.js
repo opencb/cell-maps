@@ -237,7 +237,12 @@ TopologicalStudyPlugin.prototype.retrieveData = function () {
 
     this.progress.updateProgress(0.1, 'Requesting data');
 
-    var sif = this.cellMaps.networkViewer.getAsSIF();
+    var sif;
+    if (this.weightedRadioGroup.getValue().weighted === 'T') {
+        sif = this.cellMaps.networkViewer.getAsSIFCustomRelation('\t', this.attributeNameSelected);
+    } else {
+        sif = this.cellMaps.networkViewer.getAsSIF();
+    }
 
     var data = {
         sif: sif,
@@ -255,7 +260,7 @@ TopologicalStudyPlugin.prototype.retrieveData = function () {
             console.log('success')
             console.log(data.response);
             if (typeof data.response.error === 'undefined') {
-                var attributesDataAdapter = new AttributesDataAdapter({
+                var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
                     dataSource: new StringDataSource(data.response.local),
                     handlers: {
                         'data:load': function (event) {

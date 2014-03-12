@@ -157,7 +157,7 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
     this.progress = Ext.create('Ext.ProgressBar', {
         text: 'Click run to start the analysis...',
         border: 1,
-        flex:1,
+        flex: 1,
         margin: '0 10 0 0'
     });
 
@@ -169,7 +169,7 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
     this.resultContainer = Ext.create('Ext.panel.Panel', {
         hidden: true,
         xtype: 'container',
-        title:'Results',
+        title: 'Results',
         padding: 10,
         bodyPadding: 10,
         layout: {
@@ -272,8 +272,13 @@ CommunitiesStructureDetectionPlugin.prototype.retrieveData = function () {
 
     this.progress.updateProgress(0.1, 'Requesting data');
 
-    var sif = this.cellMaps.networkViewer.getAsSIF();
-//    console.log(sif)
+    var sif;
+    if (this.weightedRadioGroup.getValue().weighted === 'T') {
+        sif = this.cellMaps.networkViewer.getAsSIFCustomRelation('\t', this.attributeNameSelected);
+    } else {
+        sif = this.cellMaps.networkViewer.getAsSIF();
+    }
+    console.log(sif)
 
     var data = {
         sif: sif,
@@ -290,7 +295,7 @@ CommunitiesStructureDetectionPlugin.prototype.retrieveData = function () {
         dataType: 'json',//still firefox 20 does not auto serialize JSON, You can force it to always do the parsing by adding dataType: 'json' to your call.
         success: function (data, textStatus, jqXHR) {
             if (typeof data.response.error === 'undefined') {
-                var attributesDataAdapter = new AttributesDataAdapter({
+                var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
                     dataSource: new StringDataSource(data.response.attributes),
                     handlers: {
                         'data:load': function (event) {
