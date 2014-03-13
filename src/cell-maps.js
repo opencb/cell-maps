@@ -36,7 +36,7 @@ function CellMaps(args) {
     this.targetId;
     this.width;
     this.height;
-
+    this.resizeTimer = 0;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -93,20 +93,28 @@ CellMaps.prototype = {
         // Resize
         if (this.resizable) {
             $(window).resize(function (event) {
-                if (event.target == window) {
-                    if (!_this.resizing) {//avoid multiple resize events
-                        _this.resizing = true;
-//                        _this.setWidth($(_this.div).width());
-                        setTimeout(function () {
-                            _this.resizing = false;
-                        }, 400);
-                    }
-                }
+                clearTimeout(_this.resizeTimer);
+                _this.resizeTimer = setTimeout(function () {
+
+                    _this.resize();
+                    console.log($(_this.div).width())
+                    console.log($(_this.div).height())
+                }, 500);
             });
         }
 
-
         this.rendered = true;
+    },
+    resize: function () {
+        var centerHeight = this._getCenterHeight();
+        $('#cm-network-viewer').css({
+            height: centerHeight
+        });
+        this.networkViewer.resize();
+    },
+    _getCenterHeight: function () {
+        //header toolbar and status must exists
+        return $(window).height() - this.headerWidget.height - this.toolbar.getHeight() - $('#status').height() - 12;
     },
     draw: function () {
         var _this = this;
@@ -120,10 +128,9 @@ CellMaps.prototype = {
 
         this.toolbar = this._createToolBar('cm-tool-bar');
 
-        var centerHeight = $(window).height() - this.headerWidget.height - this.toolbar.getHeight() - $('#status').height() - 12;
 
         $('#cm-network-viewer').css({
-            height: centerHeight
+            height: this._getCenterHeight()
         });
 
         /* network Viewer  */
@@ -236,6 +243,11 @@ CellMaps.prototype = {
         });
         this.topologicalStudyPlugin.draw();
 
+        this.reactomePlugin = new ReactomePlugin({
+            cellMaps: _this
+        });
+        this.reactomePlugin.draw();
+//        this.reactomePlugin.show();
 
         /* Job forms */
 
@@ -469,8 +481,7 @@ CellMaps.prototype = {
                 },
 
                 'click:reactome': function (event) {
-                    var reactome = new ReactomePlugin(_this);
-                    reactome.draw();
+                    _this.reactomePlugin.show();
                 },
                 'click:intact': function (event) {
                     _this.intActPlugin.show(_this);

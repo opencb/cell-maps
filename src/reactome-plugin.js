@@ -19,14 +19,20 @@
  * along with Cell Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-function ReactomePlugin(cellMaps) {
-    this.id = Math.round(Math.random() * 10000000);
+function ReactomePlugin(args) {
+    var _this = this;
+    this.id = Utils.genId('ReactomePlugin');
+
+    this.cellMaps = args.cellMaps;
 
     this.nodeNameIdDic = {};
     this.nodeIdNameDic = {};
     this.pathwayComponents = {};
     this.reusedNodes = {};
-    this.cellMaps = cellMaps;
+}
+
+ReactomePlugin.prototype.show = function () {
+    this.window.show();
 };
 
 ReactomePlugin.prototype.draw = function () {
@@ -37,41 +43,40 @@ ReactomePlugin.prototype.draw = function () {
         fields: [ 'name', 'value' ],
         data: [
             {name: "Homo sapiens", value: "hsapiens"},
-            {name: "Mus musculus", value: "mmusculus"},
-            {name: "Rattus norvegicus", value: "rnorvegicus"},
-            {name: "Bos taurus", value: "btaurus"},
-            {name: "Gallus gallus", value: "ggallus"},
-            {name: "Sus scrofa", value: "sscrofa"},
-            {name: "Canis familiaris", value: "cfamiliaris"},
-            {name: "Drosophila melanogaster", value: "dmelanogaster"},
-            {name: "Caenorhabditis elegans", value: "celegans"},
-            {name: "Saccharomyces cerevisiae", value: "scerevisiae"},
-            {name: "Danio rerio", value: "drerio"},
-            {name: "Schizosaccharomyces pombe", value: "spombe"},
-            {name: "Escherichia coli", value: "ecoli"},
-            {name: "Human immunodeficiency virus 1", value: "hiv-1"},
-            {name: "Influenza A virus", value: "flu-a"},
-            {name: "Clostridium botulinum", value: "cbotulinum"},
-            {name: "Arabidopsis thaliana", value: "athaliana"},
-            {name: "Plasmodium falciparum", value: "pfalciparum"},
-            {name: "Dictyostelium discoideum", value: "ddiscoideum"},
-            {name: "Mycobacterium tuberculosis", value: "mtuberculosis"},
-            {name: "Neisseria meningitidis serogroup B", value: "nmeningitidis"},
-            {name: "Chlamydia trachomatis", value: "ctrachomatis"},
-            {name: "Oryza sativa", value: "osativa"},
-            {name: "Toxoplasma gondii", value: "tgondii"},
-            {name: "Xenopus tropicalis", value: "xtropicalis"},
-            {name: "Salmonella typhimurium", value: "styphimurium"},
-            {name: "Taeniopygia guttata", value: "tguttata"},
-            {name: "Staphylococcus aureus N315", value: "saureus"}
+//            {name: "Mus musculus", value: "mmusculus"},
+//            {name: "Rattus norvegicus", value: "rnorvegicus"},
+//            {name: "Bos taurus", value: "btaurus"},
+//            {name: "Gallus gallus", value: "ggallus"},
+//            {name: "Sus scrofa", value: "sscrofa"},
+//            {name: "Canis familiaris", value: "cfamiliaris"},
+//            {name: "Drosophila melanogaster", value: "dmelanogaster"},
+//            {name: "Caenorhabditis elegans", value: "celegans"},
+//            {name: "Saccharomyces cerevisiae", value: "scerevisiae"},
+//            {name: "Danio rerio", value: "drerio"},
+//            {name: "Schizosaccharomyces pombe", value: "spombe"},
+//            {name: "Escherichia coli", value: "ecoli"},
+//            {name: "Human immunodeficiency virus 1", value: "hiv-1"},
+//            {name: "Influenza A virus", value: "flu-a"},
+//            {name: "Clostridium botulinum", value: "cbotulinum"},
+//            {name: "Arabidopsis thaliana", value: "athaliana"},
+//            {name: "Plasmodium falciparum", value: "pfalciparum"},
+//            {name: "Dictyostelium discoideum", value: "ddiscoideum"},
+//            {name: "Mycobacterium tuberculosis", value: "mtuberculosis"},
+//            {name: "Neisseria meningitidis serogroup B", value: "nmeningitidis"},
+//            {name: "Chlamydia trachomatis", value: "ctrachomatis"},
+//            {name: "Oryza sativa", value: "osativa"},
+//            {name: "Toxoplasma gondii", value: "tgondii"},
+//            {name: "Xenopus tropicalis", value: "xtropicalis"},
+//            {name: "Salmonella typhimurium", value: "styphimurium"},
+//            {name: "Taeniopygia guttata", value: "tguttata"},
+//            {name: "Staphylococcus aureus N315", value: "saureus"}
         ]
     });
 
     var speciesCombo = Ext.create('Ext.form.field.ComboBox', {
-        margin: "0 0 0 5",
         width: 400,
-        labelWidth: 60,
-        fieldLabel: 'Species',
+//        labelWidth: 60,
+//        fieldLabel: 'Species',
         value: speciesSelected,
         allowBlank: false,
         editable: false,
@@ -89,9 +94,8 @@ ReactomePlugin.prototype.draw = function () {
 
     var selectionType = Ext.create('Ext.form.RadioGroup', {
         fieldLabel: 'Selection',
-        labelWidth: 60,
-        margin: "0 0 0 5",
-        width: 320,
+        labelWidth: 50,
+        width: 200,
         items: [
             { boxLabel: 'Single', name: 'st', inputValue: 'single', checked: true},
             { boxLabel: 'Multiple', name: 'st', inputValue: 'multiple'}
@@ -119,13 +123,16 @@ ReactomePlugin.prototype.draw = function () {
 
     var tree = Ext.create('Ext.tree.Panel', {
         store: treeStore,
-        title:'Pathways',
-        flex:1,
-        border:0,
+        title: 'Pathways',
+        flex: 3,
+        border: 0,
         rootVisible: false,
         useArrows: true,
         viewConfig: {
             markDirty: false
+        },
+        tbar: {
+            items: [selectionType]
         },
         listeners: {
             itemclick: function (i, record, item, index, e, eOpts) {
@@ -154,9 +161,8 @@ ReactomePlugin.prototype.draw = function () {
 
     var searchTb = Ext.create('Ext.form.field.Text', {
         emptyText: "search text",
-        fieldLabel: 'Search',
-        labelWidth: 60,
-        margin: "0 0 0 5",
+//        fieldLabel: 'Search',
+//        labelWidth: 60,
         listeners: {
             change: function (event, newValue, oldValue, eOpts) {
                 if (newValue.length > 0) searchBtn.enable();
@@ -209,7 +215,7 @@ ReactomePlugin.prototype.draw = function () {
     var searchRadioGrp = Ext.create('Ext.form.RadioGroup', {
         layout: 'hbox',
         defaults: {
-            margin: '0 0 0 10'
+            width: 70
         },
         items: [
             { boxLabel: 'Pathway', name: 'rb', inputValue: 'pathway', checked: true},
@@ -218,32 +224,63 @@ ReactomePlugin.prototype.draw = function () {
     });
 
 
-    var window = Ext.create('Ext.ux.Window', {
+    this.window = Ext.create('Ext.window.Window', {
         title: "Reactome plugin",
-        taskbar: Ext.getCmp(this.cellMaps.networkViewer.id + 'uxTaskbar'),
-        height: 600,
-        width: 500,
-        layout: "fit",
-        dockedItems:[
+        height: 500,
+        width: 600,
+        layout: {
+            type: 'hbox',
+            align: 'stretch'
+        },
+        items: [
             {
-                xtype:'toolbar',
-                dock: 'top',
-                items: [searchTb, searchBtn, searchRadioGrp]
+                title: 'Search',
+                width: 170,
+                border: 0,
+                bodyPadding: 10,
+                style: {
+                    borderRight: '1px solid lightgray'
+                },
+                items: [
+                    {
+                        xtype: 'container',
+                        layout: {
+                            type: 'vbox',
+                            align: 'stretch'
+                        },
+                        items: [speciesCombo, searchTb, searchRadioGrp, searchBtn]
+                    },
+//                    {
+//                        xtype: 'container',
+//                        layout: {
+//                            type: 'hbox',
+//                            align: 'stretch'
+//                        },
+//                        items: [speciesCombo]
+//                    },
+                ]
             },
-            {
-                xtype:'toolbar',
-                dock:'top',
-                items: [speciesCombo]
-            },
-            {
-                xtype:'toolbar',
-                dock:'top',
-                items: [selectionType]
-            }
-        ],
-        items:[tree]
-    }).show();
+            tree
+        ]
+    });
 
+
+    var check = function (data) {
+        for (var i = 0; i < data.length; i++) {
+            var p = data[i];
+
+            if (p["children"].length > 0) {
+                p["icon"] = Utils.images.pathwayParent;
+                p["expanded"] = false;
+                check(p["children"]);
+            } else {
+                p["icon"] = Utils.images.pathway;
+                p["leaf"] = true;
+                delete p["children"];
+            }
+        }
+
+    };
 
     function renderTree() {
         tree.setLoading(true);
@@ -252,21 +289,24 @@ ReactomePlugin.prototype.draw = function () {
             dataType: 'json',
             success: function (res) {
                 var data = res.response;
-                var json = JSON.parse(data.replace(/\"subPathways\" : \[ \]/g, "\"leaf\":true").replace(/subPathways/g, "children"));
+                var json = JSON.parse(data.replace(/subPathways/g, "children"));
+                json.sort(function (a, b) {
+                    return a.displayName[0].localeCompare(b.displayName[0]);
+                });
+                check(json);
+//                var json = JSON.parse(data.replace(/\"subPathways\" : \[ \]/g, "\"leaf\":true").replace(/subPathways/g, "children"));
                 treeStore.setRootNode({
                     children: json
                 });
                 tree.setLoading(false);
             }});
     }
-
     renderTree();
 
 };
 
 ReactomePlugin.prototype.loadPathway = function (speciesSelected, pathwayId) {
     var _this = this;
-
     //	_this.cellMaps.clearNetwork();
     _this.nodeNameIdDic = {};
     _this.nodeIdNameDic = {};
@@ -281,6 +321,7 @@ ReactomePlugin.prototype.loadPathway = function (speciesSelected, pathwayId) {
         url: CELLBASE_HOST + "/" + CELLBASE_VERSION + "/" + speciesSelected + "/network/reactome-pathway/" + pathwayId + "/info",
         dataType: 'json',
         success: function (res) {
+            debugger
             var data = res.response;
             var json = JSON.parse(data)[0];
 
@@ -316,7 +357,7 @@ ReactomePlugin.prototype.loadPathway = function (speciesSelected, pathwayId) {
                 _this.reusedNodes[name][pathwayId] = true;
             }
             _this.cellMaps.networkViewer.drawNetwork();
-            _this.cellMaps.networkViewer.setLayout('neato');
+            _this.cellMaps.networkViewer.setLayout('Force directed');
             network.setVertexLabelByAttribute('Name');
         }});
 };
@@ -444,7 +485,7 @@ ReactomePlugin.prototype.addPathwayNode = function (name, displayName, species, 
             id: name
         });
         network.addVertex({
-            name:displayName,
+            name: displayName,
             vertex: vertex,
             vertexConfig: new VertexConfig({
                 renderer: new DefaultVertexRenderer(this.nodeTypes["pathway"])
@@ -478,7 +519,7 @@ ReactomePlugin.prototype.addPhysicalEntity = function (name, type, displayName, 
             id: name
         });
         network.addVertex({
-            name:displayName,
+            name: displayName,
             vertex: vertex,
             vertexConfig: new VertexConfig({
                 renderer: new DefaultVertexRenderer(this.nodeTypes[type])
@@ -509,7 +550,7 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
             id: name
         });
         network.addVertex({
-            name:displayName,
+            name: displayName,
             vertex: vertex,
             vertexConfig: new VertexConfig({
                 renderer: new DefaultVertexRenderer(this.nodeTypes["interaction"])
