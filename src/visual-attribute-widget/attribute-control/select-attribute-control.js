@@ -1,13 +1,13 @@
-SelectAttributeWidget.prototype = new VisualAttributeWidget();
+SelectAttributeControl.prototype = new AttributeControl();
+function SelectAttributeControl(args) {
+    AttributeControl.prototype.constructor.call(this, args);
 
-function SelectAttributeWidget(args) {
-    VisualAttributeWidget.prototype.constructor.call(this, args);
-
-    this.id = Utils.genId('SelectAttributeWidget');
+    this.id = Utils.genId('SelectAttributeControl');
 };
 
 
-SelectAttributeWidget.prototype.createControl = function (changeFunction) {
+//Parent methods
+SelectAttributeControl.prototype.create = function (changeFunction) {
     return  Ext.create('Ext.form.field.ComboBox', {
         width: 65,
         margin: '0 10 0 0',
@@ -21,9 +21,8 @@ SelectAttributeWidget.prototype.createControl = function (changeFunction) {
             }
         }
     });
-}
-
-SelectAttributeWidget.prototype.createGridColumns = function () {
+};
+SelectAttributeControl.prototype.createGridColumns = function () {
     return [
         {
             text: 'Display ' + this.displayAttribute,
@@ -36,9 +35,13 @@ SelectAttributeWidget.prototype.createGridColumns = function () {
             }
         }
     ];
-}
-
-SelectAttributeWidget.prototype.createGridListeners = function () {
+};
+SelectAttributeControl.prototype.createGridListeners = function () {
     return;
-}
-/* Private Methods */
+};
+SelectAttributeControl.prototype.getNormalizedValue = function () {
+    return;
+};
+SelectAttributeControl.prototype.updateLegend = function (items) {
+    return;
+};

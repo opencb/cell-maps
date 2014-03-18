@@ -106,52 +106,12 @@ CellMapsConfiguration.prototype = {
         });
 
     },
-//    setVertexAttributeManager: function (attrMan) {
-//        var _this = this;
-//        this.vertexAttributeManager = attrMan;
-//
-//        this._setVertexComponentsAttributeManager();
-//
-//        this.vertexAttributeManager.on('change:attributes', function () {
-//            _this.reconfigureVertexComponents();
-//        });
-//        this.reconfigureVertexComponents();
-//    },
     reconfigureVertexComponents: function () {
         this.vertexComboStore.loadData(this.vertexAttributeManager.attributes);
     },
-//    _setVertexComponentsAttributeManager: function () {
-//        this.vertexColorAttributeWidget.setAttributeManager(this.vertexAttributeManager);
-//        this.vertexStrokeColorAttributeWidget.setAttributeManager(this.vertexAttributeManager);
-//        this.vertexSizeAttributeWidget.setAttributeManager(this.vertexAttributeManager);
-//        this.vertexStrokeSizeAttributeWidget.setAttributeManager(this.vertexAttributeManager);
-//        this.vertexOpacityAttributeWidget.setAttributeManager(this.vertexAttributeManager);
-//        this.vertexLabelSizeAttributeWidget.setAttributeManager(this.vertexAttributeManager);
-//        this.vertexShapeAttributeWidget.setAttributeManager(this.vertexAttributeManager);
-//    },
-
-//    setEdgeAttributeManager: function (attrMan) {
-//        var _this = this;
-//        this.edgeAttributeManager = attrMan;
-//
-//        this._setEdgeComponentsAttributeManager();
-//
-//        this.edgeAttributeManager.on('change:attributes', function () {
-//            _this.reconfigureEdgeComponents();
-//        });
-//        this.reconfigureEdgeComponents();
-//    },
     reconfigureEdgeComponents: function () {
         this.edgeComboStore.loadData(this.edgeAttributeManager.attributes);
     },
-//    _setEdgeComponentsAttributeManager: function () {
-//        this.edgeColorAttributeWidget.setAttributeManager(this.edgeAttributeManager);
-//        this.edgeSizeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
-//        this.edgeOpacityAttributeWidget.setAttributeManager(this.edgeAttributeManager);
-//        this.edgeLabelSizeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
-//        this.edgeShapeAttributeWidget.setAttributeManager(this.edgeAttributeManager);
-//    },
-
     createLabelComboComponent: function (args) {
         var _this = this;
         return {
@@ -165,16 +125,17 @@ CellMapsConfiguration.prototype = {
                     xtype: 'text',
                     width: 80,
                     margin: '5 0 0 0',
-                    text: 'Attribute'
+                    text: 'Label'
                 },
                 {
                     xtype: 'combo',
                     store: args.comboStore,
                     displayField: 'name',
                     valueField: 'name',
-                    width: 120,
+//                    width: 120,
+                    flex: 1,
                     queryMode: 'local',
-                    margin: '0 10 0 0',
+                    margin: '0 32 0 0',
                     forceSelection: true,
                     editable: false,
                     listeners: {
@@ -197,78 +158,20 @@ CellMapsConfiguration.prototype = {
     createPropertiesPanel: function () {
         var _this = this;
 
-        this.vertexColorAttributeWidget = new ColorAttributeWidget({
-            displayAttribute: 'Color',
-            attributeManager: this.vertexAttributeManager,
-            attributesStore: this.vertexComboStore,
-            defaultValue: this.vertexDefaults.color,
-            handlers: {
-                'change:default': function (e) {
-                    _this.trigger('change:vertexColor', e);
-                },
-                'change:visualSet': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e);
-                }
-            }
-        });
+        /*Vertex General*/
 
-        this.vertexStrokeColorAttributeWidget = new ColorAttributeWidget({
-            displayAttribute: 'Stroke color',
-            attributeManager: this.vertexAttributeManager,
-            attributesStore: this.vertexComboStore,
-            defaultValue: this.vertexDefaults.strokeColor,
-            handlers: {
-                'change:default': function (e) {
-                    _this.trigger('change:vertexStrokeColor', e);
-                },
-                'change:visualSet': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e);
-                }
-            }
-        });
-        this.vertexSizeAttributeWidget = new NumberAttributeWidget({
-            displayAttribute: 'Size',
-            attributeManager: this.vertexAttributeManager,
-            attributesStore: this.vertexComboStore,
-            defaultValue: this.vertexDefaults.size,
-            maxValue: 160,
-            minValue: 0,
-            step: 1,
-            handlers: {
-                'change:default': function (e) {
-                    _this.trigger('change:vertexSize', e);
-                },
-                'change:visualSet': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e);
-                }
-            }
-        });
-        this.vertexStrokeSizeAttributeWidget = new NumberAttributeWidget({
-            displayAttribute: 'Stroke size',
-            attributeManager: this.vertexAttributeManager,
-            attributesStore: this.vertexComboStore,
-            defaultValue: this.vertexDefaults.strokeSize,
-            maxValue: 10,
-            minValue: 0,
-            step: 1,
-            handlers: {
-                'change:default': function (e) {
-                    _this.trigger('change:vertexStrokeSize', e);
-                },
-                'change:visualSet': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e);
-                }
-            }
-        });
-
-        this.vertexOpacityAttributeWidget = new NumberAttributeWidget({
+        this.vertexOpacityAttributeWidget = new VisualAttributeWidget({
             displayAttribute: 'Opacity',
+            displayLabel: 'Opacity',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
-            defaultValue: this.vertexDefaults.opacity,
-            maxValue: 1,
-            minValue: 0,
-            step: 0.1,
+            control: new NumberAttributeControl({
+                displayAttribute: 'Opacity',
+                defaultValue: this.vertexDefaults.opacity,
+                maxValue: 1,
+                minValue: 0,
+                step: 0.1
+            }),
             handlers: {
                 'change:default': function (e) {
                     _this.trigger('change:vertexOpacity', e);
@@ -278,14 +181,18 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-        this.vertexLabelSizeAttributeWidget = new NumberAttributeWidget({
+        this.vertexLabelSizeAttributeWidget = new VisualAttributeWidget({
             displayAttribute: 'Label size',
+            displayLabel: 'Label size',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
-            defaultValue: this.vertexDefaults.labelSize,
-            maxValue: 16,
-            minValue: 0,
-            step: 1,
+            control: new NumberAttributeControl({
+                displayAttribute: 'Label size',
+                defaultValue: this.vertexDefaults.labelSize,
+                maxValue: 16,
+                minValue: 0,
+                step: 1
+            }),
             handlers: {
                 'change:default': function (e) {
                     _this.trigger('change:vertexLabelSize', e);
@@ -295,12 +202,18 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-        this.vertexShapeAttributeWidget = new SelectAttributeWidget({
+
+
+        this.vertexShapeAttributeWidget = new VisualAttributeWidget({
             displayAttribute: 'Shape',
+            displayLabel: 'Shape',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
-            defaultValue: this.vertexDefaults.shape,
-            comboValues: ["circle", "square", "ellipse", "rectangle"],
+            control: new SelectAttributeControl({
+                displayAttribute: 'Shape',
+                defaultValue: this.vertexDefaults.shape,
+                comboValues: ["circle", "square", "ellipse", "rectangle"]
+            }),
             handlers: {
                 'change:default': function (e) {
                     _this.trigger('change:vertexShape', e);
@@ -312,12 +225,165 @@ CellMapsConfiguration.prototype = {
         });
 
 
-        //EDGES
-        this.edgeColorAttributeWidget = new ColorAttributeWidget({
+        this.vertexColorAttributeWidget = new VisualAttributeWidget({
             displayAttribute: 'Color',
+            displayLabel: 'Color fill',
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
+            control: new ColorAttributeControl({
+                displayAttribute: 'Color',
+                defaultValue: this.vertexDefaults.color
+            }),
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:vertexColor', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:vertexDisplayAttribute', e);
+                }
+            }
+        });
+
+        this.vertexStrokeColorAttributeWidget = new VisualAttributeWidget({
+            displayAttribute: 'Stroke color',
+            displayLabel: 'Stroke color',
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
+            control: new ColorAttributeControl({
+                displayAttribute: 'Stroke color',
+                defaultValue: this.vertexDefaults.strokeColor
+            }),
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:vertexStrokeColor', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:vertexDisplayAttribute', e);
+                }
+            }
+        });
+
+        this.vertexSizeAttributeWidget = new VisualAttributeWidget({
+            displayAttribute: 'Size',
+            displayLabel: 'Size',
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
+            control: new NumberAttributeControl({
+                displayAttribute: 'Size',
+                defaultValue: this.vertexDefaults.size,
+                maxValue: 160,
+                minValue: 0,
+                step: 1
+            }),
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:vertexSize', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:vertexDisplayAttribute', e);
+                }
+            }
+        });
+        this.vertexStrokeSizeAttributeWidget = new VisualAttributeWidget({
+            displayAttribute: 'Stroke size',
+            displayLabel: 'Stroke size',
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
+            control: new NumberAttributeControl({
+                displayAttribute: 'Stroke size',
+                defaultValue: this.vertexDefaults.strokeSize,
+                maxValue: 20,
+                minValue: 0,
+                step: 1
+            }),
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:vertexStrokeSize', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:vertexDisplayAttribute', e);
+                }
+            }
+        });
+
+
+        //List Vertex
+        this.vertexPieColorAttributeWidget = new VisualAttributeWidget({
+            displayAttribute: 'pieColor',
+            displayLabel: 'Pie chart fill',
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
+            list : true,
+            control: new ColorAttributeControl({
+                displayAttribute: 'pieColor',
+                defaultValue: this.vertexDefaults.color
+            }),
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:vertexPieColor', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:vertexPieDisplayAttribute', e);
+                }
+            }
+        });
+        this.vertexPieRadiusAttributeWidget = new VisualAttributeWidget({
+            displayAttribute: 'pieRadius',
+            displayLabel: 'Pie chart radius',
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
+            list : true,
+            control: new NumberAttributeControl({
+                displayAttribute: 'pieRadius',
+                defaultValue: this.vertexDefaults.size,
+                maxValue: 160,
+                minValue: 0,
+                step: 1
+            }),
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:vertexPieRadius', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:vertexPieDisplayAttribute', e);
+                }
+            }
+        });
+        this.vertexPieAreaAttributeWidget = new VisualAttributeWidget({
+            displayAttribute: 'pieArea',
+            displayLabel: 'Pie chart area',
+            attributeManager: this.vertexAttributeManager,
+            attributesStore: this.vertexComboStore,
+            list : true,
+            control: new NumberAttributeControl({
+                displayAttribute: 'pieArea',
+                defaultValue: 1,
+                maxValue: 1,
+                minValue: 0,
+                step: 1
+            }),
+            handlers: {
+                'change:default': function (e) {
+                    _this.trigger('change:vertexPieArea', e);
+                },
+                'change:visualSet': function (e) {
+                    _this.trigger('change:vertexPieDisplayAttribute', e);
+                }
+            }
+        });
+
+
+
+        //EDGES
+        this.edgeColorAttributeWidget = new VisualAttributeWidget({
+            displayAttribute: 'Color',
+            displayLabel: 'Color',
             attributeManager: this.edgeAttributeManager,
             attributesStore: this.edgeComboStore,
-            defaultValue: this.edgeDefaults.color,
+            control: new ColorAttributeControl({
+                displayAttribute: 'Color',
+                defaultValue: this.edgeDefaults.color
+            }),
             handlers: {
                 'change:default': function (e) {
                     _this.trigger('change:edgeColor', e);
@@ -327,14 +393,18 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-        this.edgeSizeAttributeWidget = new NumberAttributeWidget({
+        this.edgeSizeAttributeWidget = new VisualAttributeWidget({
             displayAttribute: 'Size',
+            displayLabel: 'Size',
             attributeManager: this.edgeAttributeManager,
             attributesStore: this.edgeComboStore,
-            defaultValue: this.edgeDefaults.size,
-            maxValue: 10,
-            minValue: 0,
-            step: 1,
+            control: new NumberAttributeControl({
+                displayAttribute: 'Size',
+                defaultValue: this.edgeDefaults.size,
+                maxValue: 10,
+                minValue: 0,
+                step: 1
+            }),
             handlers: {
                 'change:default': function (e) {
                     _this.trigger('change:edgeSize', e);
@@ -344,14 +414,18 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-        this.edgeOpacityAttributeWidget = new NumberAttributeWidget({
+        this.edgeOpacityAttributeWidget = new VisualAttributeWidget({
             displayAttribute: 'Opacity',
+            displayLabel: 'Opacity',
             attributeManager: this.edgeAttributeManager,
             attributesStore: this.edgeComboStore,
-            defaultValue: this.edgeDefaults.opacity,
-            maxValue: 1,
-            minValue: 0,
-            step: 0.1,
+            control: new NumberAttributeControl({
+                displayAttribute: 'Opacity',
+                defaultValue: this.edgeDefaults.opacity,
+                maxValue: 1,
+                minValue: 0,
+                step: 0.1
+            }),
             handlers: {
                 'change:default': function (e) {
                     _this.trigger('change:edgeOpacity', e);
@@ -361,14 +435,18 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-        this.edgeLabelSizeAttributeWidget = new NumberAttributeWidget({
+        this.edgeLabelSizeAttributeWidget = new VisualAttributeWidget({
             displayAttribute: 'Label size',
+            displayLabel: 'Label size',
             attributeManager: this.edgeAttributeManager,
             attributesStore: this.edgeComboStore,
-            defaultValue: this.edgeDefaults.labelSize,
-            maxValue: 16,
-            minValue: 0,
-            step: 1,
+            control: new NumberAttributeControl({
+                displayAttribute: 'Opacity',
+                defaultValue: this.edgeDefaults.labelSize,
+                maxValue: 16,
+                minValue: 0,
+                step: 1
+            }),
             handlers: {
                 'change:default': function (e) {
                     _this.trigger('change:edgeLabelSize', e);
@@ -378,12 +456,16 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-        this.edgeShapeAttributeWidget = new SelectAttributeWidget({
+        this.edgeShapeAttributeWidget = new VisualAttributeWidget({
             displayAttribute: 'Shape',
+            displayLabel: 'Shape',
             attributeManager: this.edgeAttributeManager,
             attributesStore: this.edgeComboStore,
-            defaultValue: this.edgeDefaults.shape,
-            comboValues: ["directed", "undirected", "inhibited", "dot", "odot"],
+            control: new SelectAttributeControl({
+                displayAttribute: 'Shape',
+                defaultValue: this.edgeDefaults.shape,
+                comboValues: ["directed", "undirected", "inhibited", "dot", "odot"]
+            }),
             handlers: {
                 'change:default': function (e) {
                     _this.trigger('change:edgeShape', e);
@@ -414,50 +496,66 @@ CellMapsConfiguration.prototype = {
                     },
                     items: [
                         {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            margin: '0 0 5 0',
+                            xtype: 'box',
+                            margin: '5 0 5 0',
+                            flex: 1,
                             style: {
+                                fontWeight: 'bold',
                                 borderBottom: '1px solid gray'
                             },
-                            defaults: {
-                                style: {
-                                    fontWeight: 'bold'
-                                }
+                            html: 'General settings'
+                        },
+                        this.createLabelComboComponent({
+                            comboStore: this.vertexComboStore,
+                            eventName: 'change:vertexLabel'
+                        }),
+                        this.vertexLabelSizeAttributeWidget.getComponent(),
+                        this.vertexOpacityAttributeWidget.getComponent(),
+                        this.vertexShapeAttributeWidget.getComponent(),
+                        {
+                            xtype: 'box',
+                            margin: '20 0 5 0',
+                            flex: 1,
+                            style: {
+                                fontWeight: 'bold',
+                                borderBottom: '1px solid gray'
+                            },
+                            html: 'Simple node settings'
+                        },
+                        {
+                            xtype: 'container',
+                            layout: {
+                                type: 'hbox',
+                                align: 'stretch'
+                            },
+                            margin: '0 0 5 0',
+                            style: {
+                                borderBottom: '1px solid lightgray',
+                                textAlign: 'center'
                             },
                             items: [
-                                {xtype: 'text', width: 80, margin: '0 0 0 0', text: 'Name'},
-                                {xtype: 'text', width: 65, margin: '0 10 0 0', text: 'Default'},
-                                {xtype: 'text', width: 100, text: 'Attribute'}
+                                {xtype: 'box', width: 80, margin: '0 0 0 0', html: 'Name'},
+                                {xtype: 'box', width: 65, margin: '0 10 0 0', html: 'Default'},
+                                {xtype: 'box', width: 100, html: 'Attribute'}
                             ]
                         },
                         this.vertexColorAttributeWidget.getComponent(),
                         this.vertexStrokeColorAttributeWidget.getComponent(),
                         this.vertexSizeAttributeWidget.getComponent(),
                         this.vertexStrokeSizeAttributeWidget.getComponent(),
-                        this.vertexOpacityAttributeWidget.getComponent(),
-                        this.vertexLabelSizeAttributeWidget.getComponent(),
-                        this.vertexShapeAttributeWidget.getComponent(),
                         {
-                            xtype: 'container',
-                            layout: 'hbox',
+                            xtype: 'box',
                             margin: '20 0 5 0',
+                            flex: 1,
                             style: {
+                                fontWeight: 'bold',
                                 borderBottom: '1px solid gray'
                             },
-                            defaults: {
-                                style: {
-                                    fontWeight: 'bold'
-                                }
-                            },
-                            items: [
-                                {xtype: 'text', margin: '0 0 0 0', text: 'Set attribute as label'}
-                            ]
+                            html: 'Complex node settings'
                         },
-                        this.createLabelComboComponent({
-                            comboStore: this.vertexComboStore,
-                            eventName: 'change:vertexLabel'
-                        })
+                        this.vertexPieColorAttributeWidget.getComponent(),
+                        this.vertexPieRadiusAttributeWidget.getComponent(),
+                        this.vertexPieAreaAttributeWidget.getComponent()
                     ]
                 },
                 {

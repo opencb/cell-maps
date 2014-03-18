@@ -1,28 +1,27 @@
-ColorAttributeWidget.prototype = new VisualAttributeWidget();
+ColorAttributeControl.prototype = new AttributeControl();
+function ColorAttributeControl(args) {
+    AttributeControl.prototype.constructor.call(this, args);
 
-function ColorAttributeWidget(args) {
-    VisualAttributeWidget.prototype.constructor.call(this, args);
-
-    this.id = Utils.genId('ColorAttributeWidget');
+    this.id = Utils.genId('ColorAttributeControl');
 
     this.colorMenu = this._createColorMenu();
 };
 
-
-ColorAttributeWidget.prototype.createControl = function (changeFunction) {
+//Parent methods
+ColorAttributeControl.prototype.create = function (changeFunction) {
     return this._getColorSelect(this.defaultValue, function (color) {
         changeFunction(color);
     })
-}
+};
 
-ColorAttributeWidget.prototype.createGridColumns = function () {
+ColorAttributeControl.prototype.createGridColumns = function () {
     return [
         { xtype: 'templatecolumn', text: 'Display ' + this.displayAttribute, menuDisabled: true, width: 100, tpl: '<div style="text-align:center;width:30px;height:12px;background-color: {visualParam};"></div>'},
         {  dataIndex: 'visualParam', width: 70, menuDisabled: true, editor: {xtype: 'textfield', allowBlank: false}}
     ];
 }
 
-ColorAttributeWidget.prototype.createGridListeners = function () {
+ColorAttributeControl.prototype.createGridListeners = function () {
     var _this = this;
     return {
         cellclick: function (cell, td, cellIndex, record, tr, rowIndex, e, eOpts) {
@@ -37,7 +36,7 @@ ColorAttributeWidget.prototype.createGridListeners = function () {
     }
 }
 
-ColorAttributeWidget.prototype.getNormalizedValue = function (first, second, value) {
+ColorAttributeControl.prototype.getNormalizedValue = function (first, second, value) {
     var _this = this;
     var color1 = parseInt(first.norm.replace('#', ''), 16);
     var color2 = parseInt(second.norm.replace('#', ''), 16);
@@ -70,7 +69,7 @@ ColorAttributeWidget.prototype.getNormalizedValue = function (first, second, val
     return color;
 }
 
-ColorAttributeWidget.prototype.updateLegend = function (items) {
+ColorAttributeControl.prototype.updateLegend = function (items) {
     var l = items.length - 1;
     var minNorm = items[0].items.getAt(1).getRawValue();
     var maxNorm = items[l].items.getAt(1).getRawValue();
@@ -110,12 +109,9 @@ ColorAttributeWidget.prototype.updateLegend = function (items) {
     });
 }
 
-/* Private Methods */
-ColorAttributeWidget.prototype._getColorDiv = function (color) {
-    return '<div style="width:30px;height:12px;background-color: ' + color + ';"></div>';
-}
 
-ColorAttributeWidget.prototype._getColorSelect = function (defaultColor, handler) {
+//Custom methods
+ColorAttributeControl.prototype._getColorSelect = function (defaultColor, handler) {
     var _this = this;
 
     return Ext.create('Ext.Component', {
@@ -153,12 +149,12 @@ ColorAttributeWidget.prototype._getColorSelect = function (defaultColor, handler
     });
 }
 
-ColorAttributeWidget.prototype._createColorMenu = function () {
+ColorAttributeControl.prototype._createColorMenu = function () {
     var _this = this;
     var div = $('<div></div>')[0];
     this.colorSelect = $('<select></select>')[0];
     $(div).append(this.colorSelect);
-    _this._setColorSelect(this.colorSelect);
+    this._setColorSelect(this.colorSelect);
     $(this.colorSelect).simplecolorpicker()
     var colorMenu = Ext.create('Ext.menu.Menu', {
         plain: true,
@@ -176,9 +172,9 @@ ColorAttributeWidget.prototype._createColorMenu = function () {
         ]
     });
     return colorMenu;
-}
+};
 
-ColorAttributeWidget.prototype._showColorMenu = function (x, y, func) {
+ColorAttributeControl.prototype._showColorMenu = function (x, y, func) {
     var _this = this;
     $(this.colorSelect).simplecolorpicker('destroy');
     $(this.colorSelect).off('change');
@@ -187,9 +183,9 @@ ColorAttributeWidget.prototype._showColorMenu = function (x, y, func) {
         _this.colorMenu.hide();
     });
     this.colorMenu.showAt(x, y);
-}
+};
 
-ColorAttributeWidget.prototype._setColorSelect = function (select) {
+ColorAttributeControl.prototype._setColorSelect = function (select) {
     var colors = ["cccccc", "888888",
         "ac725e", "d06b64", "f83a22", "fa573c", "ff7537", "ffad46", "42d692", "16a765", "7bd148", "b3dc6c", "fbe983", "fad165",
         "92e1c0", "9fe1e7", "9fc6e7", "4986e7", "9a9cff", "b99aff", "c2c2c2", "cabdbf", "cca6ac", "f691b2", "cd74e6", "a47ae2",
@@ -200,4 +196,4 @@ ColorAttributeWidget.prototype._setColorSelect = function (select) {
         var menuEntry = $('<option value="#' + colors[i] + '">#' + colors[i] + '</option>')[0];
         $(select).append(menuEntry);
     }
-}
+};

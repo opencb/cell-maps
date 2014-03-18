@@ -1,13 +1,12 @@
-NumberAttributeWidget.prototype = new VisualAttributeWidget();
+NumberAttributeControl.prototype = new AttributeControl();
+function NumberAttributeControl(args) {
+    AttributeControl.prototype.constructor.call(this, args);
 
-function NumberAttributeWidget(args) {
-    VisualAttributeWidget.prototype.constructor.call(this, args);
-
-    this.id = Utils.genId('NumberAttributeWidget');
+    this.id = Utils.genId('NumberAttributeControl');
 };
 
-
-NumberAttributeWidget.prototype.createControl = function (changeFunction) {
+//Parent methods
+NumberAttributeControl.prototype.create = function (changeFunction) {
     return  Ext.create('Ext.form.field.Number', {
         width: 65,
         value: this.defaultValue,
@@ -26,9 +25,9 @@ NumberAttributeWidget.prototype.createControl = function (changeFunction) {
             }
         }
     });
-}
+};
 
-NumberAttributeWidget.prototype.createGridColumns = function () {
+NumberAttributeControl.prototype.createGridColumns = function () {
     return [
         {
             text: 'Display ' + this.displayAttribute,
@@ -43,13 +42,13 @@ NumberAttributeWidget.prototype.createGridColumns = function () {
             }
         }
     ];
-}
+};
 
-NumberAttributeWidget.prototype.createGridListeners = function () {
+NumberAttributeControl.prototype.createGridListeners = function () {
     return;
-}
+};
 
-NumberAttributeWidget.prototype.getNormalizedValue = function (first, second, value) {
+NumberAttributeControl.prototype.getNormalizedValue = function (first, second, value) {
     var _this = this;
 
     var firstNormalized = parseFloat(first.norm);
@@ -66,10 +65,8 @@ NumberAttributeWidget.prototype.getNormalizedValue = function (first, second, va
     var normalizedValue = (v * normalizedDiff / continousDiff) + firstNormalized;
 
     return normalizedValue;
-}
+};
 
-NumberAttributeWidget.prototype.updateLegend = function (items) {
+NumberAttributeControl.prototype.updateLegend = function (items) {
     return;
-}
-
-/* Private Methods */
+};

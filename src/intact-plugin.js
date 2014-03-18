@@ -405,9 +405,7 @@ IntActPlugin.prototype.retrieveData = function () {
                     });
                     _this.cellMaps.networkViewer.network.addVertex({
                         vertex: sourceVertex,
-                        vertexConfig: new VertexConfig({
-                            renderer: new DefaultVertexRenderer({})
-                        })
+                        vertexConfig: new VertexConfig({})
                     });
                     verticesMap[sourceName] = sourceVertex;
                 }
@@ -418,9 +416,7 @@ IntActPlugin.prototype.retrieveData = function () {
                     });
                     _this.cellMaps.networkViewer.network.addVertex({
                         vertex: targetVertex,
-                        vertexConfig: new VertexConfig({
-                            renderer: new DefaultVertexRenderer({})
-                        })
+                        vertexConfig: new VertexConfig({})
                     });
                     verticesMap[targetName] = targetVertex;
                 }
@@ -439,9 +435,7 @@ IntActPlugin.prototype.retrieveData = function () {
                     });
                     _this.cellMaps.networkViewer.network.addEdge({
                         edge: edge,
-                        edgeConfig: new EdgeConfig({
-                            renderer: new DefaultEdgeRenderer()
-                        })
+                        edgeConfig: new EdgeConfig({})
                     });
                     edgesMap[edgeId] = edge;
                 }

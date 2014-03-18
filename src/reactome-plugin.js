@@ -488,7 +488,7 @@ ReactomePlugin.prototype.addPathwayNode = function (name, displayName, species, 
             name: displayName,
             vertex: vertex,
             vertexConfig: new VertexConfig({
-                renderer: new DefaultVertexRenderer(this.nodeTypes["pathway"])
+                rendererConfig: this.nodeTypes["pathway"]
             })
         });
         this.nodeNameIdDic[name] = vertex.id;
@@ -522,7 +522,7 @@ ReactomePlugin.prototype.addPhysicalEntity = function (name, type, displayName, 
             name: displayName,
             vertex: vertex,
             vertexConfig: new VertexConfig({
-                renderer: new DefaultVertexRenderer(this.nodeTypes[type])
+                rendererConfig: this.nodeTypes[type]
             })
         });
         this.nodeNameIdDic[name] = vertex.id;
@@ -553,7 +553,7 @@ ReactomePlugin.prototype.addInteraction = function (interaction, network) {
             name: displayName,
             vertex: vertex,
             vertexConfig: new VertexConfig({
-                renderer: new DefaultVertexRenderer(this.nodeTypes["interaction"])
+                rendererConfig: this.nodeTypes["interaction"]
             })
         });
         this.nodeNameIdDic[name] = vertex.id;

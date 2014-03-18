@@ -82,7 +82,6 @@ CellMaps.prototype = {
         });
         $(this.rightSidebarDiv).append(this.configureDiv);
         $(this.rightSidebarDiv).append(this.jobsDiv);
-
         this.width = ($(this.div).width());
 
         if (this.border) {
@@ -95,10 +94,7 @@ CellMaps.prototype = {
             $(window).resize(function (event) {
                 clearTimeout(_this.resizeTimer);
                 _this.resizeTimer = setTimeout(function () {
-
                     _this.resize();
-                    console.log($(_this.div).width())
-                    console.log($(_this.div).height())
                 }, 500);
             });
         }
@@ -638,12 +634,15 @@ CellMaps.prototype = {
                     _this.networkViewer.network.setEdgeLabelByAttribute(e.value);
                 },
 
-
                 'change:vertexDisplayAttribute': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttributeMap(e.diplayAttribute, e.attribute, e.map);
                 },
                 'change:edgeDisplayAttribute': function (e) {
                     _this.networkViewer.network.setEdgesRendererAttributeMap(e.diplayAttribute, e.attribute, e.map);
+                },
+
+                'change:vertexPieDisplayAttribute': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttributePieMap(e.diplayAttribute, e.attribute, e.map);
                 }
             }
         });

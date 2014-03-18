@@ -5,7 +5,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         // Metadata.
         meta: {
-            name:'cell-maps',
+            name: 'cell-maps',
             version: '2.0.1',
             jsorolla: {
                 dir: '/lib/jsorolla/',
@@ -37,8 +37,12 @@ module.exports = function (grunt) {
                     'src/cm-toolbar.js',
                     'src/visual-attribute-widget.js',
                     'src/cell-maps-configuration.js',
+                    'src/visual-attribute-widget/attribute-control/attribute-control.js',
+                    'src/visual-attribute-widget/attribute-control/*-attribute-control.js',
+                    'src/visual-attribute-widget/attribute-grid/attribute-grid.js',
+                    'src/visual-attribute-widget/attribute-grid/*-attribute-grid.js',
                     'src/visual-attribute-widget/visual-attribute-widget.js',
-                    'src/visual-attribute-widget/*-attribute-widget.js',
+                    'src/visual-attribute-widget/pie-attribute-widget.js',
                     'src/*-form.js',
                     'src/cell-maps.js'
                 ],
@@ -161,7 +165,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-hub');
 
     grunt.registerTask('log-deploy', 'Deploy path info', function (version) {
-        grunt.log.writeln("DEPLOY COMMAND: scp -r build/"+grunt.config.data.meta.version+" cafetero@mem16:/httpd/bioinfo/www-apps/cell-maps/");
+        grunt.log.writeln("DEPLOY COMMAND: scp -r build/" + grunt.config.data.meta.version + " cafetero@mem16:/httpd/bioinfo/www-apps/cell-maps/");
     });
 
     // Default task.

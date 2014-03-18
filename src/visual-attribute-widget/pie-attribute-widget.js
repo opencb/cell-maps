@@ -1,15 +1,14 @@
-function VisualAttributeWidget(args) {
+function PieAttributeWidget(args) {
     // Using Underscore 'extend' function to extend and add Backbone Events
     _.extend(this, Backbone.Events);
 
-    this.id = Utils.genId('VisualAttributeWidget');
+    this.id = Utils.genId('PieAttributeWidget');
 
-    this.displayAttribute;
-    this.displayLabel;
     this.attributeManager;
     this.attributesStore;
-    this.control;
-    this.list = false;
+    this.colorControl;
+    this.radiusControl;
+    this.areaControl;
 
 
     //set instantiation args, must be last
@@ -19,20 +18,14 @@ function VisualAttributeWidget(args) {
 
     this.visualSet;
 
-    this.types = ['String', 'Number'];
-    if(this.list){
-        this.types = ['List string', 'List number'];
-    }
+    this.types = ['List string', 'List number'];
+
 
     this.gridMap = {};
     this.window;
     this.component;
     this.button;
     this.removeButton;
-
-    this.lastAttributeName;
-    this.lastType;
-    this.lastStore;
 
     this.autoRender = true;
 
@@ -42,68 +35,19 @@ function VisualAttributeWidget(args) {
     }
 };
 
-
-/************************/
-VisualAttributeWidget.prototype.applyVisualSet = function (attributeName, type) {
-    this.button.el.dom.click();
-    this.attributeNameCombo.select(attributeName);
-    this.attributeTypeCombo.select(type);
-    var grid = this.gridMap[attributeName][type];
-    grid.down('button[text~=Apply]').el.dom.click();
-    this.window.down('button[text~=Ok]').el.dom.click();
-}
-
-VisualAttributeWidget.prototype.removeVisualSet = function () {
-    this.removeButton.el.dom.click();
-}
-
-VisualAttributeWidget.prototype.visualSetChanged = function () {
-    if (typeof this.visualSet !== 'undefined') {
-        this.trigger('change:visualSet', this.visualSet);
-    }
-}
-
-VisualAttributeWidget.prototype._updateVisualSet = function () {
-    var map = {};
-
-    var store = this.lastStore;
-    var attributeName = this.lastAttributeName;
-
-    var data = store.snapshot || store.data;
-    var records = data.items;
-    for (var i = 0; i < records.length; i++) {
-        var d = records[i].data;
-        map[d.value] = d.visualParam;
-    }
-//                        console.log(map);
-    this.visualSet = {diplayAttribute: Utils.camelCase(this.displayAttribute), attribute: attributeName, map: map, sender: this};
-    this.visualSetChanged();
-}
-
-
-VisualAttributeWidget.prototype.defaultValueChanged = function (value) {
-    this.control.defaultValue = value;
-    this.trigger('change:default', {value: value});
-    if (typeof this.visualSet !== 'undefined') {
-        this._updateVisualSet();
-    }
-}
-/************************/
-
-
-
-VisualAttributeWidget.prototype.render = function () {
+PieAttributeWidget.prototype.render = function () {
     if (this.rendered !== true) {
         this._createWindow();
         this._createComponent();
         this.rendered = true;
     }
-}
+};
 
-VisualAttributeWidget.prototype.getComponent = function () {
+PieAttributeWidget.prototype.getComponent = function () {
     return this.component;
-}
-VisualAttributeWidget.prototype._createComponent = function () {
+};
+
+PieAttributeWidget.prototype._createComponent = function () {
     var _this = this;
     this.button = Ext.create('Ext.Button', {
         xtype: 'button',
@@ -137,17 +81,13 @@ VisualAttributeWidget.prototype._createComponent = function () {
                 width: 80,
                 margin: '5 0 0 0'
             },
-            this.control.create(function (newValue) {
-                _this.defaultValueChanged(newValue);
-
-            }),
             this.button,
             this.removeButton
         ]
     });
-}
+};
 
-VisualAttributeWidget.prototype._createWindow = function () {
+PieAttributeWidget.prototype._createWindow = function () {
     var _this = this;
 
     var container = Ext.create('Ext.container.Container', {
@@ -258,7 +198,7 @@ VisualAttributeWidget.prototype._createWindow = function () {
 }
 
 
-VisualAttributeWidget.prototype._createGrid = function (attributeName, type) {
+PieAttributeWidget.prototype._createGrid = function (attributeName, type) {
     var _this = this;
 
     if (typeof this.gridMap[attributeName] === 'undefined') {
@@ -269,36 +209,6 @@ VisualAttributeWidget.prototype._createGrid = function (attributeName, type) {
 
         var attributeGrid;
         switch (type) {
-            case 'String':
-                attributeGrid = new StringAttributeGrid({
-                    attributeName: attributeName,
-                    control: this.control,
-                    attributeManager: this.attributeManager,
-                    handlers: {
-                        'update:uniqueStore': function () {
-                            _this._updateVisualSet();
-                        }
-                    }
-                });
-                this.on('change:default', function (e) {
-                    attributeGrid.changeDefaultValue(e.value);
-                });
-                break;
-            case 'Number':
-                attributeGrid = new NumberAttributeGrid({
-                    attributeName: attributeName,
-                    control: this.control,
-                    attributeManager: this.attributeManager,
-                    handlers: {
-                        'update:uniqueStore': function () {
-                            _this._updateVisualSet();
-                        }
-                    }
-                });
-                this.on('change:default', function (e) {
-                    attributeGrid.changeDefaultValue(e.value);
-                });
-                break;
             case 'List string':
                 attributeGrid = new ListStringAttributeGrid({
                     attributeName: attributeName,
@@ -316,6 +226,7 @@ VisualAttributeWidget.prototype._createGrid = function (attributeName, type) {
                 break;
             case 'List number':
             default:
+
         }
         this.gridMap[attributeName][type] = attributeGrid.create();
     }
