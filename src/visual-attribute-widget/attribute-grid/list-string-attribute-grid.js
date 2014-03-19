@@ -165,6 +165,6 @@ ListStringAttributeGrid.prototype._updateUniqueStore = function (modifiedAttribu
         this.store.resumeEvents();
         this.store.fireEvent('refresh');
 
-        this._updateVisualSet();
+        this.trigger('update:uniqueStore');
     }
 };

@@ -55,13 +55,13 @@ VisualAttributeWidget.prototype.applyVisualSet = function (attributeName, type) 
 
 VisualAttributeWidget.prototype.removeVisualSet = function () {
     this.removeButton.el.dom.click();
-}
+};
 
 VisualAttributeWidget.prototype.visualSetChanged = function () {
     if (typeof this.visualSet !== 'undefined') {
         this.trigger('change:visualSet', this.visualSet);
     }
-}
+};
 
 VisualAttributeWidget.prototype._updateVisualSet = function () {
     var map = {};
@@ -78,7 +78,7 @@ VisualAttributeWidget.prototype._updateVisualSet = function () {
 //                        console.log(map);
     this.visualSet = {diplayAttribute: Utils.camelCase(this.displayAttribute), attribute: attributeName, map: map, sender: this};
     this.visualSetChanged();
-}
+};
 
 
 VisualAttributeWidget.prototype.defaultValueChanged = function (value) {
@@ -87,7 +87,7 @@ VisualAttributeWidget.prototype.defaultValueChanged = function (value) {
     if (typeof this.visualSet !== 'undefined') {
         this._updateVisualSet();
     }
-}
+};
 /************************/
 
 

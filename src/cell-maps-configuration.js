@@ -154,6 +154,9 @@ CellMapsConfiguration.prototype = {
         }
     },
 
+    _processPieVisualSet: function () {
+
+    },
 
     createPropertiesPanel: function () {
         var _this = this;
@@ -313,7 +316,7 @@ CellMapsConfiguration.prototype = {
             displayLabel: 'Pie chart fill',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
-            list : true,
+            list: true,
             control: new ColorAttributeControl({
                 displayAttribute: 'pieColor',
                 defaultValue: this.vertexDefaults.color
@@ -332,7 +335,7 @@ CellMapsConfiguration.prototype = {
             displayLabel: 'Pie chart radius',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
-            list : true,
+            list: true,
             control: new NumberAttributeControl({
                 displayAttribute: 'pieRadius',
                 defaultValue: this.vertexDefaults.size,
@@ -354,7 +357,7 @@ CellMapsConfiguration.prototype = {
             displayLabel: 'Pie chart area',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
-            list : true,
+            list: true,
             control: new NumberAttributeControl({
                 displayAttribute: 'pieArea',
                 defaultValue: 1,
@@ -371,7 +374,6 @@ CellMapsConfiguration.prototype = {
                 }
             }
         });
-
 
 
         //EDGES
