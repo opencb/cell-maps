@@ -6,7 +6,7 @@ module.exports = function (grunt) {
         // Metadata.
         meta: {
             name: 'cell-maps',
-            version: '2.0.1',
+            version: '2.0.2',
             jsorolla: {
                 dir: '/lib/jsorolla/',
                 'networkviewer': {

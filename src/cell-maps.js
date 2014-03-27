@@ -30,7 +30,7 @@ function CellMaps(args) {
     this.title = 'Cell Maps';
     this.description = "Systems Biology Visualization";
     this.tools = ["communities-structure-detection.communities-structure-detection"];
-    this.version = "2.0.0";
+    this.version = "2.0.2";
     this.border = true;
     this.resizable = true;
     this.targetId;
@@ -107,6 +107,7 @@ CellMaps.prototype = {
             height: centerHeight
         });
         this.networkViewer.resize();
+        this.headerWidget.setWidth();
     },
     _getCenterHeight: function () {
         //header toolbar and status must exists
@@ -610,6 +611,12 @@ CellMaps.prototype = {
                 'change:vertexLabelSize': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('labelSize', e.value);
                 },
+                'change:vertexLabelPositionX': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttribute('labelPositionX', e.value);
+                },
+                'change:vertexLabelPositionY': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttribute('labelPositionY', e.value);
+                },
                 'change:vertexLabel': function (e) {
                     _this.networkViewer.network.setVertexLabelByAttribute(e.value);
                 },
@@ -635,14 +642,14 @@ CellMaps.prototype = {
                 },
 
                 'change:vertexDisplayAttribute': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttributeMap(e.diplayAttribute, e.attribute, e.map);
+                    _this.networkViewer.network.setVerticesRendererAttributeMap(e.displayAttribute, e.attribute, e.map);
                 },
                 'change:edgeDisplayAttribute': function (e) {
-                    _this.networkViewer.network.setEdgesRendererAttributeMap(e.diplayAttribute, e.attribute, e.map);
+                    _this.networkViewer.network.setEdgesRendererAttributeMap(e.displayAttribute, e.attribute, e.map);
                 },
 
                 'change:vertexPieDisplayAttribute': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttributePieMap(e.diplayAttribute, e.attribute, e.map);
+                    _this.networkViewer.network.setVerticesRendererAttributeListMap(e.settings);
                 }
             }
         });

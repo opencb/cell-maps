@@ -10,6 +10,7 @@ function VisualAttributeWidget(args) {
     this.attributesStore;
     this.control;
     this.list = false;
+    this.showControl = true;
 
 
     //set instantiation args, must be last
@@ -20,7 +21,7 @@ function VisualAttributeWidget(args) {
     this.visualSet;
 
     this.types = ['String', 'Number'];
-    if(this.list){
+    if (this.list) {
         this.types = ['List string', 'List number'];
     }
 
@@ -59,7 +60,7 @@ VisualAttributeWidget.prototype.removeVisualSet = function () {
 
 VisualAttributeWidget.prototype.visualSetChanged = function () {
     if (typeof this.visualSet !== 'undefined') {
-        this.trigger('change:visualSet', this.visualSet);
+        this.trigger('change:visualSet', {visualSet: this.visualSet, sender: this});
     }
 };
 
@@ -76,20 +77,28 @@ VisualAttributeWidget.prototype._updateVisualSet = function () {
         map[d.value] = d.visualParam;
     }
 //                        console.log(map);
-    this.visualSet = {diplayAttribute: Utils.camelCase(this.displayAttribute), attribute: attributeName, map: map, sender: this};
+    this.visualSet = {displayAttribute: Utils.camelCase(this.displayAttribute), attribute: attributeName, map: map, sender: this};
     this.visualSetChanged();
 };
 
 
 VisualAttributeWidget.prototype.defaultValueChanged = function (value) {
-    this.control.defaultValue = value;
-    this.trigger('change:default', {value: value});
+    if (typeof value !== 'undefined') {
+        this.control.defaultValue = value;
+    }
+    this.trigger('change:default', {value: this.control.defaultValue});
     if (typeof this.visualSet !== 'undefined') {
         this._updateVisualSet();
     }
 };
-/************************/
 
+VisualAttributeWidget.prototype.getVisualSet = function () {
+    return this.visualSet;
+};
+VisualAttributeWidget.prototype.getDefaultValue = function () {
+    return this.control.defaultValue;
+};
+/************************/
 
 
 VisualAttributeWidget.prototype.render = function () {
@@ -104,6 +113,15 @@ VisualAttributeWidget.prototype.getComponent = function () {
     return this.component;
 }
 VisualAttributeWidget.prototype._createComponent = function () {
+    var control;
+    var width = 150;
+    if (this.showControl == true) {
+        control = this.control.create(function (newValue) {
+            _this.defaultValueChanged(newValue);
+        });
+        width = 80;
+    }
+
     var _this = this;
     this.button = Ext.create('Ext.Button', {
         xtype: 'button',
@@ -117,11 +135,13 @@ VisualAttributeWidget.prototype._createComponent = function () {
     this.removeButton = Ext.create('Ext.Button', {
         disabled: true,
         text: '<span class="bootstrap"><span class="glyphicon glyphicon-trash" style="font-size: 15px"></span></span>',
+        width: 35,
         handler: function (bt) {
             _this.button.setText('Select attribute');
             _this.removeButton.disable();
             delete _this.visualSet;
             _this.defaultValueChanged(_this.control.defaultValue);
+            _this.trigger('remove:visualSet',{sender:_this});
         }
     });
 
@@ -134,13 +154,10 @@ VisualAttributeWidget.prototype._createComponent = function () {
             {
                 xtype: 'text',
                 text: this.displayLabel,
-                width: 80,
+                width: width,
                 margin: '5 0 0 0'
             },
-            this.control.create(function (newValue) {
-                _this.defaultValueChanged(newValue);
-
-            }),
+            control,
             this.button,
             this.removeButton
         ]
@@ -315,6 +332,20 @@ VisualAttributeWidget.prototype._createGrid = function (attributeName, type) {
                 });
                 break;
             case 'List number':
+                attributeGrid = new ListNumberAttributeGrid({
+                    attributeName: attributeName,
+                    control: this.control,
+                    attributeManager: this.attributeManager,
+                    handlers: {
+                        'update:uniqueStore': function () {
+                            _this._updateVisualSet();
+                        }
+                    }
+                });
+                this.on('change:default', function (e) {
+                    attributeGrid.changeDefaultValue(e.value);
+                });
+                break;
             default:
         }
         this.gridMap[attributeName][type] = attributeGrid.create();
