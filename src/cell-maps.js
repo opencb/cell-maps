@@ -648,8 +648,8 @@ CellMaps.prototype = {
                     _this.networkViewer.network.setEdgesRendererAttributeMap(e.displayAttribute, e.attribute, e.map);
                 },
 
-                'change:vertexPieDisplayAttribute': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttributeListMap(e.settings);
+                'change:vertexComplexDisplayAttribute': function (e) {
+                    _this.networkViewer.network.setVerticesRendererAttributeListMap(e.args);
                 }
             }
         });

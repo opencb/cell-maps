@@ -58,12 +58,6 @@ VisualAttributeWidget.prototype.removeVisualSet = function () {
     this.removeButton.el.dom.click();
 };
 
-VisualAttributeWidget.prototype.visualSetChanged = function () {
-    if (typeof this.visualSet !== 'undefined') {
-        this.trigger('change:visualSet', {visualSet: this.visualSet, sender: this});
-    }
-};
-
 VisualAttributeWidget.prototype._updateVisualSet = function () {
     var map = {};
 
@@ -78,7 +72,6 @@ VisualAttributeWidget.prototype._updateVisualSet = function () {
     }
 //                        console.log(map);
     this.visualSet = {displayAttribute: Utils.camelCase(this.displayAttribute), attribute: attributeName, map: map, sender: this};
-    this.visualSetChanged();
 };
 
 
@@ -113,16 +106,17 @@ VisualAttributeWidget.prototype.getComponent = function () {
     return this.component;
 }
 VisualAttributeWidget.prototype._createComponent = function () {
+    var _this = this;
+
     var control;
     var width = 150;
     if (this.showControl == true) {
         control = this.control.create(function (newValue) {
             _this.defaultValueChanged(newValue);
         });
-        width = 80;
+        width = 75;
     }
 
-    var _this = this;
     this.button = Ext.create('Ext.Button', {
         xtype: 'button',
         text: 'Select attribute',
@@ -141,7 +135,7 @@ VisualAttributeWidget.prototype._createComponent = function () {
             _this.removeButton.disable();
             delete _this.visualSet;
             _this.defaultValueChanged(_this.control.defaultValue);
-            _this.trigger('remove:visualSet',{sender:_this});
+            _this.trigger('remove:visualSet', {sender: _this});
         }
     });
 
@@ -268,6 +262,9 @@ VisualAttributeWidget.prototype._createWindow = function () {
                     _this.button.setText(_this.lastAttributeName);
                     _this.removeButton.enable();
                     bt.up('window').hide();
+                    if (typeof _this.visualSet !== 'undefined') {
+                        _this.trigger('click:ok', {visualSet: _this.visualSet, sender: _this});
+                    }
                 }
             }
         ]

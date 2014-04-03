@@ -12,14 +12,23 @@ SelectAttributeControl.prototype.create = function (changeFunction) {
         width: 65,
         margin: '0 10 0 0',
         value: this.defaultValue,
-        store: this.comboValues,
+        store: Ext.create('Ext.data.Store', {
+            fields: ['name'],
+            data: this.comboValues
+        }),
+        displayField: 'name',
+        valueField: 'name',
+        queryMode: 'local',
         forceSelection: true,
         editable: false,
-        listeners: {
-            change: function (combo, select) {
-                changeFunction(select);
+        listConfig: {
+            listeners: {
+                itemclick: function(list, record) {
+                    changeFunction(record.get('name'));
+                }
             }
         }
+
     });
 };
 SelectAttributeControl.prototype.createGridColumns = function () {
