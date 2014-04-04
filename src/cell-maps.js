@@ -252,6 +252,8 @@ CellMaps.prototype = {
             webapp: _this,
             type:'window',
             testing:true,
+            closable:false,
+            minimizable:true,
             headerFormConfig: {
                 baseCls: 'header-form'
             }
