@@ -54,6 +54,31 @@ VisualAttributeWidget.prototype.applyVisualSet = function (attributeName, type) 
     this.window.down('button[text~=Ok]').el.dom.click();
 }
 
+VisualAttributeWidget.prototype.restoreVisualSet = function (visualSet) {
+    var attributeName = visualSet.attribute;
+    var type = visualSet.type;
+    var map = visualSet.map;
+
+    this.button.el.dom.click();
+    this.attributeNameCombo.select(attributeName);
+    this.attributeTypeCombo.select(type);
+    var grid = this.gridMap[attributeName][type];
+
+    var store = grid.store;
+
+    //restoreMap
+    var data = store.snapshot || store.data;
+    var records = data.items;
+    for (var i = 0; i < records.length; i++) {
+        var record = records[i];
+        var value = record.get('value');
+        if (typeof map[value] !== 'undefined') {
+            record.set('visualParam', map[value])
+        }
+    }
+    this.window.down('button[text~=Ok]').el.dom.click();
+}
+
 VisualAttributeWidget.prototype.removeVisualSet = function () {
     this.removeButton.el.dom.click();
 };
@@ -71,7 +96,7 @@ VisualAttributeWidget.prototype._updateVisualSet = function () {
         map[d.value] = d.visualParam;
     }
 //                        console.log(map);
-    this.visualSet = {displayAttribute: Utils.camelCase(this.displayAttribute), attribute: attributeName, map: map, sender: this};
+    this.visualSet = {displayAttribute: Utils.camelCase(this.displayAttribute), attribute: attributeName, map: map, type: this.attributeTypeCombo.getValue()};
 };
 
 
@@ -79,7 +104,7 @@ VisualAttributeWidget.prototype.defaultValueChanged = function (value) {
     if (typeof value !== 'undefined') {
         this.control.defaultValue = value;
     }
-    this.trigger('change:default', {value: this.control.defaultValue});
+    this.trigger('change:default', {value: this.control.defaultValue, sender: this});
     if (typeof this.visualSet !== 'undefined') {
         this._updateVisualSet();
     }

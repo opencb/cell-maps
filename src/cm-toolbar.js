@@ -284,7 +284,7 @@ CmToolBar.prototype = {
                     enableToggle: true,
 //                    iconCls: 'ocb-icon-gear',
                     pressed: false,
-                    hidden: true,
+//                    hidden: true,
                     toggleHandler: function () {
                         _this.trigger('jobs-button:change', {selected: this.pressed, sender: _this});
                     }
@@ -586,6 +586,18 @@ CmToolBar.prototype = {
             ]
         });
 
+        var expressionMenu = Ext.create('Ext.menu.Menu', {
+            plain: true,
+            items: [
+                {
+                    text: "Reactome FI microarray",
+                    handler: function () {
+                        _this.trigger('click:reactimeFIMicroarray', {sender: _this});
+                    }
+                }
+            ]
+        });
+
         var functionalMenu = Ext.create('Ext.menu.Menu', {
             items: [
                 {
@@ -685,6 +697,10 @@ CmToolBar.prototype = {
                 {
                     text: 'Network analysis',
                     menu: networkMenu
+                },
+                {
+                    text: 'Expression analysis',
+                    menu: expressionMenu
                 },
 //                {
 //                    text: 'Functional enrichment',

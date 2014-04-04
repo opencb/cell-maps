@@ -244,9 +244,19 @@ CellMaps.prototype = {
             cellMaps: _this
         });
         this.reactomePlugin.draw();
-//        this.reactomePlugin.show();
+
+
 
         /* Job forms */
+        this.reactomeFIMicroarrayForm = new ReactomeFIMicroarrayForm({
+            webapp: _this,
+            type:'window',
+            testing:true,
+            headerFormConfig: {
+                baseCls: 'header-form'
+            }
+        });
+        this.reactomeFIMicroarrayForm.draw();
 
 
         if ($.cookie('bioinfo_sid') != null) {
@@ -285,7 +295,6 @@ CellMaps.prototype = {
             }
         });
         headerWidget.draw();
-
         return headerWidget;
     },
     _createToolBar: function (targetId) {
@@ -489,6 +498,11 @@ CellMaps.prototype = {
                 'click:topologicalStudy': function (event) {
                     _this.topologicalStudyPlugin.show();
                 },
+                'click:reactimeFIMicroarray': function (event) {
+                    _this.reactomeFIMicroarrayForm.show();
+                },
+
+
                 'example:click': function (event) {
 
                     if (event.example == 1) {
@@ -676,7 +690,7 @@ CellMaps.prototype = {
                 'width': 280,
                 'height': 625,
                 border: true,
-                'mode': 'view',
+                'mode': 'view'
 //                headerConfig: {
 //                    baseCls: 'home-header-dark'
 //                }
@@ -688,6 +702,7 @@ CellMaps.prototype = {
             _this.jobItemClick(data.item);
         });
         jobListWidget.draw();
+        jobListWidget.hide();
 
         return jobListWidget;
     },
@@ -701,11 +716,10 @@ CellMaps.prototype = {
     },
     setAccountData: function (response) {
         this.accountData = response;
-//        this.jobListWidget.setAccountData(this.accountData);
+        this.jobListWidget.setAccountData(this.accountData);
     },
     jobItemClick: function (record) {
         var _this = this;
         console.log(record)
-
     }
 }
