@@ -43,6 +43,9 @@ function CmToolBar(args) {
 };
 
 CmToolBar.prototype = {
+    setWidth: function () {
+        this.toolbar.setWidth();
+    },
     render: function (targetId) {
         var _this = this;
         this.targetId = (targetId) ? targetId : this.targetId;

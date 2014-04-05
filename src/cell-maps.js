@@ -108,6 +108,7 @@ CellMaps.prototype = {
         });
         this.networkViewer.resize();
         this.headerWidget.setWidth();
+        this.toolbar.setWidth();
     },
     _getCenterHeight: function () {
         //header toolbar and status must exists

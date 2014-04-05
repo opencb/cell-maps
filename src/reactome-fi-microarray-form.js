@@ -169,7 +169,7 @@ ReactomeFIMicroarrayForm.prototype._getCorrelationForm = function () {
 
 
     var formBrowser = Ext.create('Ext.panel.Panel', {
-        title: "Expression matrix (normalized)",
+        title: "Correlation",
         header: this.headerFormConfig,
         border: true,
         padding: "5 0 0 0",
