@@ -22,8 +22,13 @@
 ReactomeFIMicroarrayForm.prototype = new GenericFormPanel();
 
 function ReactomeFIMicroarrayForm(args) {
-    args.analysis = 'reactome-fi';
+    args.analysis = 'reactome-fi.default';
     args.title = 'Reactome FI microarray analysis';
+    args.border = false;
+    args.buttonConfig = {
+        width: 100,
+        height: undefined
+    };
     GenericFormPanel.prototype.constructor.call(this, args);
 
     this.id = Utils.genId("ReactomeFIMicroarrayForm");
@@ -37,33 +42,15 @@ ReactomeFIMicroarrayForm.prototype.beforeRun = function () {
     if (this.testing) {
         console.log("Watch out!!! testing flag is on, so job will not launched.")
     }
+
+    if (this.paramsWS['abs'] !== 'on') {
+        delete this.paramsWS['abs']
+    }
 };
 
 
 ReactomeFIMicroarrayForm.prototype.getPanels = function () {
-    var items = [
-        this._getBrowseForm(),
-        this._getCorrelationForm(),
-        this._getClusteringForm(),
-        this._getFilteringForm()
-    ];
-
-    var form = Ext.create('Ext.panel.Panel', {
-        margin: "0 0 5 0",
-        border: false,
-//		layout:{type:'vbox', align: 'stretch'},
-        buttonAlign: 'center',
-        width: "99%",
-        //height:900,
-        //width: "600",
-        items: items,
-        defaults: {
-            margin: '0 0 15 0'
-        }
-    });
-
-//    return [this._getExampleForm(), form];
-    return [form];
+    return [this._getForm()];
 };
 
 
@@ -95,39 +82,19 @@ ReactomeFIMicroarrayForm.prototype.getPanels = function () {
 //    return exampleForm;
 //};
 
-ReactomeFIMicroarrayForm.prototype._getBrowseForm = function () {
+ReactomeFIMicroarrayForm.prototype._getForm = function () {
     var _this = this;
 
     var note1 = Ext.create('Ext.container.Container', {
-        html: '<p>Please select a file from your <span class="info">server account</span> using the <span class="emph">Browse</span> button.</p>'
+        html: 'Please select a file from your <span class="info">server account</span> using the <span class="emph">Browse</span> button'
     });
 
-    var formBrowser = Ext.create('Ext.panel.Panel', {
-        title: "Expression matrix (normalized)",
-        header: this.headerFormConfig,
-        border: true,
-        padding: "5 0 0 0",
-        bodyPadding: 10,
-        items: [
-            note1,
-            this.createOpencgaBrowserCmp({
-                fieldLabel: 'File',
-                dataParamName: 'file',
-                id: this.id + 'file',
-                mode: 'fileSelection',
-                allowedTypes: ['txt'],
-                allowBlank: false
-            })
-        ]
-    });
-    return formBrowser;
-};
-ReactomeFIMicroarrayForm.prototype._getCorrelationForm = function () {
-    var _this = this;
-//    ## Possible correlation distances
+
     var distanceCombo = Ext.create('Ext.form.field.ComboBox', {
         labelAlign: 'left',
-        labelWidth: 50,
+        labelWidth: 150,
+        margin: '20 0 0 0',
+        name: 'corrDist',
         fieldLabel: 'Distance',
         store: Ext.create('Ext.data.Store', {
             fields: ['name', 'value'],
@@ -162,21 +129,76 @@ ReactomeFIMicroarrayForm.prototype._getCorrelationForm = function () {
     });
 
     var absCheckbox = Ext.create('Ext.form.field.Checkbox', {
-        boxLabel: 'Absolute correlation value',
-        name: 'abs_correlation',
-        checked:true
+        labelWidth: 150,
+        fieldLabel: 'Absolute correlation value',
+        name: 'abs',
+        checked: true
     });
+
+
+    var inflationNumber = Ext.create('Ext.form.field.Number', {
+        fieldLabel: 'Inflation',
+        labelWidth: 150,
+        name: 'inflation',
+        value: 5,
+        maxValue: 5,
+        minValue: 1.2,
+        step: 0.1
+    });
+
+    var minSizeNumber = Ext.create('Ext.form.field.Number', {
+        labelWidth: 150,
+        fieldLabel: 'Minimum size',
+        name: 'modSize',
+        value: 7,
+        minValue: 0,
+        step: 1
+    });
+    var minAvgCorrelationNumber = Ext.create('Ext.form.field.Number', {
+        labelWidth: 150,
+        fieldLabel: 'Min. average correlation',
+        name: 'corrThreshold',
+        value: 0.25,
+        step: 0.01
+    });
+
+    var formBrowser = Ext.create('Ext.panel.Panel', {
+        title: "Input parameters",
+        header: this.headerFormConfig,
+        border: this.border,
+//        padding: "5 0 0 0",
+        bodyPadding: 10,
+        items: [
+            note1,
+            this.createOpencgaBrowserCmp({
+                fieldLabel: 'Expression matrix (normalized)',
+                dataParamName: 'eFile',
+                id: this.id + 'file',
+                mode: 'fileSelection',
+                allowedTypes: ['txt'],
+                allowBlank: false
+            }),
+            distanceCombo,
+            absCheckbox,
+            inflationNumber,
+            minSizeNumber,
+            minAvgCorrelationNumber
+        ]
+    });
+    return formBrowser;
+};
+ReactomeFIMicroarrayForm.prototype._getCorrelationForm = function () {
+    var _this = this;
+//    ## Possible correlation distances
 
 
     var formBrowser = Ext.create('Ext.panel.Panel', {
         title: "Correlation",
         header: this.headerFormConfig,
-        border: true,
         padding: "5 0 0 0",
         bodyPadding: 10,
         items: [
-            distanceCombo,
-            absCheckbox
+
         ]
     });
     return formBrowser;
@@ -185,25 +207,6 @@ ReactomeFIMicroarrayForm.prototype._getCorrelationForm = function () {
 ReactomeFIMicroarrayForm.prototype._getClusteringForm = function () {
     var _this = this;
 
-
-    var inflationNumber =  Ext.create('Ext.form.field.Number', {
-        fieldLabel:'Inflation',
-        value: 5,
-        maxValue: 5,
-        minValue: 1.2,
-        step: this.step,
-        margin: '0 10 0 0',
-        listeners: {
-            change: {
-                buffer: 100,
-                fn: function (field, newValue) {
-                    if (newValue != null) {
-                        changeFunction(newValue);
-                    }
-                }
-            }
-        }
-    });
 
     var formBrowser = Ext.create('Ext.panel.Panel', {
         title: "Network clustering",
@@ -222,39 +225,7 @@ ReactomeFIMicroarrayForm.prototype._getClusteringForm = function () {
 ReactomeFIMicroarrayForm.prototype._getFilteringForm = function () {
     var _this = this;
 
-    var minSizeNumber =  Ext.create('Ext.form.field.Number', {
-        fieldLabel:'Minimum size',
-        value: 7,
-        minValue: 0,
-        step: this.step,
-        margin: '0 10 0 0',
-        listeners: {
-            change: {
-                buffer: 100,
-                fn: function (field, newValue) {
-                    if (newValue != null) {
-                        changeFunction(newValue);
-                    }
-                }
-            }
-        }
-    });
-    var minAvgCorrelationNumber =  Ext.create('Ext.form.field.Number', {
-        fieldLabel:'Min. average correlation',
-        value: 0.25,
-        step: this.step,
-        margin: '0 10 0 0',
-        listeners: {
-            change: {
-                buffer: 100,
-                fn: function (field, newValue) {
-                    if (newValue != null) {
-                        changeFunction(newValue);
-                    }
-                }
-            }
-        }
-    });
+
     var formBrowser = Ext.create('Ext.panel.Panel', {
         title: "Module filtering",
         header: this.headerFormConfig,
@@ -262,13 +233,11 @@ ReactomeFIMicroarrayForm.prototype._getFilteringForm = function () {
         padding: "5 0 0 0",
         bodyPadding: 10,
         items: [
-            minSizeNumber,
-            minAvgCorrelationNumber
+
         ]
     });
     return formBrowser;
 };
-
 
 
 //ReactomeFIMicroarrayForm.prototype.loadExample1 = function () {

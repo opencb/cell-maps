@@ -62,21 +62,26 @@ VisualAttributeWidget.prototype.restoreVisualSet = function (visualSet) {
     this.button.el.dom.click();
     this.attributeNameCombo.select(attributeName);
     this.attributeTypeCombo.select(type);
-    var grid = this.gridMap[attributeName][type];
 
-    var store = grid.store;
+    if (typeof this.gridMap[attributeName] !== 'undefined' && typeof this.gridMap[type] !== 'undefined') {
+        var grid = this.gridMap[attributeName][type];
 
-    //restoreMap
-    var data = store.snapshot || store.data;
-    var records = data.items;
-    for (var i = 0; i < records.length; i++) {
-        var record = records[i];
-        var value = record.get('value');
-        if (typeof map[value] !== 'undefined') {
-            record.set('visualParam', map[value])
+        var store = grid.store;
+
+        //restoreMap
+        var data = store.snapshot || store.data;
+        var records = data.items;
+        for (var i = 0; i < records.length; i++) {
+            var record = records[i];
+            var value = record.get('value');
+            if (typeof map[value] !== 'undefined') {
+                record.set('visualParam', map[value])
+            }
         }
+        this.window.down('button[text~=Ok]').el.dom.click();
+    } else {
+        this.window.down('button[text~=Close]').el.dom.click();
     }
-    this.window.down('button[text~=Ok]').el.dom.click();
 }
 
 VisualAttributeWidget.prototype.removeVisualSet = function () {
@@ -189,7 +194,6 @@ VisualAttributeWidget.prototype._createWindow = function () {
     var container = Ext.create('Ext.container.Container', {
         layout: 'fit'
     });
-
 
     this.attributeNameCombo = Ext.create('Ext.form.field.ComboBox', {
         margin: '0 0 0 10',

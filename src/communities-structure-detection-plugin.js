@@ -168,8 +168,11 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
 
     this.resultContainer = Ext.create('Ext.panel.Panel', {
         hidden: true,
-        xtype: 'container',
         title: 'Results',
+        header: {
+            baseCls: 'header-form'
+        },
+        border: false,
         padding: 10,
         bodyPadding: 10,
         layout: {
@@ -213,7 +216,6 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
 
     this.window = Ext.create('Ext.window.Window', {
         title: "Network analysis: Communities structure detection",
-        bodyStyle: {backgroundColor: 'white'},
         width: 470,
         closable: false,
         minimizable: true,
@@ -223,11 +225,21 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
             type: 'vbox',
             align: 'stretch'
         },
+        bodyStyle: {
+            fontFamily: 'Oxygen',
+            backgroundColor: 'white'
+        },
         items: [
             {
-                xtype: 'container',
+                xtype: 'panel',
+                title: 'Input parameters',
+                header: {
+                    baseCls: 'header-form'
+                },
+                border: false,
                 flex: 1,
                 padding: 10,
+                bodyPadding: 10,
                 layout: {
                     type: 'vbox',
                     align: 'stretch'

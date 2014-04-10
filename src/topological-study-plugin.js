@@ -151,8 +151,11 @@ TopologicalStudyPlugin.prototype.draw = function () {
 
     this.resultContainer = Ext.create('Ext.panel.Panel', {
         hidden: true,
-        xtype: 'container',
         title:'Results',
+        header: {
+            baseCls: 'header-form'
+        },
+        border: false,
         padding: 10,
         bodyPadding: 10,
         layout: {
@@ -178,7 +181,6 @@ TopologicalStudyPlugin.prototype.draw = function () {
 
     this.window = Ext.create('Ext.window.Window', {
         title: "Network analysis: Topological study",
-        bodyStyle: {backgroundColor: 'white'},
 //        height: 200,
         width: 350,
         closable: false,
@@ -189,11 +191,21 @@ TopologicalStudyPlugin.prototype.draw = function () {
             type: 'vbox',
             align: 'stretch'
         },
+        bodyStyle: {
+            fontFamily: 'Oxygen',
+            backgroundColor: 'white'
+        },
         items: [
             {
-                xtype: 'container',
+                xtype: 'panel',
+                title: 'Input parameters',
+                header: {
+                    baseCls: 'header-form'
+                },
+                border: false,
                 flex: 1,
                 padding: 10,
+                bodyPadding: 10,
                 layout: {
                     type: 'vbox',
                     align: 'stretch'

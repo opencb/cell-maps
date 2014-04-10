@@ -27,7 +27,7 @@ function CellMapsConfiguration(args) {
     this.id = Utils.genId('CellMapsConfigurationPanel');
 
     this.width = 300;
-    this.height = 750;
+    this.height = 710;
 
     this.vertexAttributeManager;
     this.edgeAttributeManager;
@@ -109,7 +109,7 @@ CellMapsConfiguration.prototype = {
 //            collapsible: true,
 //            titleCollapse: true,
 //            border:false,
-            layout: 'accordion',
+//            layout: 'accordion',
             hidden: true,
             bodyStyle: {
                 fontFamily: 'Oxygen'
@@ -969,7 +969,6 @@ CellMapsConfiguration.prototype = {
             }
         });
 
-
         var attrSettingsHeader = {
             xtype: 'container',
             layout: {
@@ -1004,9 +1003,10 @@ CellMapsConfiguration.prototype = {
         };
 
         this.propertiesPanel = Ext.create('Ext.tab.Panel', {
-            title: 'Visualization settings',
+//            title: 'Visualization settings',
             autoHeight: true,
             border: false,
+//            plain:true,
             defaults: {
                 border: false,
                 bodyPadding: 5
@@ -1086,23 +1086,6 @@ CellMapsConfiguration.prototype = {
                         margin: '0 0 2 0'
                     },
                     items: [
-//                        {
-//                            xtype: 'container',
-//                            layout: {
-//                                type: 'hbox',
-//                                align: 'stretch'
-//                            },
-//                            margin: '0 0 5 0',
-//                            style: {
-//                                borderBottom: '1px solid lightgray',
-//                                textAlign: 'center'
-//                            },
-//                            items: [
-//                                {xtype: 'box', width: 80, margin: '0 0 0 0', html: 'Name'},
-//                                {xtype: 'box', width: 65, margin: '0 10 0 0', html: 'Default'},
-//                                {xtype: 'box', width: 100, html: 'Attribute'}
-//                            ]
-//                        },
                         {
                             xtype: 'box',
                             margin: '5 0 5 0',
@@ -1127,7 +1110,6 @@ CellMapsConfiguration.prototype = {
                         this.edgeColorAttributeWidget.getComponent(),
                         this.edgeSizeAttributeWidget.getComponent()
                     ]
-
                 }
             ]
         });

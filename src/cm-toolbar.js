@@ -271,7 +271,7 @@ CmToolBar.prototype = {
                 '->',
                 {
                     tooltip: 'Configure',
-                    text: '<span class="emph"> Configure</span>',
+                    text: '<span class="emph"> Visual settings</span>',
                     enableToggle: true,
                     iconCls: 'ocb-icon-gear',
                     pressed: true,
@@ -282,6 +282,7 @@ CmToolBar.prototype = {
                 },
                 {
                     tooltip: 'Jobs',
+                    id:'jobs'+this.id,
                     text: '<span class="emph"> Jobs</span>',
                     margin: '0 5 0 0',
                     enableToggle: true,
@@ -292,13 +293,14 @@ CmToolBar.prototype = {
                         _this.trigger('jobs-button:change', {selected: this.pressed, sender: _this});
                     }
                 }
-
             ]
         });
-
         this.rendered = true;
     },
 
+    getJobsButton:function(){
+        return Ext.getCmp('jobs'+this.id);
+    },
 
     getHeight: function () {
         return this.toolbar.getHeight();
@@ -377,16 +379,27 @@ CmToolBar.prototype = {
                         items: [
                             {
                                 text: 'Force directed',
-                                handler: function () {
-                                    _this.trigger('click:layout', {option: this.text, sender: _this});
+                                menu: {
+                                    plain:true,
+                                    items: [
+                                        {
+                                            text: 'Default',
+                                            handler: function () {
+                                                _this.trigger('click:layout', {option: 'Force directed', sender: _this});
+                                            }
+                                        },
+                                        {
+                                            text: 'Configure',
+                                            handler: function () {
+                                                _this.trigger('click:configureLayout', {sender: _this});
+                                            }
+                                        }
+                                    ]
                                 }
                             },
                             {
                                 text: 'Circle',
-                                menu: this.circleLayoutMenu,
-                                handler: function () {
-                                    _this.trigger('click:layout', {option: this.text, sender: _this});
-                                }
+                                menu: this.circleLayoutMenu
                             },
                             {
                                 text: 'Random',
@@ -773,6 +786,17 @@ CmToolBar.prototype = {
     _setCircleLayoutMenu: function (attributeManager) {
         var _this = this;
         this.circleLayoutMenu.removeAll();
+
+        this.circleLayoutMenu.add([
+            {
+                text: 'Unsorted',
+                handler: function () {
+                    _this.trigger('click:layout', {option: 'Circle', sender: _this});
+                }
+            },
+            '-'
+        ]);
+
         var attributes = attributeManager.attributes;
         for (var a in attributes) {
             var name = attributes[a].name;
