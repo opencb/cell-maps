@@ -735,96 +735,106 @@ CellMaps.prototype = {
     },
     jobItemClick: function (record) {
         var _this = this;
-        var jobId = record.raw.id;
+        this.networkViewer.setLoading('Loading job...');
         console.log(record);
 
 
         var resultWidget = new ResultWidget({
-            type:'window',
-            application: 'variant',
+            type: 'window',
+            application: 'cellmaps',
             app: this,
             layoutName: record.raw.toolName
         });
         resultWidget.draw($.cookie('bioinfo_sid'), record);
 
-//
-//        OpencgaManager.poll({
-//            accountId: $.cookie('bioinfo_account'),
-//            sessionId: $.cookie('bioinfo_sid'),
-//            jobId: jobId,
-//            async: false,
-//            filename: 'mcl_out.sif',
-//            zip: false,
-//            success: function (data) {
-//                if (data.indexOf("ERROR") != -1) {
-//                    console.error(data);
-//                }
-//                var sifNetworkDataAdapter = new SIFNetworkDataAdapter({
-//                    dataSource: new StringDataSource(data),
-//                    handlers: {
-//                        'data:load': function (event) {
-//                            _this.networkViewer.setGraph(event.graph);
-//                            _this.networkViewer.setLayout('Force directed');
-//                        },
-//                        'error:parse': function (event) {
-//                            console.log(event.errorMsg);
-//                        }
-//                    }
-//                });
-//            }
-//        });
-//        OpencgaManager.poll({
-//            accountId: $.cookie('bioinfo_account'),
-//            sessionId: $.cookie('bioinfo_sid'),
-//            jobId: jobId,
-//            async: false,
-//            filename: 'mcl_node_attributes.txt',
-//            zip: false,
-//            success: function (data) {
-//                if (data.indexOf("ERROR") != -1) {
-//                    console.error(data);
-//                }
-//                var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
-//                    dataSource: new StringDataSource(data),
-//                    handlers: {
-//                        'data:load': function (event) {
-//                            var json = event.sender.getAttributesJSON();
-//                            json.attributes[1].name = "FI-Module";
-//                            _this.networkViewer.network.importVertexWithAttributes({content: json});
-//                        },
-//                        'error:parse': function (event) {
-//                            console.log(event.errorMsg);
-//                        }
-//                    }
-//                });
-//            }
-//        });
-//
-//        OpencgaManager.poll({
-//            accountId: $.cookie('bioinfo_account'),
-//            sessionId: $.cookie('bioinfo_sid'),
-//            jobId: jobId,
-//            async: false,
-//            filename: 'mcl_edge_attributes.txt',
-//            zip: false,
-//            success: function (data) {
-//                if (data.indexOf("ERROR") != -1) {
-//                    console.error(data);
-//                }
-//                var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
-//                    dataSource: new StringDataSource(data),
-//                    handlers: {
-//                        'data:load': function (event) {
-//                            var json = event.sender.getAttributesJSON();
-//                            json.attributes[1].name = "FI-Correlation";
-//                            _this.networkViewer.network.importEdgesWithAttributes({content: json});
-//                        },
-//                        'error:parse': function (event) {
-//                            console.log(event.errorMsg);
-//                        }
-//                    }
-//                });
-//            }
-//        });
+
+        var jobId = record.raw.id;
+        switch (record.raw.toolName) {
+            case 'reactome-fi.default':
+                this._jobReactomeFIClick(jobId);
+                break;
+        }
+        this.networkViewer.setLoading('');
+    },
+    _jobReactomeFIClick: function (jobId) {
+        var _this = this;
+        OpencgaManager.poll({
+            accountId: $.cookie('bioinfo_account'),
+            sessionId: $.cookie('bioinfo_sid'),
+            jobId: jobId,
+            async: false,
+            filename: 'mcl_out.sif',
+            zip: false,
+            success: function (data) {
+                if (data.indexOf("ERROR") != -1) {
+                    console.error(data);
+                }
+                var sifNetworkDataAdapter = new SIFNetworkDataAdapter({
+                    dataSource: new StringDataSource(data),
+                    handlers: {
+                        'data:load': function (event) {
+                            _this.networkViewer.setGraph(event.graph);
+                            _this.networkViewer.setLayout('Force directed');
+                        },
+                        'error:parse': function (event) {
+                            console.log(event.errorMsg);
+                        }
+                    }
+                });
+            }
+        });
+        OpencgaManager.poll({
+            accountId: $.cookie('bioinfo_account'),
+            sessionId: $.cookie('bioinfo_sid'),
+            jobId: jobId,
+            async: false,
+            filename: 'mcl_node_attributes.txt',
+            zip: false,
+            success: function (data) {
+                if (data.indexOf("ERROR") != -1) {
+                    console.error(data);
+                }
+                var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
+                    dataSource: new StringDataSource(data),
+                    handlers: {
+                        'data:load': function (event) {
+                            var json = event.sender.getAttributesJSON();
+                            json.attributes[1].name = "FI-Module";
+                            _this.networkViewer.network.importVertexWithAttributes({content: json});
+                        },
+                        'error:parse': function (event) {
+                            console.log(event.errorMsg);
+                        }
+                    }
+                });
+            }
+        });
+
+        OpencgaManager.poll({
+            accountId: $.cookie('bioinfo_account'),
+            sessionId: $.cookie('bioinfo_sid'),
+            jobId: jobId,
+            async: false,
+            filename: 'mcl_edge_attributes.txt',
+            zip: false,
+            success: function (data) {
+                if (data.indexOf("ERROR") != -1) {
+                    console.error(data);
+                }
+                var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
+                    dataSource: new StringDataSource(data),
+                    handlers: {
+                        'data:load': function (event) {
+                            var json = event.sender.getAttributesJSON();
+                            json.attributes[1].name = "FI-Correlation";
+                            _this.networkViewer.network.importEdgesWithAttributes({content: json});
+                        },
+                        'error:parse': function (event) {
+                            console.log(event.errorMsg);
+                        }
+                    }
+                });
+            }
+        });
     }
 }

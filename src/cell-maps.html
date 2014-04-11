@@ -1,8 +1,37 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<!--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">-->
-<title>Cell Maps</title>
+    <title>Cell Maps</title>
+    <STYLE type="text/css">
+        html {
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+
+        #status {
+            height: 26px;
+            border-color: lightgrey;
+            border-style: solid;
+            /*border-width: 0 1px 1px 1px;*/
+            border-width: 1px 0px 0px 0px;
+        }
+
+        body {
+            /*background-color: #f5f5f5;*/
+            /*padding: 4px;*/
+        }
+
+        .header-form {
+            font-size: 13px;
+            font-family: Oxygen;
+            /*background-color: #f5f5f5;*/
+            font-weight: bold;
+            padding: 4px 6px;
+            /*border:0px solid #d3d3d3;*/
+        }
+    </STYLE>
+</head>
+<body>
 
 <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all-gray.css">
 
@@ -199,44 +228,34 @@
 
     var cellMaps;
     Ext.onReady(function () {
+
 //            CheckBrowser();
         cellMaps = new CellMaps({
             targetId: 'application',
             autoRender: true
         }); //the div must exist
         cellMaps.draw();
+
+        cellMaps.networkViewer.setLoading('Checking session...')
+        setTimeout(function () {
+            if (typeof localStorage.networkViewer !== 'undefined') {
+                cellMaps.networkViewer.setLoading('Session found')
+                var j = JSON.parse(localStorage.networkViewer);
+                cellMaps.networkViewer.loadJSON(j);
+            }
+            /* auto save session timeout */
+            var intervalId = setInterval(function () {
+                localStorage.networkViewer = JSON.stringify(cellMaps.networkViewer.toJSON());
+                console.log('Session saved');
+            }, 5000);
+            cellMaps.networkViewer.setLoading('')
+        }, 600);
+
     });
 
 </script>
-<STYLE type="text/css">
-    html {
-        overflow-y: hidden;
-        overflow-x: hidden;
-    }
 
-    #status {
-        height: 26px;
-        border-color: lightgrey;
-        border-style: solid;
-        /*border-width: 0 1px 1px 1px;*/
-        border-width: 1px 0px 0px 0px;
-    }
 
-    body {
-        /*background-color: #f5f5f5;*/
-        /*padding: 4px;*/
-    }
-    .header-form {
-        font-size: 13px;
-        font-family: Oxygen;
-        /*background-color: #f5f5f5;*/
-        font-weight: bold;
-        padding: 4px 6px;
-        /*border:0px solid #d3d3d3;*/
-    }
-</STYLE>
-</head>
-<body>
 <div id="checkBrowser"></div>
 <div id="application"></div>
 <div id="status" class="gm-navigation-bar"></div>
