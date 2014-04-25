@@ -202,7 +202,7 @@ IntActPlugin.prototype.draw = function () {
 
     this.uploadButton = Ext.create('Ext.button.Button', {
         text: 'Upload local file',
-        hidden:true,
+        hidden: true,
         handler: function () {
             $(_this.uploadField).click();
         }
@@ -242,7 +242,7 @@ IntActPlugin.prototype.draw = function () {
     this.progress = Ext.create('Ext.ProgressBar', {
         text: 'Click search to retrieve data...',
         border: 1,
-        flex:1,
+        flex: 1,
         margin: '0 10 0 0'
     });
 
@@ -310,9 +310,9 @@ IntActPlugin.prototype.draw = function () {
         buttons: [
             this.progress,
             {
-                text: 'Cancel',
+                text: 'Close',
                 handler: function (bt) {
-                    bt.up('window').close();
+                    bt.up('window').hide();
                 }
             },
             {
@@ -370,8 +370,8 @@ IntActPlugin.prototype.retrieveData = function () {
     var _this = this;
 
 
-    var queryStr= this.textArea.getValue().split('\n').toString();
-    if(queryStr.length <= 0){
+    var queryStr = this.textArea.getValue().split('\n').toString();
+    if (queryStr.length <= 0) {
         return;
     }
 
@@ -442,6 +442,7 @@ IntActPlugin.prototype.retrieveData = function () {
             }
             _this.cellMaps.networkViewer.refreshNetwork();
             _this.progress.updateProgress(1, 'Complete!');
+            _this.cellMaps.networkViewer.setLayout('Force directed');
         }
     });
 };

@@ -406,8 +406,13 @@ CmToolBar.prototype = {
                                 handler: function () {
                                     _this.trigger('click:layout', {option: this.text, sender: _this});
                                 }
+                            },,
+                            {
+                                text: 'Attribute layout...',
+                                handler: function () {
+                                    _this.trigger('click:configureAttributeLayout', {option: this.text, sender: _this});
+                                }
                             },
-                            '-'
                         ]
                     }
                 }
@@ -615,64 +620,84 @@ CmToolBar.prototype = {
         });
 
         var functionalMenu = Ext.create('Ext.menu.Menu', {
+            plain:true,
             items: [
                 {
-                    text: "FatiGO",
-                    disabled: true,
-                    id: this.id + "fatigoBtn",
+                    text: "Network enrichment analysis - SNOW",
                     handler: function () {
-                        var fatigo = new FatigoPlugin(_this);
-                        var args = {
-                            type: "window",
-                            title: "Fatigo plugin",
-                            taskbar: Ext.getCmp(_this.networkViewer.id + 'uxTaskbar')
-                        };
-                        fatigo.draw(args);
-                    },
-                    listeners: {
-                        afterrender: function (me) {
-                            if ($.cookie("bioinfo_sid") != null) {
-                                me.enable()
-                            }
-                        }
+                        _this.trigger('click:snow', {sender: _this});
                     }
                 },
                 {
-                    text: "Gene set analysis",
-                    disabled: true,
+                    text: "Network set enrichment analysis - Network Miner",
                     handler: function () {
+                        _this.trigger('click:networkMiner', {sender: _this});
                     }
                 },
                 {
-                    text: "Functional network",
-                    disabled: true,
+                    text: "Fatigo",
+                    hidden:true,
                     handler: function () {
+                        _this.trigger('click:fatigo', {sender: _this});
                     }
                 },
-                {
-                    text: "Regulation network",
-                    disabled: true,
-                    handler: function () {
-                    }
-                },
-                {
-                    text: "Clustering network",
-                    disabled: true,
-                    handler: function () {
-                    }
-                },
-                {
-                    text: "Disease network",
-                    disabled: true,
-                    handler: function () {
-                    }
-                },
-                {
-                    text: "Interactome 3D",
-                    disabled: true,
-                    handler: function () {
-                    }
-                }
+//                {
+//                    text: "FatiGO",
+//                    disabled: true,
+//                    id: this.id + "fatigoBtn",
+//                    handler: function () {
+//                        var fatigo = new FatigoPlugin(_this);
+//                        var args = {
+//                            type: "window",
+//                            title: "Fatigo plugin",
+//                            taskbar: Ext.getCmp(_this.networkViewer.id + 'uxTaskbar')
+//                        };
+//                        fatigo.draw(args);
+//                    },
+//                    listeners: {
+//                        afterrender: function (me) {
+//                            if ($.cookie("bioinfo_sid") != null) {
+//                                me.enable()
+//                            }
+//                        }
+//                    }
+//                },
+//                {
+//                    text: "Gene set analysis",
+//                    disabled: true,
+//                    handler: function () {
+//                    }
+//                },
+//                {
+//                    text: "Functional network",
+//                    disabled: true,
+//                    handler: function () {
+//                    }
+//                },
+//                {
+//                    text: "Regulation network",
+//                    disabled: true,
+//                    handler: function () {
+//                    }
+//                },
+//                {
+//                    text: "Clustering network",
+//                    disabled: true,
+//                    handler: function () {
+//                    }
+//                },
+//                {
+//                    text: "Disease network",
+//                    disabled: true,
+//                    handler: function () {
+//                    }
+//                },
+//                {
+//                    text: "Interactome 3D",
+//                    disabled: true,
+//                    handler: function () {
+//                    }
+//                }
             ]
         });
 
@@ -717,6 +742,10 @@ CmToolBar.prototype = {
                 {
                     text: 'Expression analysis',
                     menu: expressionMenu
+                },
+                {
+                    text: 'Functional analysis',
+                    menu: functionalMenu
                 },
 //                {
 //                    text: 'Functional enrichment',

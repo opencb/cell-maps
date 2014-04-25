@@ -120,6 +120,9 @@ CellbasePlugin.prototype.draw = function () {
         }
     });
 
+//    uniprotkb_acc
+//    uniprotkb_id
+
     var extList = [
         {"boxLabel": "HGNC Symbol", "name": "dbNameShort", "inputValue": {db: "hgnc_symbol", field: "id"}},
         {"boxLabel": "Ensembl gene", "name": "dbNameShort", "inputValue": {db: "ensembl_gene", field: "id"}},
@@ -129,6 +132,8 @@ CellbasePlugin.prototype.draw = function () {
         {"boxLabel": "Havana gene", "name": "dbNameShort", "inputValue": {db: "havana_gene", field: "id"}},
 //        {"boxLabel": "UniProtKB/Swiss-Prot", "name": "protein", "inputValue": {db: "uniprotkb/swissprot", field: "id"}}, //mysql cellbase
         {"boxLabel": "UniProtKB/TrEMBL", "name": "dbNameShort", "inputValue": {db: "uniprotkb/trembl", field: "id"}},
+        {"boxLabel": "Uniprotkb Acc", "name": "dbNameShort", "inputValue": {db: "uniprotkb_acc", field: "id"}},
+        {"boxLabel": "Uniprotkb ID", "name": "dbNameShort", "inputValue": {db: "uniprotkb_id", field: "id"}},
         {"boxLabel": "UniParc", "name": "dbNameShort", "inputValue": {db: "uniparc", field: "id"}},
         {"boxLabel": "miRBase", "name": "dbNameShort", "inputValue": {db: "miRBase", field: "id"}},
 

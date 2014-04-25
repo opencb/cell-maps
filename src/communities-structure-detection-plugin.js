@@ -204,7 +204,7 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
                 pressed: false,
                 toggleHandler: function () {
                     if (this.pressed) {
-                        _this.cellMaps.configuration.vertexColorAttributeWidget.applyVisualSet("Community color", "String");
+                        _this.cellMaps.configuration.vertexColorAttributeWidget.applyDirectVisualSet("Community color", "String");
                     } else {
                         _this.cellMaps.configuration.vertexColorAttributeWidget.removeVisualSet();
                     }

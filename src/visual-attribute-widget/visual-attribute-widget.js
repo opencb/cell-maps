@@ -45,7 +45,7 @@ function VisualAttributeWidget(args) {
 
 
 /************************/
-VisualAttributeWidget.prototype.applyVisualSet = function (attributeName, type) {
+VisualAttributeWidget.prototype.applyDirectVisualSet = function (attributeName, type) {
     this.button.el.dom.click();
     this.attributeNameCombo.select(attributeName);
     this.attributeTypeCombo.select(type);
@@ -63,7 +63,7 @@ VisualAttributeWidget.prototype.restoreVisualSet = function (visualSet) {
     this.attributeNameCombo.select(attributeName);
     this.attributeTypeCombo.select(type);
 
-    if (typeof this.gridMap[attributeName] !== 'undefined' && typeof this.gridMap[type] !== 'undefined') {
+    if (typeof this.gridMap[attributeName] !== 'undefined' && typeof this.gridMap[attributeName][type] !== 'undefined') {
         var grid = this.gridMap[attributeName][type];
 
         var store = grid.store;

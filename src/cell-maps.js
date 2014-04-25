@@ -29,7 +29,7 @@ function CellMaps(args) {
     this.suiteId = "cellmaps";
     this.title = 'Cell Maps';
     this.description = "Systems Biology Visualization";
-    this.tools = ["reactome-fi.default"];
+    this.tools = ["reactome-fi.default", "snow.default", "network-miner.default", "fatigo.default"];
     this.version = "2.0.3";
     this.border = false;
     this.resizable = true;
@@ -221,13 +221,17 @@ CellMaps.prototype = {
         this.networkEditWidget.draw();
 
         /* Configure Layout*/
-
         this.layoutConfigureWidget = new LayoutConfigureWidget({
             autoRender: true,
-            networkViewer: _this.networkViewer,
-            network: _this.networkViewer.network
+            networkViewer: _this.networkViewer
         });
         this.layoutConfigureWidget.draw();
+
+        this.attributeLayoutConfigureWidget = new AttributeLayoutConfigureWidget({
+            autoRender: true,
+            networkViewer: this.networkViewer
+        });
+        this.attributeLayoutConfigureWidget.draw();
 
 
         /* Plugins */
@@ -270,6 +274,42 @@ CellMaps.prototype = {
         });
         this.reactomeFIMicroarrayForm.draw();
 
+        this.snowForm = new SnowForm({
+            webapp: _this,
+            type: 'window',
+            testing: false,
+            closable: false,
+            minimizable: true,
+            headerFormConfig: {
+                baseCls: 'header-form'
+            }
+        });
+        this.snowForm.draw();
+
+        this.networkMinerForm = new NetworkMinerForm({
+            webapp: _this,
+            type: 'window',
+            testing: false,
+            closable: false,
+            minimizable: true,
+            labelWidth: 150,
+            headerFormConfig: {
+                baseCls: 'header-form'
+            }
+        });
+        this.networkMinerForm.draw();
+
+        this.fatigoForm = new FatigoForm({
+            webapp: _this,
+            type: 'window',
+            testing: false,
+            closable: false,
+            minimizable: true,
+            headerFormConfig: {
+                baseCls: 'header-form'
+            }
+        });
+        this.fatigoForm.draw();
 
         if ($.cookie('bioinfo_sid') != null) {
             this.sessionInitiated();
@@ -512,7 +552,15 @@ CellMaps.prototype = {
                 'click:reactimeFIMicroarray': function (event) {
                     _this.reactomeFIMicroarrayForm.show();
                 },
-
+                'click:snow': function (event) {
+                    _this.snowForm.show();
+                },
+                'click:networkMiner': function (event) {
+                    _this.networkMinerForm.show();
+                },
+                'click:fatigo': function (event) {
+                    _this.fatigoForm.show();
+                },
 
                 'example:click': function (event) {
 
@@ -573,6 +621,9 @@ CellMaps.prototype = {
                 },
                 'click:configureLayout': function (event) {
                     _this.layoutConfigureWidget.show();
+                },
+                'click:configureAttributeLayout': function (event) {
+                    _this.attributeLayoutConfigureWidget.show();
                 }
 
 
@@ -735,26 +786,208 @@ CellMaps.prototype = {
     },
     jobItemClick: function (record) {
         var _this = this;
-        this.networkViewer.setLoading('Loading job...');
-        console.log(record);
 
+        if (record.data.visites >= 0) {
+            this.networkViewer.setLoading('Loading job...');
+            console.log(record);
 
-        var resultWidget = new ResultWidget({
-            type: 'window',
-            application: 'cellmaps',
-            app: this,
-            layoutName: record.raw.toolName
-        });
-        resultWidget.draw($.cookie('bioinfo_sid'), record);
+            var collapseInformation = false;
+            var drawIndex = true;
+            var title = '';
 
+            var jobId = record.raw.id;
+            switch (record.raw.toolName) {
+                case 'reactome-fi.default':
+                    collapseInformation = true;
+                    drawIndex = false;
+                    this._jobReactomeFIClick(jobId);
+                    title = 'Reactome FI';
+                    break;
+                case 'snow.default':
+                    collapseInformation = true;
+                    drawIndex = false;
+                    this._jobSnowClick(jobId);
+                    title = 'Snow';
+                    break;
+                case 'network-miner.default':
+                    collapseInformation = true;
+                    drawIndex = false;
+                    title = 'Network miner';
+                    this._jobNetworkMinerClick(jobId);
+                    break;
+            }
 
-        var jobId = record.raw.id;
-        switch (record.raw.toolName) {
-            case 'reactome-fi.default':
-                this._jobReactomeFIClick(jobId);
-                break;
+            var resultWidget = new ResultWidget({
+                title: title,
+                type: 'window',
+                application: 'cellmaps',
+                app: this,
+                collapseInformation: collapseInformation,
+                drawIndex: drawIndex,
+                layoutName: record.raw.toolName
+            });
+            resultWidget.draw($.cookie('bioinfo_sid'), record);
+
+            this.networkViewer.setLoading('');
         }
-        this.networkViewer.setLoading('');
+
+    },
+    _jobNetworkMinerClick: function (jobId) {
+        var _this = this;
+        OpencgaManager.poll({
+            accountId: $.cookie('bioinfo_account'),
+            sessionId: $.cookie('bioinfo_sid'),
+            jobId: jobId,
+            async: false,
+            filename: 'result_mcn.sif',
+            zip: false,
+            success: function (data) {
+                if (data.indexOf("ERROR") != -1) {
+                    console.error(data);
+                }
+                var sifNetworkDataAdapter = new SIFNetworkDataAdapter({
+                    dataSource: new StringDataSource(data),
+                    handlers: {
+                        'data:load': function (event) {
+                            _this.networkViewer.setGraph(event.graph);
+                            _this.networkViewer.setLayout('Force directed');
+                        },
+                        'error:parse': function (event) {
+                            console.log(event.errorMsg);
+                        }
+                    }
+                });
+            }
+        });
+
+        OpencgaManager.poll({
+            accountId: $.cookie('bioinfo_account'),
+            sessionId: $.cookie('bioinfo_sid'),
+            jobId: jobId,
+            async: false,
+            filename: 'result_mcn_interactors.txt',
+            zip: false,
+            success: function (data) {
+                if (data.indexOf("ERROR") != -1) {
+                    console.error(data);
+                }
+                var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
+                    ignoreColumns: {1: true, 7: true, 8: true},
+                    dataSource: new StringDataSource(data),
+                    handlers: {
+                        'data:load': function (event) {
+                            var json = event.sender.getAttributesJSON();
+                            json.attributes[1].name = "MCN_Type";
+                            json.attributes[2].name = "MCN_Rank";
+                            json.attributes[3].name = "MCN_Betweenness";
+                            json.attributes[4].name = "MCN_Clustering";
+                            json.attributes[5].name = "MCN_Connections";
+                            _this.networkViewer.network.importVertexWithAttributes({content: json});
+
+                            _this.configuration.vertexShapeAttributeWidget.restoreVisualSet({
+                                attribute:'MCN_Type',
+                                type:'String',
+                                map:{
+                                    seedlist:'ellipse',
+                                    list:'circle',
+                                    external:'square'
+                                }
+                            });
+                            _this.configuration.vertexSizeAttributeWidget.restoreVisualSet({
+                                attribute:'MCN_Type',
+                                type:'String',
+                                map:{
+                                    list:30,
+                                    seedlist:30,
+                                    external:20
+                                }
+                            });
+                        },
+                        'error:parse': function (event) {
+                            console.log(event.errorMsg);
+                        }
+                    }
+                });
+            }
+        });
+
+    },
+    _jobSnowClick: function (jobId) {
+        var _this = this;
+        OpencgaManager.poll({
+            accountId: $.cookie('bioinfo_account'),
+            sessionId: $.cookie('bioinfo_sid'),
+            jobId: jobId,
+            async: false,
+            filename: 'result_subnetwork1.sif',
+            zip: false,
+            success: function (data) {
+                if (data.indexOf("ERROR") != -1) {
+                    console.error(data);
+                }
+                var sifNetworkDataAdapter = new SIFNetworkDataAdapter({
+                    dataSource: new StringDataSource(data),
+                    handlers: {
+                        'data:load': function (event) {
+                            _this.networkViewer.setGraph(event.graph);
+                            _this.networkViewer.setLayout('Force directed');
+                        },
+                        'error:parse': function (event) {
+                            console.log(event.errorMsg);
+                        }
+                    }
+                });
+            }
+        });
+
+        OpencgaManager.poll({
+            accountId: $.cookie('bioinfo_account'),
+            sessionId: $.cookie('bioinfo_sid'),
+            jobId: jobId,
+            async: false,
+            filename: 'result_mcn_interactors_list1.txt',
+            zip: false,
+            success: function (data) {
+                if (data.indexOf("ERROR") != -1) {
+                    console.error(data);
+                }
+                var attributeNetworkDataAdapter = new AttributeNetworkDataAdapter({
+                    ignoreColumns: {1: true, 3: true, 7: true, 8: true},
+                    dataSource: new StringDataSource(data),
+                    handlers: {
+                        'data:load': function (event) {
+                            var json = event.sender.getAttributesJSON();
+                            json.attributes[1].name = "MCN_Type";
+                            json.attributes[2].name = "MCN_Betweenness";
+                            json.attributes[3].name = "MCN_Clustering";
+                            json.attributes[4].name = "MCN_Connections";
+                            _this.networkViewer.network.importVertexWithAttributes({content: json});
+
+                            _this.configuration.vertexShapeAttributeWidget.restoreVisualSet({
+                                attribute:'MCN_Type',
+                                type:'String',
+                                map:{
+                                    list:'circle',
+                                    external:'square'
+                                }
+                            });
+                            _this.configuration.vertexSizeAttributeWidget.restoreVisualSet({
+                                attribute:'MCN_Type',
+                                type:'String',
+                                map:{
+                                    list:30,
+                                    external:20
+                                }
+                            });
+                        },
+                        'error:parse': function (event) {
+                            console.log(event.errorMsg);
+                        }
+                    }
+                });
+            }
+        });
+
     },
     _jobReactomeFIClick: function (jobId) {
         var _this = this;
@@ -800,7 +1033,9 @@ CellMaps.prototype = {
                         'data:load': function (event) {
                             var json = event.sender.getAttributesJSON();
                             json.attributes[1].name = "FI-Module";
+                            json.attributes[2].name = "FI-Module color";
                             _this.networkViewer.network.importVertexWithAttributes({content: json});
+                            _this.configuration.vertexColorAttributeWidget.applyDirectVisualSet('FI-Module color','String');
                         },
                         'error:parse': function (event) {
                             console.log(event.errorMsg);

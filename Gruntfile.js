@@ -71,6 +71,9 @@ module.exports = function (grunt) {
                     {   expand: true, cwd: './src', src: ['communities-structure-detection-plugin.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './src', src: ['topological-study-plugin.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './src', src: ['reactome-fi-microarray-form.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['snow-form.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['network-miner-form.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './src', src: ['fatigo-form.js'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['vendor/**'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['styles/**'], dest: 'build/<%= meta.version %>/' }, // includes files in path and its subdirs
                     {   expand: true, cwd: './<%= meta.jsorolla.networkviewer.dir %>', src: ['network-viewer*.js', 'nv-config.js'], dest: 'build/<%= meta.version %>/' },
