@@ -1,141 +1,107 @@
-/*global module:false*/
 module.exports = function (grunt) {
 
-    // Project configuration.
     grunt.initConfig({
-        // Metadata.
-        meta: {
+        pkg: grunt.file.readJSON('package.json'),
+        jsopkg: grunt.file.readJSON('lib/jsorolla/package.json'),
+        def: {
             name: 'cell-maps',
-            version: '2.0.3',
-            jsorolla: {
-                dir: '/lib/jsorolla/',
-                'networkviewer': {
-                    version: '1.0.0',
-                    dir: '<%= meta.jsorolla.dir %>build/network-viewer/<%= meta.jsorolla.networkviewer.version %>/'
-                },
-                //opencga does not contains utils
-                opencga: {
-                    version: '1.0.0',
-                    dir: '<%= meta.jsorolla.dir %>build/opencga/<%= meta.jsorolla.opencga.version %>/'
-                }
-            }
+            build: 'build/<%= pkg.version %>',
+            jsorolla: 'lib/jsorolla'
         },
-        banner: '/*! PROJECT_NAME - v<%= meta.version %> - ' +
-            '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-            '* http://PROJECT_WEBSITE/\n' +
-            '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-            'OpenCB; Licensed GPLv2 */\n',
-        // Task configuration.
         concat: {
-            options: {
-                banner: '<%= banner %>',
-                stripBanners: true
-            },
-            build: {
+            dist: {
                 src: [
-//                    'src/cm-config.js',
-                    'src/cm-toolbar.js',
-                    'src/visual-attribute-widget.js',
                     'src/cell-maps-configuration.js',
+                    'src/cm-toolbar.js',
+
+                    'src/plugins/**/*.js',
+                    'src/forms/**/*.js',
+
                     'src/visual-attribute-widget/attribute-control/attribute-control.js',
-                    'src/visual-attribute-widget/attribute-control/*-attribute-control.js',
                     'src/visual-attribute-widget/attribute-grid/attribute-grid.js',
-                    'src/visual-attribute-widget/attribute-grid/*-attribute-grid.js',
-                    'src/visual-attribute-widget/visual-attribute-widget.js',
-                    'src/visual-attribute-widget/pie-attribute-widget.js',
-                    'src/*-form.js',
+                    'src/visual-attribute-widget/**/*.js',
+
                     'src/cell-maps.js'
                 ],
-                dest: 'build/<%= meta.version %>/<%= meta.name %>-<%= meta.version %>.js'
+                dest: '<%= def.build %>/<%= def.name %>.js'
             }
         },
         uglify: {
             options: {
-                banner: '<%= banner %>'
+                banner: '/*! <%= def.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
             },
-            build: {
-                src: '<%= concat.build.dest %>',
-                dest: 'build/<%= meta.version %>/<%= meta.name %>-<%= meta.version %>.min.js'
+            dist: {
+                files: {
+                    '<%= def.build %>/<%= def.name %>.min.js': ['<%= concat.dist.dest %>']
+                }
             }
         },
         copy: {
-            build: {
+            dist: {
                 files: [
-                    {   expand: true, cwd: './src', src: ['cm-config.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['plugins-config.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['fatigo-plugin.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['intact-plugin.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['reactome-plugin.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['cellbase-plugin.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['intact-plugin.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['communities-structure-detection-plugin.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['topological-study-plugin.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['reactome-fi-microarray-form.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['snow-form.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['network-miner-form.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './src', src: ['fatigo-form.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['vendor/**'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['styles/**'], dest: 'build/<%= meta.version %>/' }, // includes files in path and its subdirs
-                    {   expand: true, cwd: './<%= meta.jsorolla.networkviewer.dir %>', src: ['network-viewer*.js', 'nv-config.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './<%= meta.jsorolla.opencga.dir %>', src: ['opencga*.js', 'worker*'], dest: 'build/<%= meta.version %>/' }
+                    {   expand: true, cwd: './src', src: ['cm-config.js'], dest: '<%= def.build %>/' },
+                    {   expand: true, cwd: './src', src: ['forms/**'], dest: '<%= def.build %>/' },
+                    {   expand: true, cwd: './src', src: ['plugins/**'], dest: '<%= def.build %>/' },
+                    {   expand: true, cwd: './<%= def.jsorolla %>', src: ['vendor/**'], dest: '<%= def.build %>/'  },
+                    {   expand: true, cwd: './<%= def.jsorolla %>', src: ['styles/**'], dest: '<%= def.build %>/'  },
+                    {   expand: true, cwd: './<%= def.jsorolla %>/src/lib', src: ['worker*'], dest: '<%= def.build %>/' },
+
+                    {   expand: true, cwd: './<%= def.jsorolla %>/build/<%= jsopkg.version %>/network-viewer/', src: ['network-viewer*.js', 'nv-config.js'], dest: '<%= def.build %>/' },
                 ]
             }
         },
         clean: {
-            build: ["build/<%= meta.version %>/"]
+            dist: ['<%= def.build %>/']
         },
-
-        vendorPath: 'build/<%= meta.version %>/vendor',
-        stylesPath: 'build/<%= meta.version %>/styles',
         htmlbuild: {
             build: {
-                src: 'src/cell-maps.html',
-                dest: 'build/<%= meta.version %>/',
+                src: 'src/<%= def.name %>.html',
+                dest: '<%= def.build %>/',
                 options: {
                     beautify: true,
-                    scripts: {
-                        'js': 'build/<%= meta.version %>/<%= meta.name %>-<%= meta.version %>.min.js',
-                        'vendor': [
-                            'build/<%= meta.version %>/vendor/underscore*.js',
-                            'build/<%= meta.version %>/vendor/backbone*.js',
-                            'build/<%= meta.version %>/vendor/rawdeflate*.js',
-                            'build/<%= meta.version %>/vendor/rgbcolor.js',
-                            'build/<%= meta.version %>/vendor/canvg.js',
-                            'build/<%= meta.version %>/vendor/xml2json.js',
-                            'build/<%= meta.version %>/vendor/jquery.min.js',
-
-                            'build/<%= meta.version %>/vendor/bootstrap-*-dist/js/bootstrap.min.js',
-                            'build/<%= meta.version %>/vendor/typeahead.min.js',
-                            'build/<%= meta.version %>/vendor/jquery.qtip*.js',
-                            'build/<%= meta.version %>/vendor/jquery.cookie*.js',
-                            'build/<%= meta.version %>/vendor/jquery.sha1*.js',
-                            'build/<%= meta.version %>/vendor/purl*.js',
-                            'build/<%= meta.version %>/vendor/jquery.mousewheel*.js',
-                            'build/<%= meta.version %>/vendor/gl-matrix-min*.js',
-                            'build/<%= meta.version %>/vendor/ChemDoodleWeb*.js',
-                            'build/<%= meta.version %>/vendor/jquery.simplecolorpicker.js',
-                            'build/<%= meta.version %>/vendor/d3.min.js',
-                            'build/<%= meta.version %>/vendor/jszip.min.js',
-                            'build/<%= meta.version %>/vendor/xlsx.min.js'
-
-                        ],
-                        nv: [
-                            'build/<%= meta.version %>/opencga*.min.js',
-                            'build/<%= meta.version %>/network-viewer*.min.js'
-                        ],
-                        nvconfig: [
-                            'build/<%= meta.version %>/nv-config.js'
-                        ]
-                    },
                     styles: {
-                        'css': ['<%= stylesPath %>/css/style.css'],
                         'vendor': [
-                            'build/<%= meta.version %>/vendor/jquery.qtip*.css',
-                            'build/<%= meta.version %>/vendor/ChemDoodleWeb*.css',
-                            'build/<%= meta.version %>/vendor/bootstrap-*-dist/css/bootstrap.min.css',
-                            'build/<%= meta.version %>/vendor/jquery.simplecolorpicker.css'
-                        ]
+                            '<%= def.build %>/vendor/jquery.qtip*.css',
+                            '<%= def.build %>/vendor/bootstrap-*-dist/css/bootstrap.min.css',
+                            '<%= def.build %>/vendor/jquery.simplecolorpicker.css'
+                        ],
+                        'css': ['<%= def.build %>/styles/css/style.css']
+                    },
+                    scripts: {
+                        vendor: [
+                            '<%= def.build %>/vendor/underscore*.js',
+                            '<%= def.build %>/vendor/backbone*.js',
+                            '<%= def.build %>/vendor/rawdeflate*.js',
+                            '<%= def.build %>/vendor/rgbcolor.js',
+                            '<%= def.build %>/vendor/canvg.js',
+                            '<%= def.build %>/vendor/xml2json.js',
+                            '<%= def.build %>/vendor/jszip.min.js',
+                            '<%= def.build %>/vendor/xlsx.min.js',
+                            '<%= def.build %>/vendor/jquery.min.js',
+
+                            '<%= def.build %>/vendor/bootstrap-*-dist/js/bootstrap.min.js',
+                            '<%= def.build %>/vendor/typeahead.min.js',
+                            '<%= def.build %>/vendor/jquery.qtip*.js',
+                            '<%= def.build %>/vendor/jquery.cookie*.js',
+                            '<%= def.build %>/vendor/jquery.sha1*.js',
+                            '<%= def.build %>/vendor/purl*.js',
+                            '<%= def.build %>/vendor/jquery.mousewheel*.js',
+                            '<%= def.build %>/vendor/gl-matrix-min*.js',
+                            '<%= def.build %>/vendor/ChemDoodleWeb*.js',
+                            '<%= def.build %>/vendor/jquery.simplecolorpicker.js',
+                            '<%= def.build %>/vendor/d3.min.js',
+                        ],
+                        config: [
+                            '<%= def.build %>/nv-config.js'
+                        ],
+                        lib: [
+                            '<%= def.build %>/network-viewer*.min.js'
+                        ],
+                        js: '<%= def.build %>/<%= def.name %>.min.js'
+
+
                     }
+
                 }
             }
         },
@@ -143,16 +109,19 @@ module.exports = function (grunt) {
 
         },
         rename: {
-            html: {
+            dist: {
                 files: [
-                    {src: ['build/<%= meta.version %>/cell-maps.html'], dest: 'build/<%= meta.version %>/index.html'}
+                    {
+                        src: ['<%= def.build %>/<%= def.name %>.html'],
+                        dest: '<%= def.build %>/index.html'
+                    }
                 ]
             }
         },
         hub: {
-            all: {
+            'network-viewer': {
                 src: ['lib/jsorolla/Gruntfile.js'],
-                tasks: ['opencga', 'nv']
+                tasks: ['nv']
             }
         }
     });
@@ -169,10 +138,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-hub');
 
     grunt.registerTask('log-deploy', 'Deploy path info', function (version) {
-        grunt.log.writeln("DEPLOY COMMAND: scp -r build/" + grunt.config.data.meta.version + " cafetero@mem16:/httpd/bioinfo/www-apps/cell-maps/");
+        grunt.log.writeln("DEPLOY COMMAND: scp -r build/" + grunt.config.data.pkg.version + " cafetero@mem16:/httpd/bioinfo/www-apps/cell-maps/");
     });
 
     // Default task.
-    grunt.registerTask('default', ['clean', 'concat', 'uglify', 'hub:all', 'copy', 'htmlbuild', 'rename:html', 'log-deploy']);
+    grunt.registerTask('default', ['hub','clean', 'concat', 'uglify', 'copy', 'htmlbuild', 'rename', 'log-deploy']);
 
 };

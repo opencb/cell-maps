@@ -30,7 +30,7 @@ function CellMaps(args) {
     this.title = 'Cell Maps';
     this.description = "Systems Biology Visualization";
     this.tools = ["reactome-fi.default", "snow.default", "network-miner.default", "fatigo.default"];
-    this.version = "2.0.3";
+    this.version = "2.0.4";
     this.border = false;
     this.resizable = true;
     this.targetId;

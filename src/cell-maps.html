@@ -36,21 +36,16 @@
 <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all-gray.css">
 <!--<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all-neptune.css">-->
 
-<!-- CSS from vendors -->
 <!-- build:style vendor -->
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.qtip.min.css"/>
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/bootstrap-scoped-dist/css/bootstrap.min.css">
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.simplecolorpicker.css">
 <!-- /build -->
 
-
-<!-- CSS from Styles -->
 <!-- build:style css -->
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/styles/css/style.css"/>
 <!-- /build -->
 
-
-<!-- Sencha Ext -->
 <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all.js"></script>
 <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/examples/shared/examples.js"></script>
 
@@ -58,9 +53,6 @@
 <script type="text/javascript">
     WORKERS_PATH = "./";
 </script>
-
-
-<!-- JS from vendors -->
 
 <!-- build:script vendor -->
 <script type="text/javascript" src="../lib/jsorolla/vendor/underscore-min.js"></script>
@@ -85,79 +77,56 @@
 <script type="text/javascript" src="../lib/jsorolla/vendor/ChemDoodleWeb.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.simplecolorpicker.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/d3.min.js"></script>
-
 <!-- /build -->
 
 
-<!-- Cellmaps config -->
-<!-- build:script nvconfig -->
+<!-- build:script config -->
 <script type="text/javascript" src="../lib/jsorolla/src/network-viewer/nv-config.js"></script>
 <!-- /build -->
+
 <script type="text/javascript" src="cm-config.js"></script>
 
+<!-- build:script lib -->
 
-<!-- JS from network-viewer -->
-<!-- build:script nv -->
+<script type="text/javascript" src="../lib/jsorolla/src/lib/svg.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/utils.js"></script>
 
-<!-- utils -->
-<script type="text/javascript" src="../lib/jsorolla/src/lib/utils/svg.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/utils/utils.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/ux-window.js"></script>
 
-<!-- ui-widgets -->
-<script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/ux-window.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/network-edit-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/layout-configure-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attribute-layout-configure-widget.js"></script>
 
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-idb.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-store.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/network.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/network-config.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/graph.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/edge.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/edge-config.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/vertex.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/vertex-config.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/default-vertex-renderer.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/circos-vertex-renderer.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/default-edge-renderer.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/graph-layout.js"></script>
 
-<!-- cellbase ui-widgets -->
-<script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/info-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/gene-info-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/protein-info-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/snp-info-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/transcript-info-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/ui-widgets/vcf-variant-info-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase-manager.js"></script>
 
-<!-- cellbase ws-manager -->
-<script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase/cellbase-manager.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga-manager.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/generic-form-panel.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/user-list-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/check-browser.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/header-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/job-list-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/login-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/opencga-browser-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/paged-view-list-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/profile-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/result2-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/result-table.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/upload-widget.js"></script>
 
-<!-- Network viewer -->
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/tool-bar.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/edition-bar.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/network-svg-layout.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/network-edit-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/layout-configure-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/attribute-layout-configure-widget.js"></script>
-
-<script type="text/javascript" src="../lib/jsorolla/src/network/attributes/attribute-manager-idb.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/attributes/attribute-manager-store.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/network.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/network-config.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/graph.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/edge.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/edge-config.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/vertex.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/vertex-config.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/default-vertex-renderer.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/circos-vertex-renderer.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/default-edge-renderer.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/graph-layout.js"></script>
-
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/network-viewer.js"></script>
-
-<!-- Opencga -->
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/opencga-manager.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/generic-form-panel.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/user-list-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/check-browser.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/header-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/job-list-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/login-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/opencga-browser-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/paged-view-list-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/profile-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/result2-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/result-table.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/upload-widget.js"></script>
-
-<!-- adapters and widgets -->
 <script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/dot-network-data-adapter.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/json-network-data-adapter.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/sif-network-data-adapter.js"></script>
@@ -169,40 +138,45 @@
 <script type="text/javascript" src="../lib/jsorolla/src/lib/data-source/file-data-source.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/data-source/string-data-source.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/network/network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/network/dot-network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/network/json-network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/network/sif-network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/network/text-network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/network/xlsx-network-file-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/network/attribute-network-file-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/network-file-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/dot-network-file-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/json-network-file-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/sif-network-file-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/text-network-file-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/xlsx-network-file-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attribute-network-file-widget.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/attributes/attribute-edit-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/attributes/attribute-filter-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/attributes/attribute-manager-store.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/network/attributes/attribute-manager-idb.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attributes/attribute-edit-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attributes/attribute-filter-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-store.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-idb.js"></script>
+
+<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/tool-bar.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/edition-bar.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/network-svg-layout.js"></script>
+
+<script type="text/javascript" src="../lib/jsorolla/src/network-viewer/network-viewer.js"></script>
 
 
 <script type="text/javascript">
-    WORKERS_PATH = "../lib/jsorolla/src/lib/opencga/";
+    WORKERS_PATH = "../lib/jsorolla/src/lib/";
 </script>
 <!-- /build -->
 
-<script type="text/javascript" src="./plugins-config.js"></script>
-<script type="text/javascript" src="./fatigo-plugin.js"></script>
-<script type="text/javascript" src="./intact-plugin.js"></script>
-<script type="text/javascript" src="./reactome-plugin.js"></script>
-<script type="text/javascript" src="./cellbase-plugin.js"></script>
-<script type="text/javascript" src="./intact-plugin.js"></script>
-<script type="text/javascript" src="./communities-structure-detection-plugin.js"></script>
-<script type="text/javascript" src="./topological-study-plugin.js"></script>
+<script type="text/javascript" src="plugins/fatigo-plugin.js"></script>
+<script type="text/javascript" src="plugins/intact-plugin.js"></script>
+<script type="text/javascript" src="plugins/reactome-plugin.js"></script>
+<script type="text/javascript" src="plugins/cellbase-plugin.js"></script>
+<script type="text/javascript" src="plugins/intact-plugin.js"></script>
+<script type="text/javascript" src="plugins/communities-structure-detection-plugin.js"></script>
+<script type="text/javascript" src="plugins/topological-study-plugin.js"></script>
 
-<script type="text/javascript" src="./reactome-fi-microarray-form.js"></script>
-<script type="text/javascript" src="./snow-form.js"></script>
-<script type="text/javascript" src="./network-miner-form.js"></script>
-<script type="text/javascript" src="./fatigo-form.js"></script>
+<script type="text/javascript" src="forms/reactome-fi-microarray-form.js"></script>
+<script type="text/javascript" src="forms/snow-form.js"></script>
+<script type="text/javascript" src="forms/network-miner-form.js"></script>
+<script type="text/javascript" src="forms/fatigo-form.js"></script>
 
-<!-- JS from Cell Maps -->
+
 <!-- build:script js -->
 <script type="text/javascript" src="cm-toolbar.js"></script>
 <script type="text/javascript" src="visual-attribute-widget/visual-attribute-widget.js"></script>

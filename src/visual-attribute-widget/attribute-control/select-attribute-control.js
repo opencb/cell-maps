@@ -23,7 +23,7 @@ SelectAttributeControl.prototype.create = function (changeFunction) {
         editable: false,
         listConfig: {
             listeners: {
-                itemclick: function(list, record) {
+                itemclick: function (list, record) {
                     changeFunction(record.get('name'));
                 }
             }
@@ -40,7 +40,10 @@ SelectAttributeControl.prototype.createGridColumns = function () {
             menuDisabled: true,
             editor: {
                 xtype: 'combo',
-                store: this.comboValues
+                store: Ext.create('Ext.data.Store', {
+                    fields: ['name'],
+                    data: this.comboValues
+                })
             }
         }
     ];
