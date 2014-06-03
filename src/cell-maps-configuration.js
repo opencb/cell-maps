@@ -27,7 +27,8 @@ function CellMapsConfiguration(args) {
     this.id = Utils.genId('CellMapsConfigurationPanel');
 
     this.width = 300;
-    this.height = 710;
+    this.height = 825;
+    this.session;
 
     this.vertexAttributeManager;
     this.edgeAttributeManager;
@@ -39,34 +40,31 @@ function CellMapsConfiguration(args) {
     this.vertexComboStore;
     this.edgeComboStore;
 
-    if (typeof localStorage.CELLMAPS_CONFIG !== 'undefined') {
-        var config = JSON.parse(localStorage.CELLMAPS_CONFIG);
-        if (typeof config.vertexDefaults !== 'undefined') {
-            this.vertexDefaults = config.vertexDefaults;
+    this.vertexDefaults = {
+        shape: 'circle',
+        size: 40,
+        color: '#9fc6e7',
+        strokeSize: 1,
+        strokeColor: '#9fc6e7',
+        opacity: 0.8,
+        labelSize: 12,
+        labelColor: '#111111'
+    };
+    this.edgeDefaults = {
+        shape: 'undirected',
+        size: 1,
+        color: '#cccccc',
+        opacity: 1,
+        labelSize: 0,
+        labelColor: '#111111'
+    }
+
+    if (typeof this.session !== 'undefined') {
+        if (typeof this.session.vertexDefaults !== 'undefined') {
+            this.vertexDefaults = this.session.vertexDefaults;
+        } else if (typeof this.session.edgeDefaults !== 'undefined') {
+            this.edgeDefaults = this.session.edgeDefaults;
         }
-        if (typeof config.edgeDefaults !== 'undefined') {
-            this.edgeDefaults = config.edgeDefaults;
-        }
-    } else {
-        this.vertexDefaults = {
-            shape: 'circle',
-            size: 40,
-            color: '#9fc6e7',
-            strokeSize: 1,
-            strokeColor: '#9fc6e7',
-            opacity: 0.8,
-            labelSize: 12,
-            labelColor: '#111111'
-        };
-        this.edgeDefaults = {
-            shape: 'undirected',
-            size: 1,
-            color: '#cccccc',
-            opacity: 1,
-            labelSize: 0,
-            labelColor: '#111111'
-        }
-        localStorage.CELLMAPS_CONFIG = JSON.stringify({vertexDefaults: this.vertexDefaults, edgeDefaults: this.edgeDefaults});
     }
 
     this.on(this.handlers);
@@ -110,6 +108,7 @@ CellMapsConfiguration.prototype = {
 //            titleCollapse: true,
 //            border:false,
 //            layout: 'accordion',
+//            border:false,
             hidden: true,
             bodyStyle: {
                 fontFamily: 'Oxygen'
@@ -119,50 +118,60 @@ CellMapsConfiguration.prototype = {
         });
 
 
-        if (typeof localStorage.CELLMAPS_CONFIG !== 'undefined') {
-            var config = JSON.parse(localStorage.CELLMAPS_CONFIG);
-            if (typeof config.visualSets !== 'undefined') {
-                for (widgetName in config.visualSets) {
-                    if (typeof config.visualSets[widgetName] !== 'undefined') {
-                        this[widgetName].restoreVisualSet(config.visualSets[widgetName]);
+        if (typeof this.session !== 'undefined') {
+            if (typeof this.session.visualSets !== 'undefined') {
+                for (var widgetName in this.session.visualSets) {
+                    if (typeof this.session.visualSets[widgetName] !== 'undefined') {
+                        this[widgetName].restoreVisualSet(this.session.visualSets[widgetName]);
                     }
                 }
             }
         }
-
     },
-    saveConfig: function () {
-        localStorage.CELLMAPS_CONFIG = JSON.stringify({
-            vertexDefaults: this.vertexDefaults,
-            edgeDefaults: this.edgeDefaults,
-
-            visualSets: {
-                //nodes
-                vertexLabelSizeAttributeWidget: this.vertexLabelSizeAttributeWidget.getVisualSet(),
-                vertexOpacityAttributeWidget: this.vertexOpacityAttributeWidget.getVisualSet(),
-                vertexShapeAttributeWidget: this.vertexShapeAttributeWidget.getVisualSet(),
-                vertexColorAttributeWidget: this.vertexColorAttributeWidget.getVisualSet(),
-                vertexStrokeColorAttributeWidget: this.vertexStrokeColorAttributeWidget.getVisualSet(),
-                vertexSizeAttributeWidget: this.vertexSizeAttributeWidget.getVisualSet(),
-                vertexStrokeSizeAttributeWidget: this.vertexStrokeSizeAttributeWidget.getVisualSet(),
+    getVisualSets: function () {
+        return {
+            //nodes
+            vertexLabelSizeAttributeWidget: this.vertexLabelSizeAttributeWidget.getVisualSet(),
+            vertexOpacityAttributeWidget: this.vertexOpacityAttributeWidget.getVisualSet(),
+            vertexShapeAttributeWidget: this.vertexShapeAttributeWidget.getVisualSet(),
+            vertexColorAttributeWidget: this.vertexColorAttributeWidget.getVisualSet(),
+            vertexStrokeColorAttributeWidget: this.vertexStrokeColorAttributeWidget.getVisualSet(),
+            vertexSizeAttributeWidget: this.vertexSizeAttributeWidget.getVisualSet(),
+            vertexStrokeSizeAttributeWidget: this.vertexStrokeSizeAttributeWidget.getVisualSet(),
 
 
-                vertexPieColorAttributeWidget: this.vertexPieColorAttributeWidget.getVisualSet(),
-                vertexPieSizeAttributeWidget: this.vertexPieSizeAttributeWidget.getVisualSet(),
-                vertexPieAreaAttributeWidget: this.vertexPieAreaAttributeWidget.getVisualSet(),
+            vertexPieColorAttributeWidget: this.vertexPieColorAttributeWidget.getVisualSet(),
+            vertexPieSizeAttributeWidget: this.vertexPieSizeAttributeWidget.getVisualSet(),
+            vertexPieAreaAttributeWidget: this.vertexPieAreaAttributeWidget.getVisualSet(),
 
-                vertexDonutColorAttributeWidget: this.vertexDonutColorAttributeWidget.getVisualSet(),
-                vertexDonutSizeAttributeWidget: this.vertexDonutSizeAttributeWidget.getVisualSet(),
-                vertexDonutAreaAttributeWidget: this.vertexDonutAreaAttributeWidget.getVisualSet(),
+            vertexDonutColorAttributeWidget: this.vertexDonutColorAttributeWidget.getVisualSet(),
+            vertexDonutSizeAttributeWidget: this.vertexDonutSizeAttributeWidget.getVisualSet(),
+            vertexDonutAreaAttributeWidget: this.vertexDonutAreaAttributeWidget.getVisualSet(),
 
-                //edges
-                edgeLabelSizeAttributeWidget: this.edgeLabelSizeAttributeWidget.getVisualSet(),
-                edgeOpacityAttributeWidget: this.edgeOpacityAttributeWidget.getVisualSet(),
-                edgeShapeAttributeWidget: this.edgeShapeAttributeWidget.getVisualSet(),
-                edgeColorAttributeWidget: this.edgeColorAttributeWidget.getVisualSet(),
-                edgeSizeAttributeWidget: this.edgeSizeAttributeWidget.getVisualSet()
+            //edges
+            edgeLabelSizeAttributeWidget: this.edgeLabelSizeAttributeWidget.getVisualSet(),
+            edgeOpacityAttributeWidget: this.edgeOpacityAttributeWidget.getVisualSet(),
+            edgeShapeAttributeWidget: this.edgeShapeAttributeWidget.getVisualSet(),
+            edgeColorAttributeWidget: this.edgeColorAttributeWidget.getVisualSet(),
+            edgeSizeAttributeWidget: this.edgeSizeAttributeWidget.getVisualSet()
+        }
+    },
+    loadSession: function (session) {
+        if (typeof session !== 'undefined') {
+            if (typeof session.vertexDefaults !== 'undefined') {
+                this.vertexDefaults = session.vertexDefaults;
             }
-        });
+            if (typeof this.session.edgeDefaults !== 'undefined') {
+                this.edgeDefaults = session.edgeDefaults;
+            }
+            if (typeof session.visualSets !== 'undefined') {
+                for (var widgetName in session.visualSets) {
+                    if (typeof session.visualSets[widgetName] !== 'undefined') {
+                        this[widgetName].restoreVisualSet(session.visualSets[widgetName]);
+                    }
+                }
+            }
+        }
     },
     reconfigureVertexComponents: function () {
         this.vertexComboStore.loadData(this.vertexAttributeManager.attributes);
@@ -172,18 +181,14 @@ CellMapsConfiguration.prototype = {
     },
     createLabelComboComponent: function (args) {
         var _this = this;
-        return Ext.create('Ext.container.Container', {
+        return Ext.create('Ext.form.FieldContainer', {
             layout: 'hbox',
+            labelWidth: 145,
+            fieldLabel: args.text,
             defaults: {
-                margin: '0 1 0 1'
+                margin: '1'
             },
             items: [
-                {
-                    xtype: 'text',
-                    width: 150,
-                    margin: '5 0 0 0',
-                    text: args.text
-                },
                 {
                     xtype: 'combo',
                     store: args.comboStore,
@@ -222,18 +227,14 @@ CellMapsConfiguration.prototype = {
     },
     createLabelPositionComponent: function (args) {
         var _this = this;
-        return Ext.create('Ext.container.Container', {
+        return Ext.create('Ext.form.FieldContainer', {
             layout: 'hbox',
+            labelWidth: 120,
+            fieldLabel: 'Label position',
             defaults: {
-                margin: '0 1 0 1'
+                margin: '1 6'
             },
             items: [
-                {
-                    xtype: 'text',
-                    width: 131,
-                    margin: '5 0 0 0',
-                    text: 'Label position'
-                },
                 {
                     xtype: 'numberfield',
                     labelWidth: 15,
@@ -243,7 +244,6 @@ CellMapsConfiguration.prototype = {
                     maxValue: 100,
                     minValue: -100,
                     step: 1,
-                    margin: '0 10 0 0',
                     listeners: {
                         change: {
                             buffer: 100,
@@ -264,7 +264,6 @@ CellMapsConfiguration.prototype = {
                     maxValue: 100,
                     minValue: -100,
                     step: 1,
-                    margin: '0 10 0 0',
                     listeners: {
                         change: {
                             buffer: 100,
@@ -281,27 +280,23 @@ CellMapsConfiguration.prototype = {
     },
     createComplexLabelComponent: function (args) {
         var _this = this;
-        return Ext.create('Ext.container.Container', {
+        return Ext.create('Ext.form.FieldContainer', {
             layout: 'hbox',
             defaults: {
-                margin: '0 1 0 1'
+                margin: '1'
             },
             items: [
                 {
-                    xtype: 'text',
-                    width: 80,
-                    margin: '5 0 0 0',
-                    text: 'Text size'
-                },
-                {
                     xtype: 'numberfield',
+                    fieldLabel: 'Text size',
+                    labelWidth: 70,
                     xid: 'size',
-                    width: 59,
+                    width: 75 + 59,
                     value: 12,
                     maxValue: 16,
                     minValue: 0,
                     step: 1,
-                    margin: '0 10 0 0',
+                    margin: '1 5 1 1',
                     listeners: {
                         change: {
                             buffer: 100,
@@ -314,20 +309,15 @@ CellMapsConfiguration.prototype = {
                     }
                 },
                 {
-                    xtype: 'text',
-                    width: 80,
-                    margin: '5 0 0 0',
-                    text: 'Text distance'
-                },
-                {
                     xtype: 'numberfield',
+                    fieldLabel: 'Text distance',
+                    labelWidth: 85,
                     xid: 'offset',
-                    width: 59,
+                    width: 88 + 59,
                     value: 0,
                     maxValue: 200,
                     minValue: -200,
                     step: 1,
-                    margin: '0 10 0 0',
                     listeners: {
                         change: {
                             buffer: 100,
@@ -352,7 +342,6 @@ CellMapsConfiguration.prototype = {
         this._processDonutVisualSet(args);
 
         if (args.settings.length > 0) {
-            this.saveConfig();
             this.trigger('change:vertexComplexDisplayAttribute', {args: args, sender: this});
         }
     },
@@ -473,11 +462,9 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.vertexDefaults.opacity = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     _this.trigger('change:vertexOpacity', e);
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:vertexDisplayAttribute', e.visualSet);
                 }
             }
@@ -497,14 +484,12 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.vertexDefaults.labelSize = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     var btn = _this.vertexLabelComponent.down('button');
                     if (btn.pressed) {
                         _this.trigger('change:vertexLabelSize', e);
                     }
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:vertexDisplayAttribute', e.visualSet);
                 }
             }
@@ -539,13 +524,11 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.vertexDefaults.shape = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     if (!_this._checkComplexVisualSet()) {
                         _this.trigger('change:vertexShape', e);
                     }
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:vertexDisplayAttribute', e.visualSet);
                 }
             }
@@ -565,16 +548,18 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.vertexDefaults.color = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     _this.vertexPieColorAttributeWidget.defaultValueChanged(e.value);
                     if (!_this._checkComplexVisualSet()) {
-                        _this.trigger('change:vertexColor', e);
+                        if (e.sender.visualSet) {
+                            _this.trigger('change:vertexDisplayAttribute', e.sender.visualSet);
+                        } else {
+                            _this.trigger('change:vertexColor', e);
+                        }
                     } else {
                         _this._processComplexVisualSet();
                     }
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:vertexDisplayAttribute', e.visualSet);
                 }
             }
@@ -595,16 +580,18 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.vertexDefaults.size = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     _this.vertexPieSizeAttributeWidget.defaultValueChanged(e.value);
                     if (!_this._checkComplexVisualSet()) {
-                        _this.trigger('change:vertexSize', e);
+                        if (e.sender.visualSet) {
+                            _this.trigger('change:vertexDisplayAttribute', e.sender.visualSet);
+                        } else {
+                            _this.trigger('change:vertexSize', e);
+                        }
                     } else {
                         _this._processComplexVisualSet();
                     }
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:vertexDisplayAttribute', e.visualSet);
                 }
             }
@@ -622,16 +609,18 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.vertexDefaults.strokeColor = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     _this.vertexDonutColorAttributeWidget.defaultValueChanged(e.value);
                     if (!_this._checkComplexVisualSet()) {
-                        _this.trigger('change:vertexStrokeColor', e);
+                        if (e.sender.visualSet) {
+                            _this.trigger('change:vertexDisplayAttribute', e.sender.visualSet);
+                        } else {
+                            _this.trigger('change:vertexStrokeColor', e);
+                        }
                     } else {
                         _this._processComplexVisualSet();
                     }
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:vertexDisplayAttribute', e.visualSet);
                 }
             }
@@ -652,16 +641,18 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.vertexDefaults.strokeSize = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     _this.vertexDonutSizeAttributeWidget.defaultValueChanged(e.value);
                     if (!_this._checkComplexVisualSet()) {
-                        _this.trigger('change:vertexStrokeSize', e);
+                        if (e.sender.visualSet) {
+                            _this.trigger('change:vertexDisplayAttribute', e.sender.visualSet);
+                        } else {
+                            _this.trigger('change:vertexStrokeSize', e);
+                        }
                     } else {
                         _this._processComplexVisualSet();
                     }
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:vertexDisplayAttribute', e.visualSet);
                 }
             }
@@ -683,7 +674,6 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'remove:visualSet': function (e) {
                     _this.vertexColorAttributeWidget.defaultValueChanged();
-                    _this.saveConfig();
                 },
                 'click:ok': function (e) {
                     _this._processComplexVisualSet();
@@ -707,7 +697,6 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'remove:visualSet': function (e) {
                     _this.vertexSizeAttributeWidget.defaultValueChanged();
-                    _this.saveConfig();
                 },
                 'click:ok': function (e) {
                     _this._processComplexVisualSet();
@@ -767,12 +756,11 @@ CellMapsConfiguration.prototype = {
             showControl: false,
             control: new ColorAttributeControl({
                 displayAttribute: 'color',
-                defaultValue: this.vertexDefaults.color
+                defaultValue: this.vertexDefaults.strokeColor
             }),
             handlers: {
                 'remove:visualSet': function (e) {
                     _this.vertexStrokeColorAttributeWidget.defaultValueChanged();
-                    _this.saveConfig();
                 },
                 'click:ok': function (e) {
                     _this._processComplexVisualSet();
@@ -788,7 +776,7 @@ CellMapsConfiguration.prototype = {
             showControl: false,
             control: new NumberAttributeControl({
                 displayAttribute: 'size',
-                defaultValue: this.vertexDefaults.size,
+                defaultValue: this.vertexDefaults.strokeSize,
                 maxValue: 160,
                 minValue: 0,
                 step: 1
@@ -796,7 +784,6 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'remove:visualSet': function (e) {
                     _this.vertexStrokeSizeAttributeWidget.defaultValueChanged();
-                    _this.saveConfig();
                 },
                 'click:ok': function (e) {
                     _this._processComplexVisualSet();
@@ -859,11 +846,9 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.edgeDefaults.color = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     _this.trigger('change:edgeColor', e);
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:edgeDisplayAttribute', e.visualSet);
                 }
             }
@@ -883,11 +868,9 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.edgeDefaults.size = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     _this.trigger('change:edgeSize', e);
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:edgeDisplayAttribute', e.visualSet);
                 }
             }
@@ -907,11 +890,9 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.edgeDefaults.opacity = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     _this.trigger('change:edgeOpacity', e);
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:edgeDisplayAttribute', e.visualSet);
                 }
             }
@@ -931,11 +912,9 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.edgeDefaults.labelSize = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     _this.trigger('change:edgeLabelSize', e);
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:edgeDisplayAttribute', e.visualSet);
                 }
             }
@@ -959,11 +938,9 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.edgeDefaults.shape = e.sender.getDefaultValue();
-                    _this.saveConfig();
                     _this.trigger('change:edgeShape', e);
                 },
                 'click:ok': function (e) {
-                    _this.saveConfig();
                     _this.trigger('change:edgeDisplayAttribute', e.visualSet);
                 }
             }
@@ -1015,14 +992,12 @@ CellMapsConfiguration.prototype = {
                 {
                     title: 'Nodes',
                     defaults: {
-                        anchor: '100%',
-                        labelWidth: 100,
-                        margin: '0 0 2 0'
+                        margin: '2 0 2 0'
                     },
                     items: [
                         {
                             xtype: 'box',
-                            margin: '5 0 5 0',
+//                            margin: '5 0 5 0',
                             flex: 1,
                             style: {
                                 fontWeight: 'bold',

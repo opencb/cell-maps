@@ -37,9 +37,12 @@ function CellMaps(args) {
     this.width;
     this.height;
     this.resizeTimer = 0;
+    this.session;
 
     //set instantiation args, must be last
     _.extend(this, args);
+
+    this.on(this.handlers);
 
     this.accountData = null;
 
@@ -63,7 +66,11 @@ CellMaps.prototype = {
         this.div = $('<div id="cell-browser"></div>')[0];
         $(this.targetDiv).append(this.div);
 
-        $(this.div).append('<div id="cm-header-widget"></div>');
+
+        this.headerWidgetDiv = $('<div id="header-widget"></div>')[0];
+        $(this.div).append(this.headerWidgetDiv);
+
+
         $(this.div).append('<div id="cm-tool-bar" style="position:relative;"></div>');
         $(this.div).append('<div id="cm-network-viewer" style="position:relative;"></div>');
         $(this.div).append('<div id="cm-status-bar"></div>');
@@ -113,7 +120,7 @@ CellMaps.prototype = {
     },
     _getCenterHeight: function () {
         //header toolbar and status must exists
-        return $(window).height() - this.headerWidget.height - this.toolbar.getHeight() - $('#status').height() - 2;
+        return $(window).height() - $(this.headerWidgetDiv).height() - this.toolbar.getHeight() - $('#status').height() - 2;
     },
     draw: function () {
         var _this = this;
@@ -123,10 +130,9 @@ CellMaps.prototype = {
         }
 
         /* Header Widget */
-        this.headerWidget = this._createHeaderWidget('cm-header-widget');
+        this.headerWidget = this._createHeaderWidget(this.headerWidgetDiv);
 
         this.toolbar = this._createToolBar('cm-tool-bar');
-
 
         $('#cm-network-viewer').css({
             height: this._getCenterHeight()
@@ -329,19 +335,29 @@ CellMaps.prototype = {
             accountData: this.accountData,
             allowLogin: true,
             chunkedUpload: false,
+            homeLink: "http://cellmaps.babelomics.org/",
+            helpLink: "http://cellmaps.babelomics.org/",
+            tutorialLink: "http://cellmaps.babelomics.org/",
+            aboutText: '',
             handlers: {
                 'login': function (event) {
-                    Ext.example.msg('Welcome', 'You logged in');
+                    Utils.msg('Welcome', 'You logged in');
                     _this.sessionInitiated();
                 },
                 'logout': function (event) {
-                    Ext.example.msg('Good bye', 'You logged out');
+                    Utils.msg('Good bye', 'You logged out');
                     _this.sessionFinished();
 
                 },
                 'account:change': function (event) {
                     _this.setAccountData(event.response);
 
+                },
+                'jobs:click': function () {
+                    _this.jobListWidget.toggle();
+                },
+                'about:click': function () {
+                    _this.jobListWidget.toggle(false);
                 }
             }
         });
@@ -356,7 +372,8 @@ CellMaps.prototype = {
             handlers: {
                 /* File */
                 'saveJSON:click': function (event) {
-                    var content = JSON.stringify(_this.networkViewer.toJSON());
+                    var content = JSON.stringify(_this.toJSON());
+                    debugger
                     event.a.set({
                         href: 'data:text/csv,' + encodeURIComponent(content),
                         download: "network.json"
@@ -366,8 +383,9 @@ CellMaps.prototype = {
                     var jsonNetworkFileWidget = new JSONNetworkFileWidget({
                         handlers: {
                             'okButton:click': function (widgetEvent) {
-                                _this.networkViewer.loadJSON(widgetEvent.content);
-                                _this.networkViewer.setLayout(widgetEvent.layout);
+                                debugger
+                                _this.loadJSON(widgetEvent.content);
+//                                _this.networkViewer.setLayout(widgetEvent.layout);
                             }
                         }
                     });
@@ -589,14 +607,6 @@ CellMaps.prototype = {
                         _this.configuration.panel.hide();
                     }
                 },
-                'jobs-button:change': function (event) {
-                    if (event.selected) {
-                        _this.jobListWidget.show();
-                    } else {
-                        _this.jobListWidget.hide();
-                    }
-                },
-
                 /* Selection */
                 'click:selectAllVertices': function (event) {
                     _this.networkViewer.selectAllVertices();
@@ -642,6 +652,7 @@ CellMaps.prototype = {
             autoRender: true,
             sidePanel: false,
             border: false,
+            session: this.session,
             handlers: {
                 'select:vertices': function (e) {
                     _this.vertexAttributeEditWidget.checkSelectedFilter();
@@ -657,6 +668,11 @@ CellMaps.prototype = {
                 }
             }
         });
+
+        networkViewer.on('change', function () {
+            _this.trigger('session:save-request', {sender: _this});
+        });
+
         networkViewer.draw();
         return networkViewer;
     },
@@ -668,6 +684,7 @@ CellMaps.prototype = {
             targetId: targetId,
             vertexAttributeManager: this.networkViewer.network.vertexAttributeManager,
             edgeAttributeManager: this.networkViewer.network.edgeAttributeManager,
+            session: this.session,
             handlers: {
                 'change:vertexColor': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('color', e.value);
@@ -732,6 +749,13 @@ CellMaps.prototype = {
                 }
             }
         });
+
+        configuration.on('all', function (type) {
+            if (type.indexOf('change') === 0) {
+                _this.trigger('session:save-request', {sender: _this});
+            }
+        });
+
         return configuration;
     },
     _createStatusBar: function (targetId) {
@@ -771,14 +795,26 @@ CellMaps.prototype = {
 
         return jobListWidget;
     },
-
+    toJSON: function () {
+        var json = this.networkViewer.toJSON();
+        json['vertexDefaults'] = this.configuration.vertexDefaults;
+        json['edgeDefaults'] = this.configuration.edgeDefaults;
+        json['visualSets'] = this.configuration.getVisualSets();
+        return json;
+    },
+    loadJSON: function (session) {
+        debugger
+        this.networkViewer.loadJSON(session);
+        this.configuration.loadSession(session);
+    },
     sessionInitiated: function () {
-        this.toolbar.getJobsButton().toggle(true).enable();
+
+
     },
     sessionFinished: function () {
+        this.jobListWidget.hide();
         this.jobListWidget.clean();
         this.accountData = null;
-        this.toolbar.getJobsButton().toggle(false).disable();
     },
     setAccountData: function (response) {
         this.accountData = response;
@@ -885,21 +921,21 @@ CellMaps.prototype = {
                             _this.networkViewer.network.importVertexWithAttributes({content: json});
 
                             _this.configuration.vertexShapeAttributeWidget.restoreVisualSet({
-                                attribute:'MCN_Type',
-                                type:'String',
-                                map:{
-                                    seedlist:'ellipse',
-                                    list:'circle',
-                                    external:'square'
+                                attribute: 'MCN_Type',
+                                type: 'String',
+                                map: {
+                                    seedlist: 'ellipse',
+                                    list: 'circle',
+                                    external: 'square'
                                 }
                             });
                             _this.configuration.vertexSizeAttributeWidget.restoreVisualSet({
-                                attribute:'MCN_Type',
-                                type:'String',
-                                map:{
-                                    list:30,
-                                    seedlist:30,
-                                    external:20
+                                attribute: 'MCN_Type',
+                                type: 'String',
+                                map: {
+                                    list: 30,
+                                    seedlist: 30,
+                                    external: 20
                                 }
                             });
                         },
@@ -964,19 +1000,19 @@ CellMaps.prototype = {
                             _this.networkViewer.network.importVertexWithAttributes({content: json});
 
                             _this.configuration.vertexShapeAttributeWidget.restoreVisualSet({
-                                attribute:'MCN_Type',
-                                type:'String',
-                                map:{
-                                    list:'circle',
-                                    external:'square'
+                                attribute: 'MCN_Type',
+                                type: 'String',
+                                map: {
+                                    list: 'circle',
+                                    external: 'square'
                                 }
                             });
                             _this.configuration.vertexSizeAttributeWidget.restoreVisualSet({
-                                attribute:'MCN_Type',
-                                type:'String',
-                                map:{
-                                    list:30,
-                                    external:20
+                                attribute: 'MCN_Type',
+                                type: 'String',
+                                map: {
+                                    list: 30,
+                                    external: 20
                                 }
                             });
                         },
@@ -1035,7 +1071,7 @@ CellMaps.prototype = {
                             json.attributes[1].name = "FI-Module";
                             json.attributes[2].name = "FI-Module color";
                             _this.networkViewer.network.importVertexWithAttributes({content: json});
-                            _this.configuration.vertexColorAttributeWidget.applyDirectVisualSet('FI-Module color','String');
+                            _this.configuration.vertexColorAttributeWidget.applyDirectVisualSet('FI-Module color', 'String');
                         },
                         'error:parse': function (event) {
                             console.log(event.errorMsg);

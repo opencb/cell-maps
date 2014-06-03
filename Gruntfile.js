@@ -89,7 +89,7 @@ module.exports = function (grunt) {
                             '<%= def.build %>/vendor/gl-matrix-min*.js',
                             '<%= def.build %>/vendor/ChemDoodleWeb*.js',
                             '<%= def.build %>/vendor/jquery.simplecolorpicker.js',
-                            '<%= def.build %>/vendor/d3.min.js',
+                            '<%= def.build %>/vendor/d3.min.js'
                         ],
                         config: [
                             '<%= def.build %>/nv-config.js'

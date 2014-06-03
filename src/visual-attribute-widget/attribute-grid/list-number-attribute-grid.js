@@ -33,7 +33,6 @@ ListNumberAttributeGrid.prototype.create = function () {
         border: false,
         store: this.store,
         loadMask: true,
-        cls: 'bootstrap',
         plugins: [
             'bufferedrenderer'
         ],

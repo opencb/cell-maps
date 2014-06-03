@@ -37,7 +37,6 @@ StringAttributeGrid.prototype.create = function () {
         border: false,
         store: this.store,
         loadMask: true,
-        cls: 'bootstrap',
         plugins: [
             'bufferedrenderer',
             Ext.create('Ext.grid.plugin.CellEditing', {clicksToEdit: 1})

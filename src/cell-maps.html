@@ -2,39 +2,12 @@
 <html>
 <head>
     <title>Cell Maps</title>
-    <STYLE type="text/css">
-        html {
-            overflow-y: hidden;
-            overflow-x: hidden;
-        }
-
-        #status {
-            height: 26px;
-            border-color: lightgrey;
-            border-style: solid;
-            /*border-width: 0 1px 1px 1px;*/
-            border-width: 1px 0px 0px 0px;
-        }
-
-        body {
-            /*background-color: #f5f5f5;*/
-            /*padding: 4px;*/
-        }
-
-        .header-form {
-            font-size: 13px;
-            font-family: Oxygen;
-            /*background-color: #f5f5f5;*/
-            font-weight: bold;
-            padding: 4px 6px;
-            /*border:0px solid #d3d3d3;*/
-        }
-    </STYLE>
 </head>
 <body>
 
-<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all-gray.css">
+<!--<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all-gray.css">-->
 <!--<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all-neptune.css">-->
+<link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/ext-5-beta/theme-babel/theme-babel-all.css">
 
 <!-- build:style vendor -->
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/vendor/jquery.qtip.min.css"/>
@@ -46,8 +19,10 @@
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/styles/css/style.css"/>
 <!-- /build -->
 
-<script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all.js"></script>
-<script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/examples/shared/examples.js"></script>
+<!--<script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all.js"></script>-->
+<!--<script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/examples/shared/examples.js"></script>-->
+<script type="text/javascript" src="../lib/jsorolla/vendor/ext-5-beta/ext-all.js"></script>
+
 
 <!-- Workers directory -->
 <script type="text/javascript">
@@ -87,7 +62,6 @@
 <script type="text/javascript" src="cm-config.js"></script>
 
 <!-- build:script lib -->
-
 <script type="text/javascript" src="../lib/jsorolla/src/lib/svg.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/utils.js"></script>
 
@@ -123,7 +97,7 @@
 <script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/opencga-browser-widget.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/paged-view-list-widget.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/profile-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/result2-widget.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/result-widget.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/result-table.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/opencga/upload-widget.js"></script>
 
@@ -198,43 +172,82 @@
 <!-- /build -->
 
 <script>
-    Ext.Loader.setConfig({enabled: true});
-    Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext/gpl/4.2.1/examples/ux');
-    //    Ext.QuickTips.init();
-    Ext.require([
-        'Ext.grid.plugin.BufferedRenderer'
-    ]);
+    CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest";
+    CELLBASE_VERSION = "v3";
+//    Ext.Loader.setConfig({enabled: true});
+//    Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext/gpl/4.2.1/examples/ux');
+//    //    Ext.QuickTips.init();
+//    Ext.require([
+//        'Ext.grid.plugin.BufferedRenderer'
+//    ]);
 
     var cellMaps;
     Ext.onReady(function () {
 
-//            CheckBrowser();
+        var session;
+        var save_count = 0;
+        if (localStorage.getItem('CELLMAPS_SESSION') !== null) {
+            session = JSON.parse(localStorage.getItem('CELLMAPS_SESSION'));
+        }
+
         cellMaps = new CellMaps({
             targetId: 'application',
-            autoRender: true
+            autoRender: true,
+            session: session,
+            handlers: {
+                'session:save-request': function (e) {
+                    localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(e.sender.toJSON()));
+                    save_count++;
+                    console.log('Session saved: ' + save_count);
+                }
+            }
         }); //the div must exist
         cellMaps.draw();
 
-        cellMaps.networkViewer.setLoading('Checking session...')
         setTimeout(function () {
-            if (typeof localStorage.networkViewer !== 'undefined') {
-                cellMaps.networkViewer.setLoading('Session found')
-                var j = JSON.parse(localStorage.networkViewer);
-                cellMaps.networkViewer.loadJSON(j);
-            }
-            /* auto save session timeout */
             var intervalId = setInterval(function () {
-                localStorage.networkViewer = JSON.stringify(cellMaps.networkViewer.toJSON());
-                console.log('Session saved');
-            }, 5000);
-            cellMaps.networkViewer.setLoading('')
+                localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(cellMaps.toJSON()));
+                save_count++;
+                console.log('Session saved: ' + save_count);
+            }, 10000);
         }, 600);
-
     });
 
 </script>
 
+<STYLE type="text/css">
+    html {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
 
+    #status {
+        height: 26px;
+        border-color: lightgrey;
+        border-style: solid;
+        /*border-width: 0 1px 1px 1px;*/
+        border-width: 1px 0px 0px 0px;
+    }
+
+    body {
+        /*background-color: #f5f5f5;*/
+        /*padding: 4px;*/
+    }
+
+    .header-form {
+        font-size: 13px;
+        font-family: Oxygen;
+        /*background-color: #f5f5f5;*/
+        font-weight: bold;
+        padding: 4px 6px;
+        /*border:0px solid #d3d3d3;*/
+    }
+
+    ul.ocb-header > li.title {
+        font-size: 30px;
+        padding-left: 30px;
+    }
+</STYLE>
 <div id="checkBrowser"></div>
 <div id="application"></div>
 <div id="status" class="gm-navigation-bar"></div>

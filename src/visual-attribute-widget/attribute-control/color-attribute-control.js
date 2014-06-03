@@ -80,33 +80,29 @@ ColorAttributeControl.prototype.updateLegend = function (items) {
     var diff = maxVal - minVal;
 
     var stops = {};
+    var stopsCSS = [];
     stops['0'] = {color: minNorm};
     stops['100'] = {color: maxNorm};
+
+    stopsCSS.push(minNorm+' 0%');
     for (var i = 1; i < l; i++) {
         var item = items[i];
         var pointValue = item.items.getAt(0).getRawValue();
         var normValue = item.items.getAt(1).getRawValue();
         var pointDiff = pointValue - minVal;
         var stopPercentage = Math.round(pointDiff * 100 / diff);
-        stops[stopPercentage] = {color: normValue}
+        stops[stopPercentage] = {color: normValue};
+        stopsCSS.push(normValue+' '+stopPercentage+'%');
     }
+    stopsCSS.push(maxNorm+' 100%');
 
-    return drawComponent = Ext.create('Ext.draw.Component', {
-        items: [
-            {
-                type: 'rect',
-                fill: 'url(#gradientId)',
-                width: 9,
-                height: 1
-            }
-        ],
-        gradients: [
-            {
-                id: 'gradientId',
-                stops: stops
-            }
-        ]
+    var cmp = Ext.create('Ext.Component', {
+        style:{
+            background: 'linear-gradient(to bottom, '+stopsCSS.join(',')+');'
+        }
+
     });
+    return cmp;
 }
 
 

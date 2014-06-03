@@ -264,33 +264,19 @@ CmToolBar.prototype = {
 
                 {
                     text: 'Examples',
-                    cls: 'bootstrap',
                     menu: this.getExamplesMenu()
                 },
 
                 '->',
                 {
                     tooltip: 'Configure',
-                    text: '<span class="emph"> Visual settings</span>',
+                    cls:'bootstrap',
+                    text: '<span class="glyphicon glyphicon-cog"></span> Visual settings',
                     enableToggle: true,
-                    iconCls: 'ocb-icon-gear',
                     pressed: true,
                     hidden: false,
                     toggleHandler: function () {
                         _this.trigger('configuration-button:change', {selected: this.pressed, sender: _this});
-                    }
-                },
-                {
-                    tooltip: 'Jobs',
-                    id:'jobs'+this.id,
-                    text: '<span class="emph"> Jobs</span>',
-                    margin: '0 5 0 0',
-                    enableToggle: true,
-//                    iconCls: 'ocb-icon-gear',
-                    pressed: false,
-//                    hidden: true,
-                    toggleHandler: function () {
-                        _this.trigger('jobs-button:change', {selected: this.pressed, sender: _this});
                     }
                 }
             ]
