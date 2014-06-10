@@ -7,12 +7,18 @@ function ColorAttributeControl(args) {
     this.colorMenu = this._createColorMenu();
 };
 
+ColorAttributeControl.prototype.setDefaultValue = function (value) {
+
+};
+
 //Parent methods
 ColorAttributeControl.prototype.create = function (changeFunction) {
     return this._getColorSelect(this.defaultValue, function (color) {
         changeFunction(color);
     })
 };
+
+
 
 ColorAttributeControl.prototype.createGridColumns = function () {
     return [
@@ -115,10 +121,13 @@ ColorAttributeControl.prototype._getColorSelect = function (defaultColor, handle
         name: 'control',
         html: '<div style="border:1px solid gray;width:65px;height:15px;background-color: ' + defaultColor + ';" color="' + defaultColor + '"></div>',
         setRawValue: function (color) {
-            var el = this.getEl();
-            $(el.dom).find('div').attr('color', color);
-            $(el.dom).find('div').css({'background-color': color});
+            // check if rendered to modify the color div
             this.color = color;
+            if(this.rendered){
+                var el = this.getEl();
+                $(el.dom).find('div').attr('color', this.color);
+                $(el.dom).find('div').css({'background-color': this.color});
+            }
         },
         getRawValue: function () {
             return this.color;
@@ -127,6 +136,11 @@ ColorAttributeControl.prototype._getColorSelect = function (defaultColor, handle
         listeners: {
             afterrender: function (box) {
                 var el = this.getEl();
+                // color could be modifed by setRawValue
+                $(el.dom).find('div').attr('color', this.color);
+                $(el.dom).find('div').css({'background-color': this.color});
+
+                //attach menu
                 el.on('click', function (e, t, eOpts) {
                     var x = e.browserEvent.clientX;
                     var y = e.browserEvent.clientY;

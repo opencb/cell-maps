@@ -124,70 +124,76 @@ CellbasePlugin.prototype.draw = function () {
 //    uniprotkb_id
 
     var extList = [
-        {"boxLabel": "HGNC Symbol", "name": "dbNameShort", "inputValue": {db: "hgnc_symbol", field: "id"}},
-        {"boxLabel": "Ensembl gene", "name": "dbNameShort", "inputValue": {db: "ensembl_gene", field: "id"}},
-//        {"boxLabel": "MIM gene", "name": "protein", "inputValue": {db: "omim_gene", field: "id"}}, //mysql cellbase
-        {"boxLabel": "Ensembl protein", "name": "dbNameShort", "inputValue": {db: "ensembl_protein", field: "id"}},
-        {"boxLabel": "UCSC Stable ID", "name": "dbNameShort", "inputValue": {db: "ucsc_stable_id", field: "id"}},
-        {"boxLabel": "Havana gene", "name": "dbNameShort", "inputValue": {db: "havana_gene", field: "id"}},
-//        {"boxLabel": "UniProtKB/Swiss-Prot", "name": "protein", "inputValue": {db: "uniprotkb/swissprot", field: "id"}}, //mysql cellbase
-        {"boxLabel": "UniProtKB/TrEMBL", "name": "dbNameShort", "inputValue": {db: "uniprotkb/trembl", field: "id"}},
-        {"boxLabel": "Uniprotkb Acc", "name": "dbNameShort", "inputValue": {db: "uniprotkb_acc", field: "id"}},
-        {"boxLabel": "Uniprotkb ID", "name": "dbNameShort", "inputValue": {db: "uniprotkb_id", field: "id"}},
-        {"boxLabel": "UniParc", "name": "dbNameShort", "inputValue": {db: "uniparc", field: "id"}},
-        {"boxLabel": "miRBase", "name": "dbNameShort", "inputValue": {db: "miRBase", field: "id"}},
+        {"boxLabel": "HGNC Symbol", "inputValue": {db: "hgnc_symbol", field: "id"}},
+        {"boxLabel": "Ensembl gene", "inputValue": {db: "ensembl_gene", field: "id"}},
+//        {"boxLabel": "MIM gene",  "inputValue": {db: "omim_gene", field: "id"}}, //mysql cellbase
+        {"boxLabel": "Ensembl protein", "inputValue": {db: "ensembl_protein", field: "id"}},
+        {"boxLabel": "UCSC Stable ID", "inputValue": {db: "ucsc_stable_id", field: "id"}},
+        {"boxLabel": "Havana gene", "inputValue": {db: "havana_gene", field: "id"}},
+        {"boxLabel": "UniProtKB/Swiss-Prot", "inputValue": {db: "Uniprot/SWISSPROT", field: "id"}}, //mysql cellbase
+        {"boxLabel": "UniProtKB/TrEMBL", "inputValue": {db: "uniprotkb/trembl", field: "id"}},
+        {"boxLabel": "Uniprotkb Acc", "inputValue": {db: "uniprotkb_acc", field: "id"}},
+        {"boxLabel": "Uniprotkb ID", "inputValue": {db: "uniprotkb_id", field: "id"}},
+        {"boxLabel": "UniParc", "inputValue": {db: "uniparc", field: "id"}},
+        {"boxLabel": "miRBase", "inputValue": {db: "miRBase", field: "id"}},
 
-        {"boxLabel": "Ensembl transcript", "name": "dbNameShort", "inputValue": {db: "ensembl_transcript", field: "id"}},
-        {"boxLabel": "HGNC transcript name", "name": "dbNameShort", "inputValue": {db: "hgnc_transcript_name", field: "id"}},
-        {"boxLabel": "Havana transcript", "name": "dbNameShort", "inputValue": {db: "havana_transcript", field: "id"}},
-        {"boxLabel": "RefSeq peptide", "name": "dbNameShort", "inputValue": {db: "refseq_peptide", field: "id"}},
-        {"boxLabel": "RefSeq mRNA", "name": "dbNameShort", "inputValue": {db: "refseq_mrna", field: "id"}}
+        {"boxLabel": "Ensembl transcript", "inputValue": {db: "ensembl_transcript", field: "id"}},
+        {"boxLabel": "HGNC transcript name", "inputValue": {db: "hgnc_transcript_name", field: "id"}},
+        {"boxLabel": "Havana transcript", "inputValue": {db: "havana_transcript", field: "id"}},
+        {"boxLabel": "RefSeq peptide", "inputValue": {db: "refseq_peptide", field: "id"}},
+        {"boxLabel": "RefSeq mRNA", "inputValue": {db: "refseq_mrna", field: "id"}}
     ];
 
     var funcList = [
 //        {"boxLabel": "Biotype", "name": "biotype", "inputValue": "biotype"},
 
-        {"boxLabel": "GO Term Accession", "name": "dbNameShort", "inputValue": {db: "go", field: "id"}},
-        {"boxLabel": "GO Term Name", "name": "dbNameShort", "inputValue": {db: "go", field: "description"}},
-        {"boxLabel": "Propagated GO Accession", "name": "dbNameShort", "inputValue": {db: "projected_go", field: "id"}},
-        {"boxLabel": "Propagated GO Name", "name": "dbNameShort", "inputValue": {db: "projected_go", field: "description"}},
-        {"boxLabel": "GOSlim GOA Accession", "name": "dbNameShort", "inputValue": {db: "goslim_goa", field: "id"}},
-        {"boxLabel": "GOSlim GOA Name", "name": "dbNameShort", "inputValue": {db: "goslim_goa", field: "description"}},
-        {"boxLabel": "InterPro ID", "name": "protein", "inputValue": {db: "interpro", field: "id"}},
-        {"boxLabel": "InterPro Short Description", "name": "protein", "inputValue": {db: "interpro", field: "description"}}
+        {"boxLabel": "GO Term Accession", "inputValue": {db: "go", field: "id"}},
+        {"boxLabel": "GO Term Name", "inputValue": {db: "go", field: "description"}},
+        {"boxLabel": "Propagated GO Accession", "inputValue": {db: "projected_go", field: "id"}},
+        {"boxLabel": "Propagated GO Name", "inputValue": {db: "projected_go", field: "description"}},
+        {"boxLabel": "GOSlim GOA Accession", "inputValue": {db: "goslim_goa", field: "id"}},
+        {"boxLabel": "GOSlim GOA Name", "inputValue": {db: "goslim_goa", field: "description"}},
+        {"boxLabel": "InterPro ID", "inputValue": {db: "interpro", field: "id"}},
+        {"boxLabel": "InterPro Short Description", "inputValue": {db: "interpro", field: "description"}}
     ];
 
 
     var repoList = [
-//        {"boxLabel": "PDB", "name": "dbNameShort", "inputValue": {db: "pdb", field: "id"}}, //mysql cellbase
-        {"boxLabel": "European Nucleotide Archive", "name": "dbNameShort", "inputValue": {db: "european_nucleotide_archive", field: "id"}},
-        {"boxLabel": "Human Protein Atlas", "name": "dbNameShort", "inputValue": {db: "human_protein_atlas", field: "id"}},
-        {"boxLabel": "INSDC protein ID", "name": "dbNameShort", "inputValue": {db: "insdc_protein_id", field: "id"}}
+//        {"boxLabel": "PDB",  "inputValue": {db: "pdb", field: "id"}}, //mysql cellbase
+        {"boxLabel": "European Nucleotide Archive", "inputValue": {db: "european_nucleotide_archive", field: "id"}},
+        {"boxLabel": "Human Protein Atlas", "inputValue": {db: "human_protein_atlas", field: "id"}},
+        {"boxLabel": "INSDC protein ID", "inputValue": {db: "insdc_protein_id", field: "id"}}
     ];
 
 
-//        {"boxLabel": "LRG display in Ensembl", "name": "dbNameShort", "inputValue": "lrg_display_in_ensembl"},
-//        {"boxLabel": "Transcript having exact match between ENSEMBL and HAVANA", "name": "dbNameShort", "inputValue": "transcript_having_exact_match_between_ensembl_and_havana"},
-//        {"boxLabel": "Vega transcript", "name": "dbNameShort", "inputValue": "vega_transcript"},
-//        {"boxLabel": "Vega translation", "name": "dbNameShort", "inputValue": "vega_translation"},
-//        {"boxLabel": "Ensembl Human Translation", "name": "dbNameShort", "inputValue": "ensembl_human_translation"},
-//        {"boxLabel": "CCDS", "name": "dbNameShort", "inputValue": "ccds"},
+//        {"boxLabel": "LRG display in Ensembl",  "inputValue": "lrg_display_in_ensembl"},
+//        {"boxLabel": "Transcript having exact match between ENSEMBL and HAVANA",  "inputValue": "transcript_having_exact_match_between_ensembl_and_havana"},
+//        {"boxLabel": "Vega transcript",  "inputValue": "vega_transcript"},
+//        {"boxLabel": "Vega translation",  "inputValue": "vega_translation"},
+//        {"boxLabel": "Ensembl Human Translation",  "inputValue": "ensembl_human_translation"},
+//        {"boxLabel": "CCDS",  "inputValue": "ccds"},
 
-    this.extCheckGroup = Ext.create('Ext.form.CheckboxGroup', {
-        columns: 1,
-        vertical: true,
+    this.extCheckGroup = Ext.create('Ext.form.Panel', {
+        border: 0,
+        defaults:{
+            xtype:'checkbox'
+        },
         title: 'External references',
         items: extList
     });
-    this.funcCheckGroup = Ext.create('Ext.form.CheckboxGroup', {
-        columns: 1,
-        vertical: true,
+    this.funcCheckGroup = Ext.create('Ext.form.Panel', {
+        border: 0,
+        defaults:{
+            xtype:'checkbox'
+        },
         title: 'Functional information',
         items: funcList
     });
-    this.repocheckGroup = Ext.create('Ext.form.CheckboxGroup', {
-        columns: 1,
-        vertical: true,
+    this.repocheckGroup = Ext.create('Ext.form.Panel', {
+        border: 0,
+        defaults:{
+            xtype:'checkbox'
+        },
         title: 'Repositories',
         items: repoList
     });
@@ -201,67 +207,58 @@ CellbasePlugin.prototype.draw = function () {
 
     this.window = Ext.create('Ext.window.Window', {
         title: "Cellbase",
-        taskbar: Ext.getCmp(this.cellMaps.networkViewer.id + 'uxTaskbar'),
-        bodyStyle: {backgroundColor: 'white'},
-        height: 600,
-        width: 400,
         closable: false,
         minimizable: true,
         collapsible: true,
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-//        dockedItems: [
-//            {
-//                xtype: 'toolbar',
-//                dock: 'top',
-//                items: []
-//            },
-//            {
-//                xtype: 'toolbar',
-//                dock: 'top',
-//                items: []
-//            }
-//        ],
-        items: [
-            {
-                xtype: 'container',
-                padding: 10,
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                },
-                items: [
-                    speciesCombo,
-                    attributeCombo,
-                ]
+        items: {
+            height: 600,
+            width: 400,
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
             },
-            {
-                xtype: 'tabpanel',
-                border: false,
-                flex: 1,
-                buttonAlign: 'center',
-                bodyPadding: 10,
-                plain:true,
-                items: [
-                    this.extCheckGroup,
-                    this.funcCheckGroup,
-                    this.repocheckGroup
-                ]
-            }
-        ],
-        buttons: [
-            this.progress,
-            '->',
-            {
-                text: 'Search',
-                handler: function () {
-                    _this.retrieveData();
-                    _this.progress.updateProgress(0.1, 'Requesting data');
+            items: [
+                {
+                    xtype: 'container',
+                    padding: 10,
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch'
+                    },
+                    items: [
+                        speciesCombo,
+                        attributeCombo,
+                    ]
+                },
+                {
+                    xtype: 'tabpanel',
+                    border: false,
+                    flex: 1,
+                    bodyPadding: 10,
+                    plain: true,
+                    items: [
+                        this.extCheckGroup,
+                        this.funcCheckGroup,
+                        this.repocheckGroup
+                    ]
                 }
+            ],
+            bbar: {
+                items: [
+                    this.progress,
+                    '->',
+                    {
+                        text: 'Search',
+                        width: 80,
+                        handler: function () {
+                            _this.retrieveData();
+                            _this.progress.updateProgress(0.1, 'Requesting data');
+                        }
+                    }
+                ]
+
             }
-        ],
+        },
         listeners: {
             minimize: function () {
                 this.hide();
@@ -280,9 +277,9 @@ CellbasePlugin.prototype.retrieveData = function () {
     var _this = this;
 
     var attributes = [];
-    var idAttr = {name: "Id", type: "string", defaultValue: ""};
+    var idAttr = {name: "id", type: "string", defaultValue: ""};
     var idx = attributes.push(idAttr) - 1;
-    var attributesMap = {"Id": idx};
+    var attributesMap = {"id": idx};
     var dbnamesMap = {};
 
     var processCheckBoxes = function (item) {
@@ -325,8 +322,6 @@ CellbasePlugin.prototype.retrieveData = function () {
         },
         success: function (data) {
             _this.progress.updateProgress(0.4, 'Processing data');
-//            var map = {};
-//            var arr = [];
             var object = {};
             object.attributes = attributes;
             object.data = [];
@@ -340,8 +335,8 @@ CellbasePlugin.prototype.retrieveData = function () {
                     for (var i = 0; i < xrefs.length; i++) {
                         var xref = xrefs[i];
 
-                        var mapId1 = xref.dbNameShort + 'id';
-                        var mapId2 = xref.dbNameShort + 'description';
+                        var mapId1 = xref.dbName + 'id';
+                        var mapId2 = xref.dbName + 'description';
 
                         var index1 = attributesMap[mapId1];
                         var index2 = attributesMap[mapId2];

@@ -248,80 +248,79 @@ IntActPlugin.prototype.draw = function () {
 
     this.window = Ext.create('Ext.window.Window', {
         title: "IntAct",
-        taskbar: Ext.getCmp(this.cellMaps.networkViewer.id + 'uxTaskbar'),
-        bodyStyle: {backgroundColor: 'white'},
-        height: 400,
-        width: 600,
         closable: false,
         minimizable: true,
         collapsible: true,
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-        dockedItems: [
-//            {
-//                xtype: 'toolbar',
-//                dock: 'bottom',
-//                items: []
-//            }
-        ],
-        items: [
-            {
-                xtype: 'container',
-                layout: {
-                    type: 'hbox',
-                    align: 'stretch'
-                },
-                flex: 1,
-                items: [
-                    {
-                        xtype: 'container',
-                        width: 200,
-                        padding: 10,
-                        layout: {
-                            type: 'vbox',
-                            align: 'stretch'
+        layout: 'fit',
+        items: {
+            border: false,
+            height: 400,
+            width: 600,
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    xtype: 'container',
+                    layout: {
+                        type: 'hbox',
+                        align: 'stretch'
+                    },
+                    flex: 1,
+                    items: [
+                        {
+                            xtype: 'container',
+                            width: 200,
+                            padding: 10,
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            items: [
+                                speciesCombo,
+                                attributeCombo,
+                                this.selectRadioGroup,
+                                this.uploadButton
+                            ]
                         },
-                        items: [
-                            speciesCombo,
-                            attributeCombo,
-                            this.selectRadioGroup,
-                            this.uploadButton
-                        ]
+                        {
+                            xtype: 'container',
+                            flex: 1,
+                            padding: 5,
+                            layout: {
+                                type: 'hbox',
+                                align: 'stretch'
+                            },
+                            items: [
+                                this.textArea
+                            ]
+                        }
+                    ]
+                },
+                this.progress
+            ],
+            bbar: {
+                defaults: {
+                    width: 100
+                },
+                items: [
+                    this.progress,
+                    {
+                        text: 'Close',
+                        handler: function (bt) {
+                            bt.up('window').hide();
+                        }
                     },
                     {
-                        xtype: 'container',
-                        flex: 1,
-                        padding: 5,
-                        layout: {
-                            type: 'hbox',
-                            align: 'stretch'
-                        },
-                        items: [
-                            this.textArea
-                        ]
+                        text: 'Search',
+                        handler: function () {
+                            _this.retrieveData();
+                        }
                     }
                 ]
-            },
-            this.progress
-
-        ],
-        buttons: [
-            this.progress,
-            {
-                text: 'Close',
-                handler: function (bt) {
-                    bt.up('window').hide();
-                }
-            },
-            {
-                text: 'Search',
-                handler: function () {
-                    _this.retrieveData();
-                }
             }
-        ],
+        },
         listeners: {
             minimize: function () {
                 this.hide();
@@ -387,11 +386,13 @@ IntActPlugin.prototype.retrieveData = function () {
             include: "interactorA.id,interactorB.id"
         },
         success: function (data) {
-            var verticesMap = {};
-            var edgesMap = {};
+//            var verticesMap = {};
+//            var edgesMap = {};
             console.log(data)
             var interactions = data.response.result;
             _this.progress.updateProgress(0.4, 'Processing data');
+
+            var graph = _this.cellMaps.networkViewer.network.graph;
             for (var j = 0; j < interactions.length; j++) {
                 var interaction = interactions[j];
                 var sourceName = interaction.interactorA.id;
@@ -399,46 +400,28 @@ IntActPlugin.prototype.retrieveData = function () {
                 var targetName = interaction.interactorB.id;
 
                 /** create source vertex **/
-                if (typeof verticesMap[sourceName] === 'undefined') {
-                    var sourceVertex = new Vertex({
-                        id: sourceName
-                    });
-                    _this.cellMaps.networkViewer.network.addVertex({
-                        vertex: sourceVertex,
-                        vertexConfig: new VertexConfig({})
-                    });
-                    verticesMap[sourceName] = sourceVertex;
-                }
+                var sourceVertex = new Vertex({
+                    id: sourceName
+                });
+                graph.addVertex(sourceVertex);
+
                 /** create target vertex **/
-                if (typeof verticesMap[targetName] === 'undefined') {
-                    var targetVertex = new Vertex({
-                        id: targetName
-                    });
-                    _this.cellMaps.networkViewer.network.addVertex({
-                        vertex: targetVertex,
-                        vertexConfig: new VertexConfig({})
-                    });
-                    verticesMap[targetName] = targetVertex;
-                }
+                var targetVertex = new Vertex({
+                    id: targetName
+                });
+                graph.addVertex(targetVertex);
 
                 /** create edge **/
                 var edgeId = sourceName + '_' + edgeName + '_' + targetName;
-                console.log(edgeId)
-                if (typeof edgesMap[edgeId] === 'undefined') {
-                    var edge = new Edge({
-                        id: edgeId,
-                        relation: edgeName,
-                        source: verticesMap[sourceName],
-                        target: verticesMap[targetName],
-                        weight: 1,
-                        directed: true
-                    });
-                    _this.cellMaps.networkViewer.network.addEdge({
-                        edge: edge,
-                        edgeConfig: new EdgeConfig({})
-                    });
-                    edgesMap[edgeId] = edge;
-                }
+                var edge = new Edge({
+                    id: edgeId,
+                    relation: edgeName,
+                    source: graph.getVertexById(sourceName),
+                    target: graph.getVertexById(targetName),
+                    weight: 1,
+                    directed: true
+                });
+                graph.addEdge(edge);
             }
             _this.cellMaps.networkViewer.refreshNetwork();
             _this.progress.updateProgress(1, 'Complete!');

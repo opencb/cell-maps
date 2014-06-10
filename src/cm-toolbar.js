@@ -27,7 +27,7 @@ function CmToolBar(args) {
     var _this = this;
 
     this.id = Utils.genId("CbToolBar");
-
+    this.height = 35;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -46,18 +46,9 @@ CmToolBar.prototype = {
     setWidth: function () {
         this.toolbar.setWidth();
     },
-    render: function (targetId) {
+    render: function () {
         var _this = this;
-        this.targetId = (targetId) ? targetId : this.targetId;
-        if ($('#' + this.targetId).length < 1) {
-            console.log('targetId not found in DOM');
-            return;
-        }
-
-        this.targetDiv = $('#' + this.targetId)[0];
         this.div = $('<div id="navigation-bar' + this.id + '" class="unselectable"></div>')[0];
-        $(this.targetDiv).append(this.div);
-
 
         var importFileMenu = Ext.create('Ext.menu.Menu', {
             plain: true,
@@ -144,10 +135,10 @@ CmToolBar.prototype = {
 
         this.toolbar = Ext.create('Ext.toolbar.Toolbar', {
             id: this.id + "navToolbar",
-            renderTo: $(this.div).attr('id'),
             cls: 'jso-white-background',
             region: "north",
             width: '100%',
+            height: this.height,
             border: false,
             items: [
                 {
@@ -170,9 +161,8 @@ CmToolBar.prototype = {
                             },
                             {
                                 text: 'Save Session',
-                                href: 'none',
                                 handler: function () {
-                                    _this.trigger('saveJSON:click', {a: this.getEl().child("a"), sender: _this});
+                                    _this.trigger('saveJSON:click', {sender: _this});
                                 }
                             },
                             '-',
@@ -187,55 +177,40 @@ CmToolBar.prototype = {
                                     plain: true,
                                     items: [
                                         {
-                                            text: "Network as SIF",
-                                            href: "none",
-                                            icon: Utils.images.r,
+                                            text: 'Network as SIF',
+//                                            cls: 'bootstrap',
                                             handler: function () {
-                                                _this.trigger('saveSIF:click', {a: this.getEl().child("a"), sender: _this});
+                                                _this.trigger('saveSIF:click', {sender: _this});
                                             }
                                         },
                                         '-',
                                         {
-                                            text: "Network as SVG",
-                                            href: "none",
-                                            iconCls: 'icon-blue-box',
+                                            text: 'Network as SVG',
+//                                            cls: 'bootstrap',
                                             handler: function () {
-                                                _this.trigger('saveSVG:click', {a: this.getEl().child("a"), sender: _this});
+                                                _this.trigger('saveSVG:click', {sender: _this});
                                             }
                                         },
                                         {
-                                            text: "PNG image",
-                                            href: "none",
-                                            iconCls: 'icon-blue-box',
-                                            hidden: true,
+                                            text: 'PNG image',
+//                                            cls: 'bootstrap',
                                             handler: function () {
-                                                _this.trigger('savePNG:click', {a: this.getEl().child("a"), sender: _this});
-                                            }
-                                        },
-                                        {
-                                            text: "JPG image",
-                                            href: "none",
-                                            iconCls: 'icon-blue-box',
-                                            hidden: true,
-                                            handler: function () {
-                                                _this.trigger('saveJPG:click', {a: this.getEl().child("a"), sender: _this});
+                                                _this.trigger('savePNG:click', {sender: _this});
                                             }
                                         },
                                         '-',
                                         {
                                             text: 'Node attributes as file',
-                                            href: "none",
-                                            icon: Utils.images.r,
+//                                            cls: 'bootstrap',
                                             handler: function () {
-                                                _this.trigger('click:exportVertexAttributes', {a: this.getEl().child("a"), sender: _this});
+                                                _this.trigger('click:exportVertexAttributes', {sender: _this});
                                             }
                                         },
                                         {
                                             text: 'Edge attributes as file',
-                                            href: "none",
-                                            icon: Utils.images.r,
+//                                            cls: 'bootstrap',
                                             handler: function () {
-                                                _this.trigger('click:exportEdgeAttributes', {a: this.getEl().child("a"), sender: _this});
+                                                _this.trigger('click:exportEdgeAttributes', { sender: _this});
                                             }
                                         }
                                     ]
@@ -270,7 +245,7 @@ CmToolBar.prototype = {
                 '->',
                 {
                     tooltip: 'Configure',
-                    cls:'bootstrap',
+                    cls: 'bootstrap',
                     text: '<span class="glyphicon glyphicon-cog"></span> Visual settings',
                     enableToggle: true,
                     pressed: true,
@@ -282,14 +257,29 @@ CmToolBar.prototype = {
             ]
         });
         this.rendered = true;
+
+    },
+    draw: function () {
+        this.targetDiv = (this.target instanceof HTMLElement ) ? this.target : document.querySelector('#' + this.target);
+        if (this.targetDiv === 'undefined') {
+            console.log('target not found');
+            return;
+        }
+        /**********/
+        /**********/
+        $(this.targetDiv).append(this.div);
+        /**********/
+        /**********/
+
+        this.toolbar.render(this.div);
     },
 
-    getJobsButton:function(){
-        return Ext.getCmp('jobs'+this.id);
+    getJobsButton: function () {
+        return Ext.getCmp('jobs' + this.id);
     },
 
     getHeight: function () {
-        return this.toolbar.getHeight();
+        return this.height;
     },
 
 
@@ -366,7 +356,7 @@ CmToolBar.prototype = {
                             {
                                 text: 'Force directed',
                                 menu: {
-                                    plain:true,
+                                    plain: true,
                                     items: [
                                         {
                                             text: 'Default',
@@ -392,7 +382,8 @@ CmToolBar.prototype = {
                                 handler: function () {
                                     _this.trigger('click:layout', {option: this.text, sender: _this});
                                 }
-                            },,
+                            },
+                            ,
                             {
                                 text: 'Attribute layout...',
                                 handler: function () {
@@ -606,7 +597,7 @@ CmToolBar.prototype = {
         });
 
         var functionalMenu = Ext.create('Ext.menu.Menu', {
-            plain:true,
+            plain: true,
             items: [
                 {
                     text: "Network enrichment analysis - SNOW",
@@ -622,7 +613,7 @@ CmToolBar.prototype = {
                 },
                 {
                     text: "Fatigo",
-                    hidden:true,
+                    hidden: true,
                     handler: function () {
                         _this.trigger('click:fatigo', {sender: _this});
                     }

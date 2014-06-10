@@ -51,8 +51,7 @@ TopologicalStudyPlugin.prototype.draw = function () {
 
     var attributeCombo = Ext.create('Ext.form.field.ComboBox', {
 //        labelAlign: 'top',
-        labelWidth: 125,
-        margin: '0 0 0 50',
+        labelWidth: 200,
         fieldLabel: 'Select edge weight',
         store: this.attributeStore,
         allowBlank: false,
@@ -92,9 +91,8 @@ TopologicalStudyPlugin.prototype.draw = function () {
     ];
     this.directedRadioGroup = Ext.create('Ext.form.RadioGroup', {
 //        layout: 'vbox',
-        labelWidth: 175,
+        labelWidth: 200,
         fieldLabel: 'Consider network as directed',
-        width: 300,
         defaults: {
             name: 'directed'
         },
@@ -118,9 +116,8 @@ TopologicalStudyPlugin.prototype.draw = function () {
     ];
     this.weightedRadioGroup = Ext.create('Ext.form.RadioGroup', {
 //        layout: 'vbox',
-        labelWidth: 175,
+        labelWidth: 200,
         fieldLabel: 'Consider network as weighted',
-        width: 300,
         defaults: {
             name: 'weighted'
         },
@@ -140,7 +137,7 @@ TopologicalStudyPlugin.prototype.draw = function () {
     this.progress = Ext.create('Ext.ProgressBar', {
         text: 'Click run to start the analysis...',
         border: 1,
-        flex:1,
+        flex: 1,
         margin: '0 10 0 0'
     });
 
@@ -151,7 +148,7 @@ TopologicalStudyPlugin.prototype.draw = function () {
 
     this.resultContainer = Ext.create('Ext.panel.Panel', {
         hidden: true,
-        title:'Results',
+        title: 'Results',
         header: {
             baseCls: 'header-form'
         },
@@ -181,58 +178,63 @@ TopologicalStudyPlugin.prototype.draw = function () {
 
     this.window = Ext.create('Ext.window.Window', {
         title: "Network analysis: Topological study",
-//        height: 200,
-        width: 350,
         closable: false,
         minimizable: true,
         collapsible: true,
-        overflowY: 'auto',
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-        bodyStyle: {
-            fontFamily: 'Oxygen',
-            backgroundColor: 'white'
-        },
-        items: [
-            {
-                xtype: 'panel',
-                title: 'Input parameters',
-                header: {
-                    baseCls: 'header-form'
+        layout:'fit',
+        items: {
+            border: 0,
+            width: 500,
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    xtype: 'panel',
+                    title: 'Input parameters',
+                    header: {
+                        baseCls: 'header-form'
+                    },
+                    border: false,
+                    flex: 1,
+                    padding: 10,
+                    bodyPadding: 10,
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch'
+                    },
+                    items: [
+                        this.directedRadioGroup,
+                        this.weightedRadioGroup,
+                        attributeCombo
+                    ]
                 },
-                border: false,
-                flex: 1,
-                padding: 10,
-                bodyPadding: 10,
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
+                this.resultContainer
+            ],
+            bbar: {
+                defaults: {
+                    width: 100
                 },
                 items: [
-                    this.directedRadioGroup,
-                    this.weightedRadioGroup,
-                    attributeCombo
+                    this.progress,
+                    {
+                        text: 'Close',
+                        handler: function (bt) {
+                            bt.up('window').hide();
+                        }
+                    },
+                    {
+                        text: 'Run',
+                        handler: function () {
+                            _this.retrieveData();
+                        }
+                    },
+
                 ]
-            },
-            this.resultContainer
-        ],
-        buttons: [
-            this.progress,
-            {
-                text: 'Close',
-                handler: function (bt) {
-                    bt.up('window').hide();
-                }
-            },
-            {
-                text: 'Run',
-                handler: function () {
-                    _this.retrieveData();
-                }
-            },
-        ],
+            }
+
+        },
         listeners: {
             minimize: function () {
                 this.hide();

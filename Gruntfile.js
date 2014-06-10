@@ -61,6 +61,7 @@ module.exports = function (grunt) {
                     beautify: true,
                     styles: {
                         'vendor': [
+                            '<%= def.build %>/vendor/ext-5/theme-babel/theme-babel-all.css',
                             '<%= def.build %>/vendor/jquery.qtip*.css',
                             '<%= def.build %>/vendor/bootstrap-*-dist/css/bootstrap.min.css',
                             '<%= def.build %>/vendor/jquery.simplecolorpicker.css'
@@ -69,6 +70,7 @@ module.exports = function (grunt) {
                     },
                     scripts: {
                         vendor: [
+                            '<%= def.build %>/vendor/ext-5/ext-all.js',
                             '<%= def.build %>/vendor/underscore*.js',
                             '<%= def.build %>/vendor/backbone*.js',
                             '<%= def.build %>/vendor/rawdeflate*.js',

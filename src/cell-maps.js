@@ -29,14 +29,17 @@ function CellMaps(args) {
     this.suiteId = "cellmaps";
     this.title = 'Cell Maps';
     this.description = "Systems Biology Visualization";
-    this.tools = ["reactome-fi.default", "snow.default", "network-miner.default", "fatigo.default"];
+    this.tools = {
+        "reactome-fi.default": true,
+        "snow.default": true,
+        "network-miner.default": true,
+        "fatigo.default": true
+    };
     this.version = "2.0.4";
     this.border = false;
-    this.resizable = true;
-    this.targetId;
+    this.target;
     this.width;
     this.height;
-    this.resizeTimer = 0;
     this.session;
 
     //set instantiation args, must be last
@@ -53,31 +56,23 @@ function CellMaps(args) {
 };
 
 CellMaps.prototype = {
-    render: function (targetId) {
-
+    render: function () {
         var _this = this;
-        this.targetId = (targetId) ? targetId : this.targetId;
-        if ($('#' + this.targetId).length < 1) {
-            console.log('targetId not found in DOM');
-            return;
-        }
         console.log("Initializing Cell Maps");
-        this.targetDiv = $('#' + this.targetId)[0];
-        this.div = $('<div id="cell-browser"></div>')[0];
-        $(this.targetDiv).append(this.div);
 
+        //HTML skel
+        this.div = $('<div id="' + this.id + '"></div>')[0];
 
-        this.headerWidgetDiv = $('<div id="header-widget"></div>')[0];
+        this.headerWidgetDiv = $('<div></div>')[0];
         $(this.div).append(this.headerWidgetDiv);
 
-
-        $(this.div).append('<div id="cm-tool-bar" style="position:relative;"></div>');
-        $(this.div).append('<div id="cm-network-viewer" style="position:relative;"></div>');
-        $(this.div).append('<div id="cm-status-bar"></div>');
-
+        this.toolbarDiv = $('<div style="position:relative;"></div>')[0];
+        this.networkViewerDiv = $('<div style="position:relative;"></div>')[0];
+        $(this.div).append(this.toolbarDiv);
+        $(this.div).append(this.networkViewerDiv);
 
         this.rightSidebarDiv = $('<div id="rightsidebar-' + this.id + '" style="position:absolute; z-index:50;right:0px;"></div>')[0];
-        $("#cm-network-viewer").append(this.rightSidebarDiv);
+        $(this.networkViewerDiv).append(this.rightSidebarDiv);
 
         this.configureDiv = $('<div id="configure-' + this.id + '"></div>')[0];
         this.jobsDiv = $('<div id="jobs-' + this.id + '"></div>')[0];
@@ -90,67 +85,30 @@ CellMaps.prototype = {
         });
         $(this.rightSidebarDiv).append(this.configureDiv);
         $(this.rightSidebarDiv).append(this.jobsDiv);
-        this.width = ($(this.div).width());
 
         if (this.border) {
             var border = (_.isString(this.border)) ? this.border : '1px solid lightgray';
             $(this.div).css({border: border});
         }
 
-        // Resize
-        if (this.resizable) {
-            $(window).resize(function (event) {
-                clearTimeout(_this.resizeTimer);
-                _this.resizeTimer = setTimeout(function () {
-                    _this.resize();
-                }, 500);
-            });
-        }
 
-        this.rendered = true;
-    },
-    resize: function () {
-        var centerHeight = this._getCenterHeight();
-        $('#cm-network-viewer').css({
-            height: centerHeight
-        });
-        this.networkViewer.resize();
-        this.headerWidget.setWidth();
-        this.toolbar.setWidth();
-    },
-    _getCenterHeight: function () {
-        //header toolbar and status must exists
-        return $(window).height() - $(this.headerWidgetDiv).height() - this.toolbar.getHeight() - $('#status').height() - 2;
-    },
-    draw: function () {
-        var _this = this;
-        if (!this.rendered) {
-            console.info('Genome Maps is not rendered yet');
-            return;
-        }
-
+        //
+        //  Children initalization
+        //
         /* Header Widget */
         this.headerWidget = this._createHeaderWidget(this.headerWidgetDiv);
 
-        this.toolbar = this._createToolBar('cm-tool-bar');
+        /* ToolBar*/
+        this.toolbar = this._createToolBar(this.toolbarDiv);
 
-        $('#cm-network-viewer').css({
-            height: this._getCenterHeight()
-        });
+//        /* network Viewer  */
+        this.networkViewer = this._createNetworkViewer(this.networkViewerDiv);
 
-        /* network Viewer  */
-        this.networkViewer = this._createNetworkViewer('cm-network-viewer');
-        /* Side Panel  */
-        this.configuration = this._createConfiguration($(this.configureDiv).attr('id'));
-        this.configuration.panel.show();
-
+//        /* Side Panel  */
+        this.configuration = this._createConfiguration(this.configureDiv);
 
         /* Job List Widget */
-        this.jobListWidget = this._createJobListWidget($(this.jobsDiv).attr('id'));
-
-        /* status bar  */
-        this.statusBar = this._createStatusBar('status');
-
+        this.jobListWidget = this._createJobListWidget(this.jobsDiv);
 
         this.vertexAttributeEditWidget = new AttributeEditWidget({
             attrMan: this.networkViewer.network.vertexAttributeManager,
@@ -191,6 +149,7 @@ CellMaps.prototype = {
 //                }
 //            }
         });
+
         this.edgeAttributeFilterWidget = new AttributeFilterWidget({
             attrMan: this.networkViewer.network.edgeAttributeManager,
             type: 'Edge',
@@ -212,59 +171,45 @@ CellMaps.prototype = {
             }
         });
 
-//        //TEST SCROLL BAR
-//        var text = "";
-//        this.headerWidget.setDescription(text);
-
-        //check login
-
         /* Edit network */
         this.networkEditWidget = new NetworkEditWidget({
             autoRender: true,
             networkViewer: _this.networkViewer,
             network: _this.networkViewer.network
         });
-        this.networkEditWidget.draw();
 
         /* Configure Layout*/
         this.layoutConfigureWidget = new LayoutConfigureWidget({
             autoRender: true,
             networkViewer: _this.networkViewer
         });
-        this.layoutConfigureWidget.draw();
 
         this.attributeLayoutConfigureWidget = new AttributeLayoutConfigureWidget({
             autoRender: true,
             networkViewer: this.networkViewer
         });
-        this.attributeLayoutConfigureWidget.draw();
 
 
         /* Plugins */
         this.cellbasePlugin = new CellbasePlugin({
             cellMaps: _this
         });
-        this.cellbasePlugin.draw();
 
         this.intActPlugin = new IntActPlugin({
             cellMaps: _this
         });
-        this.intActPlugin.draw();
 
         this.communitiesStructureDetectionPlugin = new CommunitiesStructureDetectionPlugin({
             cellMaps: _this
         });
-        this.communitiesStructureDetectionPlugin.draw();
 
         this.topologicalStudyPlugin = new TopologicalStudyPlugin({
             cellMaps: _this
         });
-        this.topologicalStudyPlugin.draw();
 
         this.reactomePlugin = new ReactomePlugin({
             cellMaps: _this
         });
-        this.reactomePlugin.draw();
 
 
         /* Job forms */
@@ -274,11 +219,11 @@ CellMaps.prototype = {
             testing: false,
             closable: false,
             minimizable: true,
+            formBorder: false,
             headerFormConfig: {
                 baseCls: 'header-form'
             }
         });
-        this.reactomeFIMicroarrayForm.draw();
 
         this.snowForm = new SnowForm({
             webapp: _this,
@@ -286,11 +231,11 @@ CellMaps.prototype = {
             testing: false,
             closable: false,
             minimizable: true,
+            formBorder: false,
             headerFormConfig: {
                 baseCls: 'header-form'
             }
         });
-        this.snowForm.draw();
 
         this.networkMinerForm = new NetworkMinerForm({
             webapp: _this,
@@ -298,12 +243,12 @@ CellMaps.prototype = {
             testing: false,
             closable: false,
             minimizable: true,
+            formBorder: false,
             labelWidth: 150,
             headerFormConfig: {
                 baseCls: 'header-form'
             }
         });
-        this.networkMinerForm.draw();
 
         this.fatigoForm = new FatigoForm({
             webapp: _this,
@@ -311,22 +256,68 @@ CellMaps.prototype = {
             testing: false,
             closable: false,
             minimizable: true,
+            formBorder: false,
             headerFormConfig: {
                 baseCls: 'header-form'
             }
         });
-        this.fatigoForm.draw();
 
         if ($.cookie('bioinfo_sid') != null) {
             this.sessionInitiated();
         } else {
             this.sessionFinished();
         }
+
+        this.rendered = true;
     },
-    _createHeaderWidget: function (targetId) {
+    draw: function () {
+        this.targetDiv = (this.target instanceof HTMLElement ) ? this.target : document.querySelector('#' + this.target);
+        if (this.targetDiv === 'undefined') {
+            console.log('target not found');
+            return;
+        }
+        this.targetDiv.appendChild(this.div);
+
+        this.headerWidget.draw();
+        this.toolbar.draw();
+        this.networkViewer.draw();
+        this.jobListWidget.draw();
+        this.jobListWidget.hide();
+        this.configuration.draw();
+        this.configuration.show();
+
+
+        this.networkEditWidget.draw();
+        this.layoutConfigureWidget.draw();
+        this.attributeLayoutConfigureWidget.draw();
+        this.cellbasePlugin.draw();
+        this.intActPlugin.draw();
+        this.communitiesStructureDetectionPlugin.draw();
+        this.topologicalStudyPlugin.draw();
+        this.reactomePlugin.draw();
+        this.reactomeFIMicroarrayForm.draw();
+        this.snowForm.draw();
+        this.networkMinerForm.draw();
+        this.fatigoForm.draw();
+
+
+    },
+    resize: function (args) {
+        this.width = args.width;
+        this.height = args.height;
+
+        this.toolbar.setWidth();
+
+        var topOffset = this.headerWidget.getHeight() + this.toolbar.getHeight();
+        this.networkViewer.resize({
+            width: this.width,
+            height: this.height - topOffset
+        });
+    },
+    _createHeaderWidget: function (target) {
         var _this = this;
         var headerWidget = new HeaderWidget({
-            targetId: targetId,
+            target: target,
             autoRender: true,
             appname: this.title,
             description: this.description,
@@ -361,29 +352,68 @@ CellMaps.prototype = {
                 }
             }
         });
-        headerWidget.draw();
         return headerWidget;
     },
-    _createToolBar: function (targetId) {
+    _createNetworkViewer: function (target) {
+        var _this = this;
+
+        /* check height */
+        var topOffset = this.headerWidget.getHeight() + this.toolbar.getHeight();
+        var networkViewer = new NetworkViewer({
+            target: target,
+            autoRender: true,
+            sidePanel: false,
+            border: false,
+            width: this.width,
+            height: this.height - topOffset,
+            session: this.session,
+            handlers: {
+                'select:vertices': function (e) {
+                    _this.vertexAttributeEditWidget.checkSelectedFilter();
+                },
+                'select:edges': function (e) {
+                    _this.edgeAttributeEditWidget.checkSelectedFilter();
+                },
+                'change:vertexAttributes': function (e) {
+                    _this.toolbar.setVertexAttributes(e.sender);
+                },
+                'change:edgeAttributes': function (e) {
+
+                }
+            }
+        });
+
+        networkViewer.on('change', function () {
+            _this.trigger('session:save-request', {sender: _this});
+        });
+
+        return networkViewer;
+    },
+    _createToolBar: function (target) {
         var _this = this;
         var cmToolBar = new CmToolBar({
-            targetId: targetId,
+            target: target,
             autoRender: true,
             handlers: {
                 /* File */
                 'saveJSON:click': function (event) {
                     var content = JSON.stringify(_this.toJSON());
-                    debugger
-                    event.a.set({
-                        href: 'data:text/csv,' + encodeURIComponent(content),
-                        download: "network.json"
+                    var blob = new Blob([content], {type: "application/json"});
+                    var url = URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = "network.json";
+                    var event = new MouseEvent('click', {
+                        'view': window,
+                        'bubbles': true,
+                        'cancelable': true
                     });
+                    link.dispatchEvent(event);
                 },
                 'openJSON:click': function (event) {
                     var jsonNetworkFileWidget = new JSONNetworkFileWidget({
                         handlers: {
                             'okButton:click': function (widgetEvent) {
-                                debugger
                                 _this.loadJSON(widgetEvent.content);
 //                                _this.networkViewer.setLayout(widgetEvent.layout);
                             }
@@ -441,79 +471,87 @@ CellMaps.prototype = {
                     textNetworkFileWidget.draw();
                 },
                 'savePNG:click': function (event) {
-                    var svgEl = _this.networkViewer.networkSvgLayout.getSvgEl();
-
-                    var svgBack = _this.networkViewer.networkSvgLayout.backgroundSvg;
-                    // quit the image background
-                    var image = svgEl.removeChild(svgBack);
-
-                    var svg = new XMLSerializer().serializeToString(svgEl);
-
-                    // put again the image background
-                    $(svgEl).prepend(image);
-
-                    var canvas = $("<canvas/>", {"id": _this.id + "png", "visibility": _this.id + "hidden"}).appendTo("body")[0];
+                    var svg = new XMLSerializer().serializeToString(_this.networkViewer.networkSvgLayout.getSvgEl());
+                    var canvas = document.createElement('canvas');
                     canvg(canvas, svg);
-                    event.a.set({
-                        href: canvas.toDataURL("image/png"),
-                        target: "_blank",
-                        download: "network.png"
+
+                    var dataURL = canvas.toDataURL("image/png");
+                    var data = atob(dataURL.substring("data:image/png;base64,".length));
+                    var asArray = new Uint8Array(data.length);
+                    //data is a string, so when you pass it to blob, the binary data will be that string in UTF-8 encoding. You want binary data not a string.
+                    for (var i = 0, len = data.length; i < len; ++i) {
+                        asArray[i] = data.charCodeAt(i);
+                    }
+
+                    var blob = new Blob([ asArray.buffer ], {type: "image/png"});
+                    var url = URL.createObjectURL(blob);
+
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = "network.png";
+                    var event = new MouseEvent('click', {
+                        'view': window,
+                        'bubbles': true,
+                        'cancelable': true
                     });
-                    $("#" + _this.id + "png").remove();
-                },
-                'saveJPG:click': function (event) {
-                    var svgEl = _this.networkViewer.networkSvgLayout.getSvgEl();
-
-                    var svgBack = _this.networkViewer.networkSvgLayout.backgroundSvg;
-                    // quit the image background
-                    var image = svgEl.removeChild(svgBack);
-
-                    var svg = new XMLSerializer().serializeToString(svgEl);
-
-                    // put again the image background
-                    $(svgEl).prepend(image);
-
-                    var canvas = $("<canvas/>", {"id": _this.id + "jpg", "visibility": _this.id + "hidden"}).appendTo("body")[0];
-                    canvg(canvas, svg);
-                    event.a.set({
-                        href: canvas.toDataURL("image/jpg"),
-                        target: "_blank",
-                        download: "network.jpg"
-                    });
-                    $("#" + _this.id + "jpg").remove();
+                    link.dispatchEvent(event);
                 },
                 'saveSVG:click': function (event) {
                     var svg = new XMLSerializer().serializeToString(_this.networkViewer.networkSvgLayout.getSvgEl());
-                    var content = 'data:image/svg+xml,' + encodeURIComponent(svg);
-                    event.a.set({
-                        href: content,
-                        target: "_blank",
-                        download: "network.svg"
+                    var blob = new Blob([svg], {type: "image/svg+xml"});
+                    var url = URL.createObjectURL(blob);
+
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = "network.svg";
+                    var event = new MouseEvent('click', {
+                        'view': window,
+                        'bubbles': true,
+                        'cancelable': true
                     });
+                    link.dispatchEvent(event);
                 },
                 'saveSIF:click': function (event) {
                     var content = _this.networkViewer.getAsSIF();
-                    event.a.set({
-                        href: 'data:text/tsv,' + encodeURIComponent(content),
-                        target: "_blank",
-                        download: "network.sif"
+                    var blob = new Blob([content], {type: "data:text/tsv"});
+                    var url = URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = "network.sif";
+                    var event = new MouseEvent('click', {
+                        'view': window,
+                        'bubbles': true,
+                        'cancelable': true
                     });
+                    link.dispatchEvent(event);
                 },
                 'click:exportVertexAttributes': function (event) {
                     var content = _this.networkViewer.network.vertexAttributeManager.getAsFile();
-                    event.a.set({
-                        href: 'data:text/tsv,' + encodeURIComponent(content),
-                        target: "_blank",
-                        download: "node.attr"
+                    var blob = new Blob([content], {type: "data:text/tsv"});
+                    var url = URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = "node.attr";
+                    var event = new MouseEvent('click', {
+                        'view': window,
+                        'bubbles': true,
+                        'cancelable': true
                     });
+                    link.dispatchEvent(event);
                 },
                 'click:exportEdgeAttributes': function (event) {
                     var content = _this.networkViewer.network.edgeAttributeManager.getAsFile();
-                    event.a.set({
-                        href: 'data:text/tsv,' + encodeURIComponent(content),
-                        target: "_blank",
-                        download: "edge.attr"
+                    var blob = new Blob([content], {type: "data:text/tsv"});
+                    var url = URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = "edge.attr";
+                    var event = new MouseEvent('click', {
+                        'view': window,
+                        'bubbles': true,
+                        'cancelable': true
                     });
+                    link.dispatchEvent(event);
                 },
                 /* Network */
                 'click:editNetwork': function (event) {
@@ -602,9 +640,9 @@ CellMaps.prototype = {
                 },
                 'configuration-button:change': function (event) {
                     if (event.selected) {
-                        _this.configuration.panel.show();
+                        _this.configuration.show();
                     } else {
-                        _this.configuration.panel.hide();
+                        _this.configuration.hide();
                     }
                 },
                 /* Selection */
@@ -645,43 +683,11 @@ CellMaps.prototype = {
         });
         return cmToolBar;
     },
-    _createNetworkViewer: function (targetId) {
-        var _this = this;
-        var networkViewer = new NetworkViewer({
-            targetId: targetId,
-            autoRender: true,
-            sidePanel: false,
-            border: false,
-            session: this.session,
-            handlers: {
-                'select:vertices': function (e) {
-                    _this.vertexAttributeEditWidget.checkSelectedFilter();
-                },
-                'select:edges': function (e) {
-                    _this.edgeAttributeEditWidget.checkSelectedFilter();
-                },
-                'change:vertexAttributes': function (e) {
-                    _this.toolbar.setVertexAttributes(e.sender);
-                },
-                'change:edgeAttributes': function (e) {
-
-                }
-            }
-        });
-
-        networkViewer.on('change', function () {
-            _this.trigger('session:save-request', {sender: _this});
-        });
-
-        networkViewer.draw();
-        return networkViewer;
-    },
-    _createConfiguration: function (targetId) {
+    _createConfiguration: function (target) {
         var _this = this;
 
         var configuration = new CellMapsConfiguration({
-            autoRender: true,
-            targetId: targetId,
+            target: target,
             vertexAttributeManager: this.networkViewer.network.vertexAttributeManager,
             edgeAttributeManager: this.networkViewer.network.edgeAttributeManager,
             session: this.session,
@@ -758,40 +764,22 @@ CellMaps.prototype = {
 
         return configuration;
     },
-    _createStatusBar: function (targetId) {
-        var _this = this;
-        var statusBar;
-        return  statusBar;
-    },
 
-    _createJobListWidget: function (targetId) {
+    _createJobListWidget: function (target) {
         var _this = this;
 
         var jobListWidget = new JobListWidget({
-            'timeout': 4000,
-            'suiteId': this.suiteId,
-            'tools': this.tools,
-            'pagedViewList': {
-                'title': 'Jobs',
-                'pageSize': 7,
-                'targetId': targetId,
-                'order': 0,
-                'width': 280,
-                'height': 625,
-                border: true,
-                'mode': 'view'
-//                headerConfig: {
-//                    baseCls: 'home-header-dark'
-//                }
+            target: target,
+            timeout: 4000,
+            width: 280,
+            height: 625,
+            tools: this.tools,
+            handlers: {
+                'job:click': function (data) {
+                    _this.jobItemClick(data.item);
+                }
             }
         });
-
-        /**Atach events i listen**/
-        jobListWidget.pagedListViewWidget.on('item:click', function (data) {
-            _this.jobItemClick(data.item);
-        });
-        jobListWidget.draw();
-        jobListWidget.hide();
 
         return jobListWidget;
     },
@@ -803,7 +791,6 @@ CellMaps.prototype = {
         return json;
     },
     loadJSON: function (session) {
-        debugger
         this.networkViewer.loadJSON(session);
         this.configuration.loadSession(session);
     },
@@ -813,17 +800,17 @@ CellMaps.prototype = {
     },
     sessionFinished: function () {
         this.jobListWidget.hide();
-        this.jobListWidget.clean();
         this.accountData = null;
     },
     setAccountData: function (response) {
+        console.log(response)
         this.accountData = response;
         this.jobListWidget.setAccountData(this.accountData);
     },
     jobItemClick: function (record) {
         var _this = this;
 
-        if (record.data.visites >= 0) {
+        if (record.get('visites') >= 0) {
             this.networkViewer.setLoading('Loading job...');
             console.log(record);
 
@@ -831,8 +818,8 @@ CellMaps.prototype = {
             var drawIndex = true;
             var title = '';
 
-            var jobId = record.raw.id;
-            switch (record.raw.toolName) {
+            var jobId = record.get('id');
+            switch (record.get('toolName')) {
                 case 'reactome-fi.default':
                     collapseInformation = true;
                     drawIndex = false;
@@ -860,7 +847,7 @@ CellMaps.prototype = {
                 app: this,
                 collapseInformation: collapseInformation,
                 drawIndex: drawIndex,
-                layoutName: record.raw.toolName
+                layoutName: record.get('toolName')
             });
             resultWidget.draw($.cookie('bioinfo_sid'), record);
 
@@ -960,7 +947,9 @@ CellMaps.prototype = {
             success: function (data) {
                 if (data.indexOf("ERROR") != -1) {
                     console.error(data);
+                    return;
                 }
+                _this.networkViewer.clean();
                 var sifNetworkDataAdapter = new SIFNetworkDataAdapter({
                     dataSource: new StringDataSource(data),
                     handlers: {
@@ -1107,5 +1096,8 @@ CellMaps.prototype = {
                 });
             }
         });
+    },
+    __iliketomoveit: function () {
+        this.networkViewer.setLayout('Force directed (simulation)')
     }
 }

@@ -29,6 +29,7 @@ function CellMapsConfiguration(args) {
     this.width = 300;
     this.height = 825;
     this.session;
+    this.autoRender = true;
 
     this.vertexAttributeManager;
     this.edgeAttributeManager;
@@ -58,15 +59,14 @@ function CellMapsConfiguration(args) {
         labelSize: 0,
         labelColor: '#111111'
     }
-
     if (typeof this.session !== 'undefined') {
         if (typeof this.session.vertexDefaults !== 'undefined') {
             this.vertexDefaults = this.session.vertexDefaults;
-        } else if (typeof this.session.edgeDefaults !== 'undefined') {
+        }
+        if (typeof this.session.edgeDefaults !== 'undefined') {
             this.edgeDefaults = this.session.edgeDefaults;
         }
     }
-
     this.on(this.handlers);
 
     this.rendered = false;
@@ -76,14 +76,11 @@ function CellMapsConfiguration(args) {
 };
 
 CellMapsConfiguration.prototype = {
-    render: function (targetId) {
+    render: function () {
         var _this = this;
-        this.targetId = (targetId) ? targetId : this.targetId;
-        if ($('#' + this.targetId).length < 1) {
-            console.log('targetId not found in DOM');
 
-            return;
-        }
+        this.div = $('<div></div>')[0];
+
         this.vertexAttributeManager.on('change:attributes', function () {
             _this.reconfigureVertexComponents();
         });
@@ -109,14 +106,22 @@ CellMapsConfiguration.prototype = {
 //            border:false,
 //            layout: 'accordion',
 //            border:false,
-            hidden: true,
+//            hidden: true,
             bodyStyle: {
                 fontFamily: 'Oxygen'
             },
-            items: [this.createPropertiesPanel()],
-            renderTo: this.targetId
+            items: [this.createPropertiesPanel()]
         });
+    },
+    draw: function () {
+        this.targetDiv = (this.target instanceof HTMLElement ) ? this.target : document.querySelector('#' + this.target);
+        if (this.targetDiv === 'undefined') {
+            console.log('target not found');
+            return;
+        }
+        this.targetDiv.appendChild(this.div);
 
+        this.panel.render(this.div);
 
         if (typeof this.session !== 'undefined') {
             if (typeof this.session.visualSets !== 'undefined') {
@@ -126,6 +131,20 @@ CellMapsConfiguration.prototype = {
                     }
                 }
             }
+        }
+
+    },
+    show: function () {
+        this.panel.show()
+    },
+    hide: function () {
+        this.panel.hide();
+    },
+    toggle: function () {
+        if (this.panel.isVisible()) {
+            this.panel.hide();
+        } else {
+            this.panel.show();
         }
     },
     getVisualSets: function () {
@@ -172,6 +191,21 @@ CellMapsConfiguration.prototype = {
                 }
             }
         }
+        //nodes
+        this.vertexLabelSizeAttributeWidget.defaultValueChanged(this.vertexDefaults.labelSize);
+        this.vertexOpacityAttributeWidget.defaultValueChanged(this.vertexDefaults.opacity);
+        this.vertexShapeAttributeWidget.defaultValueChanged(this.vertexDefaults.shape);
+        this.vertexColorAttributeWidget.defaultValueChanged(this.vertexDefaults.color);
+        this.vertexStrokeColorAttributeWidget.defaultValueChanged(this.vertexDefaults.strokeColor);
+        this.vertexSizeAttributeWidget.defaultValueChanged(this.vertexDefaults.size);
+        this.vertexStrokeSizeAttributeWidget.defaultValueChanged(this.vertexDefaults.strokeSize);
+
+        //edges
+        this.edgeLabelSizeAttributeWidget.defaultValueChanged(this.edgeDefaults.labelSize);
+        this.edgeOpacityAttributeWidget.defaultValueChanged(this.edgeDefaults.opacity);
+        this.edgeShapeAttributeWidget.defaultValueChanged(this.edgeDefaults.shape);
+        this.edgeColorAttributeWidget.defaultValueChanged(this.edgeDefaults.color);
+        this.edgeSizeAttributeWidget.defaultValueChanged(this.edgeDefaults.size);
     },
     reconfigureVertexComponents: function () {
         this.vertexComboStore.loadData(this.vertexAttributeManager.attributes);
@@ -183,18 +217,15 @@ CellMapsConfiguration.prototype = {
         var _this = this;
         return Ext.create('Ext.form.FieldContainer', {
             layout: 'hbox',
-            labelWidth: 145,
+            labelWidth: 151,
             fieldLabel: args.text,
-            defaults: {
-                margin: '1'
-            },
             items: [
                 {
                     xtype: 'combo',
                     store: args.comboStore,
                     displayField: 'name',
                     valueField: 'name',
-                    width: 100,
+                    width: 95,
                     queryMode: 'local',
                     forceSelection: true,
                     editable: false,
@@ -212,11 +243,13 @@ CellMapsConfiguration.prototype = {
                 },
                 {
                     xtype: 'button',
+                    margin:'0 0 0 2',
                     tooltip: 'Configure',
-                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-eye-open" style="font-size: 15px"></span></span>',
+                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-eye-open"></span></span>',
                     enableToggle: true,
                     width: 35,
-                    pressed: true,
+                    height: 25,
+                    pressed: args.pressed,
                     hidden: false,
                     toggleHandler: function () {
                         args.changeVisibility(this.pressed);
@@ -229,10 +262,10 @@ CellMapsConfiguration.prototype = {
         var _this = this;
         return Ext.create('Ext.form.FieldContainer', {
             layout: 'hbox',
-            labelWidth: 120,
+            labelWidth: 127,
             fieldLabel: 'Label position',
             defaults: {
-                margin: '1 6'
+                margin: '1 4'
             },
             items: [
                 {
@@ -497,6 +530,7 @@ CellMapsConfiguration.prototype = {
         this.vertexLabelComponent = this.createLabelComboComponent({
             text: 'Label',
             comboStore: this.vertexComboStore,
+            pressed:true,
             changeVisibility: function (bool) {
                 var value = (bool === true) ? _this.vertexLabelSizeAttributeWidget.getDefaultValue() : 0;
                 _this.trigger('change:vertexLabelSize', {value: value, sender: _this});
@@ -834,6 +868,19 @@ CellMapsConfiguration.prototype = {
         });
 
         //EDGES
+        this.edgeLabelComponent = this.createLabelComboComponent({
+            text: 'Label',
+            comboStore: this.edgeComboStore,
+            pressed:false,
+            changeVisibility: function (bool) {
+                var value = (bool === true) ? _this.edgeLabelSizeAttributeWidget.getDefaultValue() : 0;
+                _this.trigger('change:edgeLabelSize', {value: value, sender: _this});
+            },
+            changeAttribute: function (attribute) {
+                _this.trigger('change:edgeLabel', {value: attribute});
+            }
+        });
+
         this.edgeColorAttributeWidget = new VisualAttributeWidget({
             displayAttribute: 'Color',
             displayLabel: 'Color',
@@ -903,7 +950,7 @@ CellMapsConfiguration.prototype = {
             attributeManager: this.edgeAttributeManager,
             attributesStore: this.edgeComboStore,
             control: new NumberAttributeControl({
-                displayAttribute: 'Opacity',
+                displayAttribute: 'Label size',
                 defaultValue: this.edgeDefaults.labelSize,
                 maxValue: 16,
                 minValue: 0,
@@ -912,7 +959,11 @@ CellMapsConfiguration.prototype = {
             handlers: {
                 'change:default': function (e) {
                     _this.edgeDefaults.labelSize = e.sender.getDefaultValue();
-                    _this.trigger('change:edgeLabelSize', e);
+                    var btn = _this.edgeLabelComponent.down('button');
+                    if (btn.pressed) {
+                        _this.trigger('change:edgeLabelSize', e);
+                    }
+
                 },
                 'click:ok': function (e) {
                     _this.trigger('change:edgeDisplayAttribute', e.visualSet);
@@ -1072,13 +1123,7 @@ CellMapsConfiguration.prototype = {
                             },
                             html: 'Simple edge settings'
                         },
-                        this.createLabelComboComponent({
-                            text: 'Label',
-                            comboStore: this.edgeComboStore,
-                            changeAttribute: function (attribute) {
-                                _this.trigger('change:edgeLabel', {value: attribute});
-                            }
-                        }),
+                        this.edgeLabelComponent,
                         this.edgeLabelSizeAttributeWidget.getComponent(),
                         this.edgeOpacityAttributeWidget.getComponent(),
                         this.edgeShapeAttributeWidget.getComponent(),

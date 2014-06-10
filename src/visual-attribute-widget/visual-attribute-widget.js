@@ -29,6 +29,7 @@ function VisualAttributeWidget(args) {
     this.attributeGridMap = {};
     this.window;
     this.component;
+    this.controlComponent;
     this.button;
     this.removeButton;
 
@@ -47,12 +48,18 @@ function VisualAttributeWidget(args) {
 
 /************************/
 VisualAttributeWidget.prototype.applyDirectVisualSet = function (attributeName, type) {
-    this.button.el.dom.click();
-    this.attributeNameCombo.select(attributeName);
-    this.attributeTypeCombo.select(type);
-    var grid = this.gridMap[attributeName][type];
-    grid.down('button[text~=Apply]').el.dom.click();
-    this.window.down('button[text~=Ok]').el.dom.click();
+    this.window.show();
+    var found = this.attributeNameCombo.store.find("name", attributeName);
+    if (found !== -1) {
+        this.attributeNameCombo.select(attributeName);
+        this.attributeTypeCombo.select(type);
+        var grid = this.gridMap[attributeName][type];
+        grid.down('button[text~=Apply]').el.dom.click();
+        this.window.down('button[text~=Ok]').el.dom.click();
+        return true;
+    }
+    this.window.hide();
+    return false;
 }
 
 VisualAttributeWidget.prototype.restoreVisualSet = function (visualSet) {
@@ -60,19 +67,16 @@ VisualAttributeWidget.prototype.restoreVisualSet = function (visualSet) {
     var type = visualSet.type;
     var map = visualSet.map;
 
-    if (typeof this.gridMap[attributeName] !== 'undefined' && typeof this.gridMap[attributeName][type] !== 'undefined') {
-        this.button.el.dom.click();
+    this.window.show();
+    var found = this.attributeNameCombo.store.find("name", attributeName);
+    if (found !== -1) {
         this.attributeNameCombo.select(attributeName);
         this.attributeTypeCombo.select(type);
-
-
         var grid = this.gridMap[attributeName][type];
 
         var store = grid.store;
-
         //restoreMap
-        var data = store.snapshot || store.data;
-        var records = data.items;
+        var records = store.query().items;
         for (var i = 0; i < records.length; i++) {
             var record = records[i];
             var value = record.get('value');
@@ -83,11 +87,20 @@ VisualAttributeWidget.prototype.restoreVisualSet = function (visualSet) {
         this.window.down('button[text~=Ok]').el.dom.click();
         return true;
     }
+    this.window.hide();
     return false;
 }
 
 VisualAttributeWidget.prototype.removeVisualSet = function () {
-    this.removeButton.el.dom.click();
+    this._removeButtonHandler();
+};
+
+VisualAttributeWidget.prototype._removeButtonHandler = function (button) {
+    this.button.setText('Select attribute');
+    this.removeButton.disable();
+    delete this.visualSet;
+    this.defaultValueChanged(this.control.defaultValue);
+    this.trigger('remove:visualSet', {sender: this});
 };
 
 VisualAttributeWidget.prototype._updateVisualSet = function () {
@@ -111,6 +124,10 @@ VisualAttributeWidget.prototype.defaultValueChanged = function (value) {
     if (typeof value !== 'undefined') {
         this.control.defaultValue = value;
 
+        if (this.controlComponent) {//pie and donut does not has controlComponent
+            this.controlComponent.setRawValue(value);
+        }
+
         for (var id in this.attributeGridMap) {
             this.attributeGridMap[id].changeDefaultValue(value);
         }
@@ -121,8 +138,6 @@ VisualAttributeWidget.prototype.defaultValueChanged = function (value) {
 
         this.trigger('change:default', {value: this.control.defaultValue, sender: this});
     }
-
-
 };
 
 VisualAttributeWidget.prototype.getVisualSet = function () {
@@ -148,10 +163,9 @@ VisualAttributeWidget.prototype.getComponent = function () {
 VisualAttributeWidget.prototype._createComponent = function () {
     var _this = this;
 
-    var control;
     var width = 150;
     if (this.showControl == true) {
-        control = this.control.create(function (newValue) {
+        this.controlComponent = this.control.create(function (newValue) {
             _this.defaultValueChanged(newValue);
         });
         width = 75;
@@ -160,7 +174,8 @@ VisualAttributeWidget.prototype._createComponent = function () {
     this.button = Ext.create('Ext.Button', {
         xtype: 'button',
         text: 'Select attribute',
-        width: 100,
+        width: 95,
+        height: 25,
         handler: function () {
             _this.window.show();
         }
@@ -168,14 +183,11 @@ VisualAttributeWidget.prototype._createComponent = function () {
 
     this.removeButton = Ext.create('Ext.Button', {
         disabled: true,
-        text: '<span class="bootstrap"><span class="glyphicon glyphicon-trash" style="font-size: 15px"></span></span>',
+        text: '<span class="bootstrap"><span class="glyphicon glyphicon-trash"></span></span>',
         width: 35,
+        height: 25,
         handler: function (bt) {
-            _this.button.setText('Select attribute');
-            _this.removeButton.disable();
-            delete _this.visualSet;
-            _this.defaultValueChanged(_this.control.defaultValue);
-            _this.trigger('remove:visualSet', {sender: _this});
+            _this._removeButtonHandler(bt);
         }
     });
 
@@ -187,7 +199,7 @@ VisualAttributeWidget.prototype._createComponent = function () {
             margin: '1'
         },
         items: [
-            control,
+            this.controlComponent,
             this.button,
             this.removeButton
         ]
