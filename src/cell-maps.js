@@ -412,6 +412,7 @@ CellMaps.prototype = {
                 },
                 'openJSON:click': function (event) {
                     var jsonNetworkFileWidget = new JSONNetworkFileWidget({
+                        layoutSelector:false,
                         handlers: {
                             'okButton:click': function (widgetEvent) {
                                 _this.loadJSON(widgetEvent.content);
@@ -438,9 +439,10 @@ CellMaps.prototype = {
                     var sifNetworkFileWidget = new SIFNetworkFileWidget({
                         handlers: {
                             'okButton:click': function (widgetEvent) {
+                                _this.configuration.cleanVisualSets();
                                 var graph = widgetEvent.content;
                                 _this.networkViewer.setGraph(graph);
-                                _this.networkViewer.setLayout('Force directed');
+                                _this.networkViewer.setLayout(widgetEvent.layout);
                             }
                         }
                     });
@@ -450,9 +452,10 @@ CellMaps.prototype = {
                     var xlsxNetworkFileWidget = new XLSXNetworkFileWidget({
                         handlers: {
                             'okButton:click': function (widgetEvent) {
+                                _this.configuration.cleanVisualSets();
                                 var graph = widgetEvent.content;
                                 _this.networkViewer.setGraph(graph);
-                                _this.networkViewer.setLayout('Force directed');
+                                _this.networkViewer.setLayout(widgetEvent.layout);
                             }
                         }
                     });
@@ -462,9 +465,10 @@ CellMaps.prototype = {
                     var textNetworkFileWidget = new TextNetworkFileWidget({
                         handlers: {
                             'okButton:click': function (widgetEvent) {
+                                _this.configuration.cleanVisualSets();
                                 var graph = widgetEvent.content;
                                 _this.networkViewer.setGraph(graph);
-                                _this.networkViewer.setLayout('Force directed');
+                                _this.networkViewer.setLayout(widgetEvent.layout);
                             }
                         }
                     });
@@ -634,6 +638,7 @@ CellMaps.prototype = {
                 'click:newsession': function (event) {
                     Ext.Msg.confirm('Start over', 'All changes will be lost. Are you sure?', function (btn, text) {
                         if (btn == 'yes') {
+                            _this.configuration.cleanVisualSets();
                             _this.networkViewer.clean();
                         }
                     });
@@ -705,7 +710,7 @@ CellMaps.prototype = {
                     _this.networkViewer.network.setVerticesRendererAttribute('strokeSize', e.value, true);
                 },
                 'change:vertexShape': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('shape', e.value);
+                    _this.networkViewer.network.setVerticesRendererAttribute('shape', e.value, true);
                 },
                 'change:vertexOpacity': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('opacity', e.value);
@@ -775,7 +780,7 @@ CellMaps.prototype = {
             height: 625,
             tools: this.tools,
             handlers: {
-                'job:click': function (data) {
+                'item:click': function (data) {
                     _this.jobItemClick(data.item);
                 }
             }
@@ -872,6 +877,7 @@ CellMaps.prototype = {
                     dataSource: new StringDataSource(data),
                     handlers: {
                         'data:load': function (event) {
+                            _this.configuration.cleanVisualSets();
                             _this.networkViewer.setGraph(event.graph);
                             _this.networkViewer.setLayout('Force directed');
                         },
@@ -954,6 +960,7 @@ CellMaps.prototype = {
                     dataSource: new StringDataSource(data),
                     handlers: {
                         'data:load': function (event) {
+                            _this.configuration.cleanVisualSets();
                             _this.networkViewer.setGraph(event.graph);
                             _this.networkViewer.setLayout('Force directed');
                         },
@@ -1031,6 +1038,7 @@ CellMaps.prototype = {
                     dataSource: new StringDataSource(data),
                     handlers: {
                         'data:load': function (event) {
+                            _this.configuration.cleanVisualSets();
                             _this.networkViewer.setGraph(event.graph);
                             _this.networkViewer.setLayout('Force directed');
                         },

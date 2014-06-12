@@ -40,6 +40,9 @@ SelectAttributeControl.prototype.createGridColumns = function () {
             menuDisabled: true,
             editor: {
                 xtype: 'combo',
+                displayField: 'name',
+                queryMode: 'local',
+                valueField: 'name',
                 store: Ext.create('Ext.data.Store', {
                     fields: ['name'],
                     data: this.comboValues

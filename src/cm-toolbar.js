@@ -365,7 +365,7 @@ CmToolBar.prototype = {
                                             }
                                         },
                                         {
-                                            text: 'Configure',
+                                            text: 'Configure...',
                                             handler: function () {
                                                 _this.trigger('click:configureLayout', {sender: _this});
                                             }

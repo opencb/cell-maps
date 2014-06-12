@@ -176,6 +176,8 @@ CellMapsConfiguration.prototype = {
         }
     },
     loadSession: function (session) {
+        this.cleanVisualSets();
+
         if (typeof session !== 'undefined') {
             if (typeof session.vertexDefaults !== 'undefined') {
                 this.vertexDefaults = session.vertexDefaults;
@@ -206,6 +208,31 @@ CellMapsConfiguration.prototype = {
         this.edgeShapeAttributeWidget.defaultValueChanged(this.edgeDefaults.shape);
         this.edgeColorAttributeWidget.defaultValueChanged(this.edgeDefaults.color);
         this.edgeSizeAttributeWidget.defaultValueChanged(this.edgeDefaults.size);
+    },
+    cleanVisualSets: function () {
+        this.vertexLabelSizeAttributeWidget.removeVisualSet();
+        this.vertexOpacityAttributeWidget.removeVisualSet();
+        this.vertexShapeAttributeWidget.removeVisualSet();
+        this.vertexColorAttributeWidget.removeVisualSet();
+        this.vertexStrokeColorAttributeWidget.removeVisualSet();
+        this.vertexSizeAttributeWidget.removeVisualSet();
+        this.vertexStrokeSizeAttributeWidget.removeVisualSet();
+
+
+        this.vertexPieColorAttributeWidget.removeVisualSet();
+        this.vertexPieSizeAttributeWidget.removeVisualSet();
+        this.vertexPieAreaAttributeWidget.removeVisualSet();
+
+        this.vertexDonutColorAttributeWidget.removeVisualSet();
+        this.vertexDonutSizeAttributeWidget.removeVisualSet();
+        this.vertexDonutAreaAttributeWidget.removeVisualSet();
+
+        //edges
+        this.edgeLabelSizeAttributeWidget.removeVisualSet();
+        this.edgeOpacityAttributeWidget.removeVisualSet();
+        this.edgeShapeAttributeWidget.removeVisualSet();
+        this.edgeColorAttributeWidget.removeVisualSet();
+        this.edgeSizeAttributeWidget.removeVisualSet();
     },
     reconfigureVertexComponents: function () {
         this.vertexComboStore.loadData(this.vertexAttributeManager.attributes);
@@ -243,7 +270,7 @@ CellMapsConfiguration.prototype = {
                 },
                 {
                     xtype: 'button',
-                    margin:'0 0 0 2',
+                    margin: '0 0 0 2',
                     tooltip: 'Configure',
                     text: '<span class="bootstrap"><span class="glyphicon glyphicon-eye-open"></span></span>',
                     enableToggle: true,
@@ -530,7 +557,7 @@ CellMapsConfiguration.prototype = {
         this.vertexLabelComponent = this.createLabelComboComponent({
             text: 'Label',
             comboStore: this.vertexComboStore,
-            pressed:true,
+            pressed: true,
             changeVisibility: function (bool) {
                 var value = (bool === true) ? _this.vertexLabelSizeAttributeWidget.getDefaultValue() : 0;
                 _this.trigger('change:vertexLabelSize', {value: value, sender: _this});
@@ -871,7 +898,7 @@ CellMapsConfiguration.prototype = {
         this.edgeLabelComponent = this.createLabelComboComponent({
             text: 'Label',
             comboStore: this.edgeComboStore,
-            pressed:false,
+            pressed: false,
             changeVisibility: function (bool) {
                 var value = (bool === true) ? _this.edgeLabelSizeAttributeWidget.getDefaultValue() : 0;
                 _this.trigger('change:edgeLabelSize', {value: value, sender: _this});
