@@ -104,6 +104,7 @@ CellMaps.prototype = {
 //        /* network Viewer  */
         this.networkViewer = this._createNetworkViewer(this.networkViewerDiv);
 
+
 //        /* Side Panel  */
         this.configuration = this._createConfiguration(this.configureDiv);
 
@@ -412,10 +413,10 @@ CellMaps.prototype = {
                 },
                 'openJSON:click': function (event) {
                     var jsonNetworkFileWidget = new JSONNetworkFileWidget({
-                        layoutSelector:false,
+                        layoutSelector: false,
                         handlers: {
                             'okButton:click': function (widgetEvent) {
-                                _this.loadJSON(widgetEvent.content);
+                                _this.loadSession(widgetEvent.content);
 //                                _this.networkViewer.setLayout(widgetEvent.layout);
                             }
                         }
@@ -623,16 +624,32 @@ CellMaps.prototype = {
                 },
 
                 'example:click': function (event) {
-
                     if (event.example == 1) {
-                        _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_1_JSON));
+                        $.ajax({
+                            url: './example-files/ppi_histone_network.json',
+                            dataType: 'json',
+                            success: function (data) {
+                                _this.networkViewer.loadSession(data);
+                            }
+                        })
                     }
                     if (event.example == 2) {
-                        _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_2_JSON));
+                        $.ajax({
+                            url: './example-files/reactome_network.json',
+                            dataType: 'json',
+                            success: function (data) {
+                                _this.networkViewer.loadSession(data);
+                            }
+                        })
                     }
                     if (event.example == 3) {
-                        _this.networkViewer.loadJSON(JSON.parse(EXAMPLE_3_JSON));
-                        _this.networkViewer.setLayout('Force directed');
+                        $.ajax({
+                            url: './example-files/ppi_network.json',
+                            dataType: 'json',
+                            success: function (data) {
+                                _this.networkViewer.loadSession(data);
+                            }
+                        })
                     }
                 },
                 'click:newsession': function (event) {
@@ -757,13 +774,10 @@ CellMaps.prototype = {
 
                 'change:vertexComplexDisplayAttribute': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttributeListMap(e.args);
-                }
-            }
-        });
+                },
+                'load:defaults': function (e) {
 
-        configuration.on('all', function (type) {
-            if (type.indexOf('change') === 0) {
-                _this.trigger('session:save-request', {sender: _this});
+                }
             }
         });
 
@@ -795,8 +809,12 @@ CellMaps.prototype = {
         json['visualSets'] = this.configuration.getVisualSets();
         return json;
     },
-    loadJSON: function (session) {
-        this.networkViewer.loadJSON(session);
+    saveSession: function () {
+        this.networkViewer.saveSession();
+        this.configuration.saveSession();
+    },
+    loadSession: function (session) {
+        this.networkViewer.loadSession(session);
         this.configuration.loadSession(session);
     },
     sessionInitiated: function () {

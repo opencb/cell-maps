@@ -42,6 +42,7 @@ module.exports = function (grunt) {
                     {   expand: true, cwd: './src', src: ['cm-config.js'], dest: '<%= def.build %>/' },
                     {   expand: true, cwd: './src', src: ['forms/**'], dest: '<%= def.build %>/' },
                     {   expand: true, cwd: './src', src: ['plugins/**'], dest: '<%= def.build %>/' },
+                    {   expand: true, cwd: './src', src: ['example-files/**'], dest: '<%= def.build %>/' },
                     {   expand: true, cwd: './<%= def.jsorolla %>', src: ['vendor/**'], dest: '<%= def.build %>/'  },
                     {   expand: true, cwd: './<%= def.jsorolla %>', src: ['styles/**'], dest: '<%= def.build %>/'  },
                     {   expand: true, cwd: './<%= def.jsorolla %>/src/lib', src: ['worker*'], dest: '<%= def.build %>/' },

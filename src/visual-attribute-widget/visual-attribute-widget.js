@@ -100,7 +100,8 @@ VisualAttributeWidget.prototype._removeButtonHandler = function (button) {
     this.removeButton.disable();
     delete this.visualSet;
     this.defaultValueChanged(this.control.defaultValue);
-    this.trigger('remove:visualSet', {sender: this});
+    this.trigger('remove:visualSet', {visualSet: this.visualSet, sender: this});
+    this.trigger('change:visualSet', {visualSet: this.visualSet, sender: this});
 };
 
 VisualAttributeWidget.prototype._updateVisualSet = function () {
@@ -117,6 +118,7 @@ VisualAttributeWidget.prototype._updateVisualSet = function () {
     }
 //                        console.log(map);
     this.visualSet = {displayAttribute: Utils.camelCase(this.displayAttribute), attribute: attributeName, map: map, type: this.attributeTypeCombo.getValue()};
+    this.trigger('change:visualSet', {visualSet: this.visualSet, sender: this});
 };
 
 

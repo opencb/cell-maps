@@ -72,6 +72,7 @@
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-idb.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-store.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/network.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/network-session.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/network-config.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/graph.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/edge.js"></script>
@@ -171,22 +172,23 @@
     CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest";
     CELLBASE_VERSION = "v3";
     //    Ext.Loader.setConfig({enabled: true});
-//        Ext.Loader.setPath('Ext.chart', 'http://cdn.sencha.io/ext/gpl/5.0.0/packages/sencha-charts/src');
+    //        Ext.Loader.setPath('Ext.chart', 'http://cdn.sencha.io/ext/gpl/5.0.0/packages/sencha-charts/src');
     //    //    Ext.QuickTips.init();
     //    Ext.require([
     //        'Ext.grid.plugin.BufferedRenderer'
     //    ]);
 
     var cellMaps;
+    var session
     var resizeTimer;
     Ext.onReady(function () {
 
-        var session;
+        session = new NetworkSession();
+
         var save_count = 0;
         if (localStorage.getItem('CELLMAPS_SESSION') !== null) {
-            session = JSON.parse(localStorage.getItem('CELLMAPS_SESSION'));
+            session.loadJSON(JSON.parse(localStorage.getItem('CELLMAPS_SESSION')));
         }
-
         cellMaps = new CellMaps({
             target: 'application',
             autoRender: true,
@@ -195,7 +197,7 @@
             height: $('html').height(),
             handlers: {
                 'session:save-request': function (e) {
-                    localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(e.sender.toJSON()));
+                    localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(session));
                     save_count++;
                     console.log('Session saved: ' + save_count);
                 }
@@ -206,7 +208,8 @@
         setTimeout(function () {
             var intervalId = setInterval(function () {
                 console.time('Save session')
-                localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(cellMaps.toJSON()));
+                cellMaps.saveSession();
+                localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(session));
                 save_count++;
                 console.log('Session saved: ' + save_count);
                 console.timeEnd('Save session')
