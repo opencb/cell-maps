@@ -398,7 +398,7 @@ CellMaps.prototype = {
             handlers: {
                 /* File */
                 'saveJSON:click': function (event) {
-                    var content = JSON.stringify(_this.toJSON());
+                    var content = JSON.stringify(_this.session);
                     var blob = new Blob([content], {type: "application/json"});
                     var url = URL.createObjectURL(blob);
                     var link = document.createElement('a');
@@ -416,7 +416,8 @@ CellMaps.prototype = {
                         layoutSelector: false,
                         handlers: {
                             'okButton:click': function (widgetEvent) {
-                                _this.loadSession(widgetEvent.content);
+                                _this.session.loadJSON(widgetEvent.content);
+                                _this.loadSession();
 //                                _this.networkViewer.setLayout(widgetEvent.layout);
                             }
                         }
@@ -813,9 +814,9 @@ CellMaps.prototype = {
         this.networkViewer.saveSession();
         this.configuration.saveSession();
     },
-    loadSession: function (session) {
-        this.networkViewer.loadSession(session);
-        this.configuration.loadSession(session);
+    loadSession: function () {
+        this.networkViewer.loadSession();
+        this.configuration.loadSession();
     },
     sessionInitiated: function () {
 

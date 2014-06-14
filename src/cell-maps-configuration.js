@@ -150,11 +150,26 @@ CellMapsConfiguration.prototype = {
     },
     saveSession: function () {
         this.session.loadVisualSets(this._getVisualSets());
+
+        //defaults
+        this.session.setVertexDefault('labelSize', this.vertexLabelSizeAttributeWidget.getDefaultValue());
+        this.session.setVertexDefault('opacity', this.vertexOpacityAttributeWidget.getDefaultValue());
+        this.session.setVertexDefault('shape', this.vertexShapeAttributeWidget.getDefaultValue());
+        this.session.setVertexDefault('color', this.vertexColorAttributeWidget.getDefaultValue());
+        this.session.setVertexDefault('strokeColor', this.vertexStrokeColorAttributeWidget.getDefaultValue());
+        this.session.setVertexDefault('size', this.vertexSizeAttributeWidget.getDefaultValue());
+        this.session.setVertexDefault('strokeSize', this.vertexStrokeSizeAttributeWidget.getDefaultValue());
+
+        this.session.setEdgeDefault('labelSize', this.edgeLabelSizeAttributeWidget.getDefaultValue());
+        this.session.setEdgeDefault('opacity', this.edgeOpacityAttributeWidget.getDefaultValue());
+        this.session.setEdgeDefault('shape', this.edgeShapeAttributeWidget.getDefaultValue());
+        this.session.setEdgeDefault('color', this.edgeColorAttributeWidget.getDefaultValue());
+        this.session.setEdgeDefault('size', this.edgeSizeAttributeWidget.getDefaultValue());
     },
-    loadSession: function (session) {
+    loadSession: function () {
         this.cleanVisualSets();
 
-        var visualSets = this.session.getVisualSets();
+        var visualSets = session.getVisualSets();
         for (var widgetName in visualSets) {
             if (typeof visualSets[widgetName] !== 'undefined') {
                 this[widgetName].restoreVisualSet(visualSets[widgetName]);
