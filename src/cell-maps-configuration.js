@@ -167,6 +167,8 @@ CellMapsConfiguration.prototype = {
         this.session.setEdgeDefault('size', this.edgeSizeAttributeWidget.getDefaultValue());
     },
     loadSession: function () {
+        this.loadDefaults();
+
         this.cleanVisualSets();
 
         var visualSets = session.getVisualSets();
@@ -175,7 +177,6 @@ CellMapsConfiguration.prototype = {
                 this[widgetName].restoreVisualSet(visualSets[widgetName]);
             }
         }
-        this.loadDefaults();
     },
     loadDefaults: function () {
         //nodes

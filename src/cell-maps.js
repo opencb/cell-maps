@@ -630,7 +630,8 @@ CellMaps.prototype = {
                             url: './example-files/ppi_histone_network.json',
                             dataType: 'json',
                             success: function (data) {
-                                _this.networkViewer.loadSession(data);
+                                _this.session.loadJSON(data);
+                                _this.networkViewer.loadSession();
                             }
                         })
                     }
@@ -639,7 +640,8 @@ CellMaps.prototype = {
                             url: './example-files/reactome_network.json',
                             dataType: 'json',
                             success: function (data) {
-                                _this.networkViewer.loadSession(data);
+                                _this.session.loadJSON(data);
+                                _this.networkViewer.loadSession();
                             }
                         })
                     }
@@ -648,6 +650,7 @@ CellMaps.prototype = {
                             url: './example-files/ppi_network.json',
                             dataType: 'json',
                             success: function (data) {
+                                _this.session.loadJSON(data);
                                 _this.networkViewer.loadSession(data);
                             }
                         })
@@ -656,8 +659,9 @@ CellMaps.prototype = {
                 'click:newsession': function (event) {
                     Ext.Msg.confirm('Start over', 'All changes will be lost. Are you sure?', function (btn, text) {
                         if (btn == 'yes') {
-                            _this.configuration.cleanVisualSets();
-                            _this.networkViewer.clean();
+                            var session = new NetworkSession();
+                            _this.session.loadJSON(session);
+                            _this.loadSession();
                         }
                     });
                 },

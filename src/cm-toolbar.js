@@ -809,7 +809,7 @@ CmToolBar.prototype = {
             this.circleLayoutMenu.add({
                 text: name,
                 handler: function () {
-                    _this.trigger('click:layout', {option: 'Circle', attributeName: name, sender: _this});
+                    _this.trigger('click:layout', {option: 'Circle', attributeName: this.text, sender: _this});
                 }
             });
         }
