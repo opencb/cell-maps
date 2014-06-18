@@ -77,11 +77,11 @@ CellMaps.prototype = {
         this.configureDiv = $('<div id="configure-' + this.id + '"></div>')[0];
         this.jobsDiv = $('<div id="jobs-' + this.id + '"></div>')[0];
         $(this.configureDiv).css({
-            float: 'left',
-            marginRight: '2px'
+            float: 'left'
         });
         $(this.jobsDiv).css({
-            float: 'left'
+            float: 'left',
+            margin: '0 2px'
         });
         $(this.rightSidebarDiv).append(this.configureDiv);
         $(this.rightSidebarDiv).append(this.jobsDiv);
