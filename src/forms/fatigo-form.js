@@ -60,37 +60,48 @@ FatigoForm.prototype.beforeRun = function () {
 
 
 FatigoForm.prototype.getPanels = function () {
-    return [this._getForm()];
+    return [
+        this._getExampleForm(),
+        this._getForm()
+    ];
 };
 
+FatigoForm.prototype._getExampleForm = function () {
+    var _this = this;
 
-//FatigoForm.prototype._getExampleForm = function () {
-//    var _this = this;
-//
-//    var example1 = Ext.create('Ext.Component', {
-//        html: '<span class="s140"><span class="btn btn-default">Load</span> &nbsp; VCF file example</span>',
-//        cls: 'dedo',
-//        listeners: {
-//            afterrender: function () {
-//                this.getEl().on("click", function () {
-//                    _this.loadExample1();
-//                    Ext.example.msg("Example loaded", "");
-//                });
-//
-//            }
-//        }
-//    });
-//
-//    var exampleForm = Ext.create('Ext.container.Container', {
-//        bodyPadding: 10,
-//        cls: 'bootstrap',
-//        items: [this.note1, example1],
-//        defaults: {margin: '5 0 0 0'},
-//        margin: '0 0 10 0'
-//    });
-//
-//    return exampleForm;
-//};
+    var example1 = Ext.create('Ext.container.Container', {
+        layout: 'hbox',
+        items: [
+            {
+                xtype: 'button',
+                width: this.labelWidth,
+                text: 'Load example 1',
+                handler: function () {
+                    _this.loadExample();
+                    Utils.msg("Example 1", "Loaded");
+                }
+            },
+            {
+                xtype: 'box',
+                margin: '5 0 0 15',
+                html: 'Gene list'
+
+            }
+        ]
+    });
+
+    var exampleForm = Ext.create('Ext.panel.Panel', {
+        bodyPadding: 10,
+        title: 'Examples',
+        header: this.headerFormConfig,
+        border: this.formBorder,
+        items: [example1],
+        defaults: {margin: '5 0 0 0'},
+        margin: '0 0 10 0'
+    });
+
+    return exampleForm;
+};
 
 FatigoForm.prototype._getForm = function () {
     var _this = this;
@@ -126,8 +137,7 @@ FatigoForm.prototype._getForm = function () {
 
     var radioInputType = Ext.create('Ext.form.RadioGroup', {
         fieldLabel: 'Select your input list from',
-        labelWidth: 150,
-        width: 400,
+        labelWidth: this.labelWidth,
         defaults: {
             margin: '0 0 0 10',
             name: 'inputSource'
@@ -367,14 +377,13 @@ FatigoForm.prototype._getForm = function () {
 };
 
 
-//FatigoForm.prototype.loadExample1 = function () {
-//    Ext.getCmp(this.id + 'vcf-file').setText('<span class="emph">Example file.vcf</span>', false);
-//    Ext.getCmp(this.id + 'vcf-file' + 'hidden').setValue('example_file.vcf');
-//
-//    Ext.getCmp(this.id + 'ped-file').setText('<span class="emph">Example file.ped</span>', false);
-//    Ext.getCmp(this.id + 'ped-file' + 'hidden').setValue('example_file.ped');
-//
-//
-//    Ext.getCmp(this.id + 'jobname').setValue("VCF example");
-//    Ext.getCmp(this.id + 'jobdescription').setValue("VCF example");
-//};
+
+FatigoForm.prototype.loadExample = function () {
+    this.clean();
+
+    Ext.getCmp(this.id + 'list1').setValue('Example 1');
+    Ext.getCmp(this.id + 'list1' + 'hidden').setValue('example_xxx.txt');
+
+    Ext.getCmp(this.id + 'jobname').setValue("Example");
+    Ext.getCmp(this.id + 'jobdescription').setValue("Example");
+};

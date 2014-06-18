@@ -53,9 +53,9 @@ NetworkMinerForm.prototype.beforeRun = function () {
     }
 
     if (this.paramsWS['seedInputSource'] === 'text') {
-        if(this.paramsWS['seedlist-text'] !== ''){
+        if (this.paramsWS['seedlist-text'] !== '') {
             this.paramsWS['seedlist'] = 'seedlist-text';
-        }else{
+        } else {
             delete this.paramsWS['seedlist-text'];
             delete this.paramsWS['seedlist'];
         }
@@ -69,47 +69,55 @@ NetworkMinerForm.prototype.beforeRun = function () {
 
 
 NetworkMinerForm.prototype.getPanels = function () {
-    return [this._getForm()];
+    return [
+        this._getExampleForm(),
+        this._getForm()
+    ];
 };
 
 
-//NetworkMinerForm.prototype._getExampleForm = function () {
-//    var _this = this;
-//
-//    var example1 = Ext.create('Ext.Component', {
-//        html: '<span class="s140"><span class="btn btn-default">Load</span> &nbsp; VCF file example</span>',
-//        cls: 'dedo',
-//        listeners: {
-//            afterrender: function () {
-//                this.getEl().on("click", function () {
-//                    _this.loadExample1();
-//                    Ext.example.msg("Example loaded", "");
-//                });
-//
-//            }
-//        }
-//    });
-//
-//    var exampleForm = Ext.create('Ext.container.Container', {
-//        bodyPadding: 10,
-//        cls: 'bootstrap',
-//        items: [this.note1, example1],
-//        defaults: {margin: '5 0 0 0'},
-//        margin: '0 0 10 0'
-//    });
-//
-//    return exampleForm;
-//};
+NetworkMinerForm.prototype._getExampleForm = function () {
+    var _this = this;
+
+    var example1 = Ext.create('Ext.container.Container', {
+        layout: 'hbox',
+        items: [
+            {
+                xtype: 'button',
+                width: this.labelWidth,
+                text: 'Load example 1',
+                handler: function () {
+                    _this.loadExample();
+                    Utils.msg("Example 1", "Loaded");
+                }
+            },
+            {
+                xtype: 'box',
+                margin: '5 0 0 15',
+                html: 'Gene list'
+
+            }
+        ]
+    });
+
+    var exampleForm = Ext.create('Ext.panel.Panel', {
+        bodyPadding: 10,
+        title: 'Examples',
+        header: this.headerFormConfig,
+        border: this.formBorder,
+        items: [example1],
+        defaults: {margin: '5 0 0 0'},
+        margin: '0 0 10 0'
+    });
+
+    return exampleForm;
+};
 
 NetworkMinerForm.prototype._getForm = function () {
     var _this = this;
 
-//    var note1 = Ext.create('Ext.container.Container', {
-//        html: 'Please select a file from your <span class="info">server account</span> using the <span class="emph">Browse</span> button'
-//    });
 
-
-    var inputArea = Ext.create('Ext.form.field.TextArea', {
+    this.inputArea = Ext.create('Ext.form.field.TextArea', {
         fieldLabel: 'Text ranked list',
         labelWidth: this.labelWidth,
         flex: 1,
@@ -118,13 +126,13 @@ NetworkMinerForm.prototype._getForm = function () {
         name: 'list-text',
         allowBlank: false,
         listeners: {
-            change: function (este) {
-                este.getValue()
+            change: function (me) {
+                me.getValue()
             }
         }
     });
 
-    var opencgaBrowserCmp = this.createOpencgaBrowserCmp({
+    this.opencgaBrowserCmp = this.createOpencgaBrowserCmp({
         fieldLabel: 'Ranked  list',
         dataParamName: 'list',
         id: this.id + 'list',
@@ -133,10 +141,9 @@ NetworkMinerForm.prototype._getForm = function () {
         allowBlank: false
     });
 
-    var radioInputType = Ext.create('Ext.form.RadioGroup', {
+    this.radioInputType = Ext.create('Ext.form.RadioGroup', {
         fieldLabel: 'Select your ranked list from',
         labelWidth: this.labelWidth,
-        width: 400,
         defaults: {
             margin: '0 0 0 10',
             name: 'inputSource'
@@ -156,18 +163,18 @@ NetworkMinerForm.prototype._getForm = function () {
             change: function (radiogroup, newValue, oldValue, eOpts) {
                 var value = radiogroup.getValue();
                 if (value['inputSource'] === 'text') {
-                    formBrowser.remove(opencgaBrowserCmp, false);
-                    formBrowser.insert(1, inputArea);
+                    formBrowser.remove(_this.opencgaBrowserCmp, false);
+                    formBrowser.insert(1, _this.inputArea);
                 } else {
-                    formBrowser.remove(inputArea, false);
-                    formBrowser.insert(1, opencgaBrowserCmp);
+                    formBrowser.remove(_this.inputArea, false);
+                    formBrowser.insert(1, _this.opencgaBrowserCmp);
                 }
             }
         }
     });
 
 
-    var listNatureCombo = Ext.create('Ext.form.field.ComboBox', {
+    this.listNatureCombo = Ext.create('Ext.form.field.ComboBox', {
         fieldLabel: 'Lists nature',
         labelWidth: this.labelWidth,
         labelAlign: 'left',
@@ -187,10 +194,8 @@ NetworkMinerForm.prototype._getForm = function () {
         valueField: 'value',
         queryMode: 'local',
         forceSelection: true,
+        value: 'gene,idlist',
         listeners: {
-            afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
             change: function (field, e) {
                 var value = field.getValue();
                 if (value != null) {
@@ -201,7 +206,7 @@ NetworkMinerForm.prototype._getForm = function () {
     });
 
 
-    var seedInputArea = Ext.create('Ext.form.field.TextArea', {
+    this.seedInputArea = Ext.create('Ext.form.field.TextArea', {
         fieldLabel: 'Text seed list',
         labelWidth: this.labelWidth,
         flex: 1,
@@ -210,13 +215,13 @@ NetworkMinerForm.prototype._getForm = function () {
         name: 'seedlist-text',
         allowBlank: true,
         listeners: {
-            change: function (este) {
-                este.getValue()
+            change: function (me) {
+                me.getValue()
             }
         }
     });
 
-    var seedOpencgaBrowserCmp = this.createOpencgaBrowserCmp({
+    this.seedOpencgaBrowserCmp = this.createOpencgaBrowserCmp({
         fieldLabel: 'Seed list',
         dataParamName: 'seedlist',
         id: this.id + 'seedlist',
@@ -225,10 +230,9 @@ NetworkMinerForm.prototype._getForm = function () {
         allowBlank: false
     });
 
-    var seedRadioInputType = Ext.create('Ext.form.RadioGroup', {
+    this.seedRadioInputType = Ext.create('Ext.form.RadioGroup', {
         fieldLabel: 'Select your seed list from',
         labelWidth: this.labelWidth,
-        width: 400,
         defaults: {
             margin: '0 0 0 10',
             name: 'seedInputSource'
@@ -248,18 +252,18 @@ NetworkMinerForm.prototype._getForm = function () {
             change: function (radiogroup, newValue, oldValue, eOpts) {
                 var value = radiogroup.getValue();
                 if (value['seedInputSource'] === 'text') {
-                    formBrowser.remove(seedOpencgaBrowserCmp, false);
-                    formBrowser.insert(3, seedInputArea);
+                    formBrowser.remove(_this.seedOpencgaBrowserCmp, false);
+                    formBrowser.insert(3, _this.seedInputArea);
                 } else {
-                    formBrowser.remove(seedInputArea, false);
-                    formBrowser.insert(3, seedOpencgaBrowserCmp);
+                    formBrowser.remove(_this.seedInputArea, false);
+                    formBrowser.insert(3, _this.seedOpencgaBrowserCmp);
                 }
             }
         }
     });
 
 
-    var speciesStore = Ext.create('Ext.data.Store', {
+    this.speciesStore = Ext.create('Ext.data.Store', {
         fields: [ 'name', 'value' ],
         data: [
             {name: "Homo sapiens", value: "hsa"},
@@ -293,22 +297,20 @@ NetworkMinerForm.prototype._getForm = function () {
         ]
     });
 
-    var speciesCombo = Ext.create('Ext.form.field.ComboBox', {
+    this.speciesCombo = Ext.create('Ext.form.field.ComboBox', {
         labelAlign: 'left',
         labelWidth: this.labelWidth,
         name: 'interactome',
         fieldLabel: 'Species',
-        store: speciesStore,
+        store: _this.speciesStore,
         allowBlank: false,
         editable: false,
         displayField: 'name',
         valueField: 'value',
         queryMode: 'local',
         forceSelection: true,
+        value: 'hsa',
         listeners: {
-            afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
             change: function (field, e) {
                 var value = field.getValue();
                 if (value != null) {
@@ -319,7 +321,7 @@ NetworkMinerForm.prototype._getForm = function () {
     });
 
 
-    var interactomeReferenceCombo = Ext.create('Ext.form.field.ComboBox', {
+    this.interactomeReferenceCombo = Ext.create('Ext.form.field.ComboBox', {
         fieldLabel: 'Select interactome confidence',
         labelWidth: this.labelWidth,
         labelAlign: 'left',
@@ -337,10 +339,8 @@ NetworkMinerForm.prototype._getForm = function () {
         valueField: 'value',
         queryMode: 'local',
         forceSelection: true,
+        value: 'all',
         listeners: {
-            afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
             change: function (field, e) {
                 var value = field.getValue();
                 if (value != null) {
@@ -351,7 +351,7 @@ NetworkMinerForm.prototype._getForm = function () {
     });
 
 
-    var orderCombo = Ext.create('Ext.form.field.ComboBox', {
+    this.orderCombo = Ext.create('Ext.form.field.ComboBox', {
         fieldLabel: 'Sort ranked list',
         labelWidth: this.labelWidth,
         labelAlign: 'left',
@@ -369,10 +369,8 @@ NetworkMinerForm.prototype._getForm = function () {
         valueField: 'value',
         queryMode: 'local',
         forceSelection: true,
+        value: 'ascending',
         listeners: {
-            afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
             change: function (field, e) {
                 var value = field.getValue();
                 if (value != null) {
@@ -383,7 +381,7 @@ NetworkMinerForm.prototype._getForm = function () {
     });
 
 
-    var externalIntermediateCombo = Ext.create('Ext.form.field.ComboBox', {
+    this.externalIntermediateCombo = Ext.create('Ext.form.field.ComboBox', {
         labelAlign: 'left',
         labelWidth: this.labelWidth,
         name: 'intermediate',
@@ -401,10 +399,8 @@ NetworkMinerForm.prototype._getForm = function () {
         valueField: 'value',
         queryMode: 'local',
         forceSelection: true,
+        value: '1',
         listeners: {
-            afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
             change: function (field, e) {
                 var value = field.getValue();
                 if (value != null) {
@@ -415,7 +411,7 @@ NetworkMinerForm.prototype._getForm = function () {
     });
 
 
-    var significanceNumberField = Ext.create('Ext.form.field.Number', {
+    this.significanceNumberField = Ext.create('Ext.form.field.Number', {
         labelWidth: this.labelWidth,
         name: 'significant-value',
         fieldLabel: 'Select threshold of significance (p-value)',
@@ -447,30 +443,34 @@ NetworkMinerForm.prototype._getForm = function () {
         },
         items: [
 //            note1,
-            radioInputType,
-            inputArea,
-            seedRadioInputType,
-            seedInputArea,
-            listNatureCombo,
-            speciesCombo,
-            interactomeReferenceCombo,
-            orderCombo,
-            externalIntermediateCombo,
-            significanceNumberField
+            this.radioInputType,
+            this.inputArea,
+            this.seedRadioInputType,
+            this.seedInputArea,
+            this.listNatureCombo,
+            this.speciesCombo,
+            this.interactomeReferenceCombo,
+            this.orderCombo,
+            this.externalIntermediateCombo,
+            this.significanceNumberField
         ]
     });
     return formBrowser;
 };
 
 
-//NetworkMinerForm.prototype.loadExample1 = function () {
-//    Ext.getCmp(this.id + 'vcf-file').setText('<span class="emph">Example file.vcf</span>', false);
-//    Ext.getCmp(this.id + 'vcf-file' + 'hidden').setValue('example_file.vcf');
-//
-//    Ext.getCmp(this.id + 'ped-file').setText('<span class="emph">Example file.ped</span>', false);
-//    Ext.getCmp(this.id + 'ped-file' + 'hidden').setValue('example_file.ped');
-//
-//
-//    Ext.getCmp(this.id + 'jobname').setValue("VCF example");
-//    Ext.getCmp(this.id + 'jobdescription').setValue("VCF example");
-//};
+NetworkMinerForm.prototype.loadExample = function () {
+    this.clean();
+
+    this.radioInputType.setValue({inputSource: 'file'});
+    this.seedRadioInputType.setValue({seedInputSource: 'file'});
+
+    Ext.getCmp(this.id + 'seedlist').setValue('BD-associatedgenesUniprot.txt');
+    Ext.getCmp(this.id + 'seedlist' + 'hidden').setValue('example_BD-associatedgenesUniprot.txt');
+
+    Ext.getCmp(this.id + 'list').setValue('BD-GWASplink.txt');
+    Ext.getCmp(this.id + 'list' + 'hidden').setValue('example_BD-GWASplink.txt');
+
+    Ext.getCmp(this.id + 'jobname').setValue("Example");
+    Ext.getCmp(this.id + 'jobdescription').setValue("Example");
+};

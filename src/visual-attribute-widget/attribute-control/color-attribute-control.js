@@ -22,8 +22,22 @@ ColorAttributeControl.prototype.create = function (changeFunction) {
 
 ColorAttributeControl.prototype.createGridColumns = function () {
     return [
-        { xtype: 'templatecolumn', text: 'Display ' + this.displayAttribute, menuDisabled: true, width: 100, tpl: '<div style="text-align:center;width:30px;height:12px;background-color: {visualParam};"></div>'},
-        {  dataIndex: 'visualParam', width: 70, menuDisabled: true, editor: {xtype: 'textfield', allowBlank: false}}
+        {
+            xtype: 'templatecolumn',
+            text: 'Display ' + this.displayAttribute,
+            menuDisabled: true,
+            width: 120,
+            tpl: '<div style="border:1px solid gray;text-align:center;width:60px;height:16px;background-color: {visualParam};"></div>'
+        },
+        {
+            dataIndex: 'visualParam',
+            text: 'Hex',
+            width: 120, menuDisabled: true,
+            editor: {
+                xtype: 'textfield',
+                allowBlank: false
+            }
+        }
     ];
 }
 

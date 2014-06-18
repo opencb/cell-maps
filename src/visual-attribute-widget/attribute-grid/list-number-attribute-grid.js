@@ -22,6 +22,10 @@ ListNumberAttributeGrid.prototype.create = function () {
         _this._updateNormArray();
         _this._updateUniqueStore(e.attributeName);
     });
+    this.attributeManager.on('change:data', function (e) {
+        _this._updateNormArray();
+        _this._updateUniqueStore(_this.attributeName);
+    });
 
     var cols = [
         { text: this.attributeName, dataIndex: 'value', menuDisabled: true, flex: 1}
@@ -42,6 +46,7 @@ ListNumberAttributeGrid.prototype.create = function () {
         columns: columns
     });
 
+    this.grid = grid;
     return grid;
 };
 

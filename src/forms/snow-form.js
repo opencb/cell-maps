@@ -60,37 +60,49 @@ SnowForm.prototype.beforeRun = function () {
 
 
 SnowForm.prototype.getPanels = function () {
-    return [this._getForm()];
+    return [
+        this._getExampleForm(),
+        this._getForm()
+    ];
 };
 
 
-//SnowForm.prototype._getExampleForm = function () {
-//    var _this = this;
-//
-//    var example1 = Ext.create('Ext.Component', {
-//        html: '<span class="s140"><span class="btn btn-default">Load</span> &nbsp; VCF file example</span>',
-//        cls: 'dedo',
-//        listeners: {
-//            afterrender: function () {
-//                this.getEl().on("click", function () {
-//                    _this.loadExample1();
-//                    Ext.example.msg("Example loaded", "");
-//                });
-//
-//            }
-//        }
-//    });
-//
-//    var exampleForm = Ext.create('Ext.container.Container', {
-//        bodyPadding: 10,
-//        cls: 'bootstrap',
-//        items: [this.note1, example1],
-//        defaults: {margin: '5 0 0 0'},
-//        margin: '0 0 10 0'
-//    });
-//
-//    return exampleForm;
-//};
+SnowForm.prototype._getExampleForm = function () {
+    var _this = this;
+
+    var example1 = Ext.create('Ext.container.Container', {
+        layout: 'hbox',
+        items: [
+            {
+                xtype: 'button',
+                width: this.labelWidth,
+                text: 'Load example 1',
+                handler: function () {
+                    _this.loadExample();
+                    Utils.msg("Example 1", "Loaded");
+                }
+            },
+            {
+                xtype: 'box',
+                margin: '5 0 0 15',
+                html: 'Gene list'
+
+            }
+        ]
+    });
+
+    var exampleForm = Ext.create('Ext.form.Panel', {
+        bodyPadding: 10,
+        title: 'Examples',
+        header: this.headerFormConfig,
+        border: this.formBorder,
+        items: [example1],
+        defaults: {margin: '5 0 0 0'},
+        margin: '0 0 10 0'
+    });
+
+    return exampleForm;
+};
 
 SnowForm.prototype._getForm = function () {
     var _this = this;
@@ -124,10 +136,9 @@ SnowForm.prototype._getForm = function () {
         allowBlank: false
     });
 
-    var radioInputType = Ext.create('Ext.form.RadioGroup', {
+    this.radioInputType = Ext.create('Ext.form.RadioGroup', {
         fieldLabel: 'Select your input list from',
         labelWidth: this.labelWidth,
-        width: 400,
         defaults: {
             margin: '0 0 0 10',
             name: 'inputSource'
@@ -203,10 +214,8 @@ SnowForm.prototype._getForm = function () {
         valueField: 'value',
         queryMode: 'local',
         forceSelection: true,
+        value: 'hsa',
         listeners: {
-            afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
             change: function (field, e) {
                 var value = field.getValue();
                 if (value != null) {
@@ -234,6 +243,7 @@ SnowForm.prototype._getForm = function () {
         valueField: 'value',
         queryMode: 'local',
         forceSelection: true,
+        value: 'proteins',
         listeners: {
             afterrender: function () {
                 this.select(this.getStore().getAt(0));
@@ -266,10 +276,8 @@ SnowForm.prototype._getForm = function () {
         valueField: 'value',
         queryMode: 'local',
         forceSelection: true,
+        value: 'all',
         listeners: {
-            afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
             change: function (field, e) {
                 var value = field.getValue();
                 if (value != null) {
@@ -294,15 +302,13 @@ SnowForm.prototype._getForm = function () {
             ]
         }),
         allowBlank: false,
-        editable: false,
+        editable: true,
         displayField: 'name',
         valueField: 'value',
         queryMode: 'local',
-        forceSelection: true,
+        forceSelection: false,
+        value: '500',
         listeners: {
-            afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
             change: function (field, e) {
                 var value = field.getValue();
                 if (value != null) {
@@ -331,10 +337,8 @@ SnowForm.prototype._getForm = function () {
         valueField: 'value',
         queryMode: 'local',
         forceSelection: true,
+        value: '1',
         listeners: {
-            afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
             change: function (field, e) {
                 var value = field.getValue();
                 if (value != null) {
@@ -343,7 +347,7 @@ SnowForm.prototype._getForm = function () {
             }
         }
     });
-    var formBrowser = Ext.create('Ext.panel.Panel', {
+    var formBrowser = Ext.create('Ext.form.Panel', {
         title: "Input parameters",
         header: this.headerFormConfig,
         border: this.border,
@@ -354,7 +358,7 @@ SnowForm.prototype._getForm = function () {
         },
         items: [
 //            note1,
-            radioInputType,
+            this.radioInputType,
             inputArea,
             natureCombo,
             speciesCombo,
@@ -367,14 +371,14 @@ SnowForm.prototype._getForm = function () {
 };
 
 
-//SnowForm.prototype.loadExample1 = function () {
-//    Ext.getCmp(this.id + 'vcf-file').setText('<span class="emph">Example file.vcf</span>', false);
-//    Ext.getCmp(this.id + 'vcf-file' + 'hidden').setValue('example_file.vcf');
-//
-//    Ext.getCmp(this.id + 'ped-file').setText('<span class="emph">Example file.ped</span>', false);
-//    Ext.getCmp(this.id + 'ped-file' + 'hidden').setValue('example_file.ped');
-//
-//
-//    Ext.getCmp(this.id + 'jobname').setValue("VCF example");
-//    Ext.getCmp(this.id + 'jobdescription').setValue("VCF example");
-//};
+SnowForm.prototype.loadExample = function () {
+    this.clean();
+
+    this.radioInputType.setValue({inputSource: 'file'});
+
+    Ext.getCmp(this.id + 'list1').setValue('oldage_dn.txt');
+    Ext.getCmp(this.id + 'list1' + 'hidden').setValue('example_oldage_dn.txt');
+
+    Ext.getCmp(this.id + 'jobname').setValue("Example");
+    Ext.getCmp(this.id + 'jobdescription').setValue("Example");
+};

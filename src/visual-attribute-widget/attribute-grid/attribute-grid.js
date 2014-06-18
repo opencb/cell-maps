@@ -10,9 +10,18 @@ function AttributeGrid(args) {
     //set instantiation args, must be last
     _.extend(this, args);
 
+    this.grid;
+
     this.on(this.handlers);
 };
 
 AttributeGrid.prototype.create = function () {
 //abstract method
+};
+
+AttributeGrid.prototype.updateUniqueStore = function () {
+    this._updateUniqueStore(this.attributeName);
+};
+AttributeGrid.prototype.destroy = function () {
+    this.grid.destroy();
 };

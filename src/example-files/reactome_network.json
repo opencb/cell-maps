@@ -1,4 +1,4 @@
-{"graph": {
+{"version": 1, "graph": {
     "vertices": [
         {
             "id": "Protein7259"
@@ -1317,10 +1317,13 @@
                 "x": "0.8333333333333334",
                 "y": "36"
             }
-        ], "center": {
+        ],
+        "center": {
             "x": 0,
             "y": 0
-        }, "zoom": 27.16666666666667, "vertexDefaults": {
+        },
+        "zoom": 27.16666666666667,
+        "vertexDefaults": {
             "shape": "circle",
             "size": 28,
             "color": "#9fc6e7",
@@ -1329,32 +1332,35 @@
             "opacity": 0.8,
             "labelSize": 16,
             "labelColor": "#111111"
-        }, "edgeDefaults": {
+        },
+        "edgeDefaults": {
             "shape": "undirected",
             "size": 1,
             "color": "#cccccc",
             "opacity": 1,
             "labelSize": 0,
             "labelColor": "#111111"
-        }, "visualSets": {}
+        },
+        "visualSets": {}
 
     }
 }, "attributes": {
-    "vertices":{"attributes": [
-        {
-            "name": "id",
-            "type": "string",
-            "defaultValue": "none",
-            "locked": true,
-            "id": "extModel176-11"
-        },
-        {
-            "name": "Name",
-            "type": "string",
-            "defaultValue": "none",
-            "id": "extModel176-12"
-        }
-    ],
+    "vertices": {
+        "attributes": [
+            {
+                "name": "id",
+                "type": "string",
+                "defaultValue": "none",
+                "locked": true,
+                "id": "extModel176-11"
+            },
+            {
+                "name": "Name",
+                "type": "string",
+                "defaultValue": "none",
+                "id": "extModel176-12"
+            }
+        ],
         "filters": {},
         "data": [
             ["Protein7259", "Proinsulin"],
@@ -1384,28 +1390,30 @@
             ["BiochemicalReaction2810", "Translocation of Insulin Secretory Granules to Cell Cortex"],
             ["BiochemicalReaction2811", "Traversal of the cortical actin network and docking at plasma membrane"],
             ["BiochemicalReaction2812", "Exocyst complex formation"]
-        ]},
-    "edges":{"attributes": [
-        {
-            "name": "id",
-            "type": "string",
-            "defaultValue": "none",
-            "locked": true,
-            "id": "extModel177-16"
-        },
-        {
-            "name": "Name",
-            "type": "string",
-            "defaultValue": "none",
-            "id": "extModel177-17"
-        },
-        {
-            "name": "Relation",
-            "type": "string",
-            "defaultValue": "none",
-            "id": "extModel177-18"
-        }
-    ],
+        ]
+    },
+    "edges": {
+        "attributes": [
+            {
+                "name": "id",
+                "type": "string",
+                "defaultValue": "none",
+                "locked": true,
+                "id": "extModel177-16"
+            },
+            {
+                "name": "Name",
+                "type": "string",
+                "defaultValue": "none",
+                "id": "extModel177-17"
+            },
+            {
+                "name": "Relation",
+                "type": "string",
+                "defaultValue": "none",
+                "id": "extModel177-18"
+            }
+        ],
         "filters": {},
         "data": [
             ["eGNL73XVWSB", "eGNL73XVWSB", ""],
@@ -1434,7 +1442,8 @@
             ["e9mi73RmFtD", "e9mi73RmFtD", ""],
             ["ekYkoCHwCfg", "ekYkoCHwCfg", ""],
             ["er8vEYxZpRH", "er8vEYxZpRH", ""]
-        ]}
+        ]
+    }
 
 
 }}

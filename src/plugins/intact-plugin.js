@@ -392,7 +392,10 @@ IntActPlugin.prototype.retrieveData = function () {
             var interactions = data.response.result;
             _this.progress.updateProgress(0.4, 'Processing data');
 
+
             var graph = _this.cellMaps.networkViewer.network.graph;
+            var network = this.cellMaps.networkViewer.network;
+            network.batchStart();
             for (var j = 0; j < interactions.length; j++) {
                 var interaction = interactions[j];
                 var sourceName = interaction.interactorA.id;
@@ -403,13 +406,13 @@ IntActPlugin.prototype.retrieveData = function () {
                 var sourceVertex = new Vertex({
                     id: sourceName
                 });
-                graph.addVertex(sourceVertex);
+                network.addVertex({vertex: sourceVertex});
 
                 /** create target vertex **/
                 var targetVertex = new Vertex({
                     id: targetName
                 });
-                graph.addVertex(targetVertex);
+                network.addVertex({vertex: targetVertex});
 
                 /** create edge **/
                 var edgeId = sourceName + '_' + edgeName + '_' + targetName;
@@ -421,8 +424,9 @@ IntActPlugin.prototype.retrieveData = function () {
                     weight: 1,
                     directed: true
                 });
-                graph.addEdge(edge);
+                network.addEdge({edge: edge});
             }
+            network.batchEnd();
             _this.cellMaps.networkViewer.refreshNetwork();
             _this.progress.updateProgress(1, 'Complete!');
             _this.cellMaps.networkViewer.setLayout('Force directed');

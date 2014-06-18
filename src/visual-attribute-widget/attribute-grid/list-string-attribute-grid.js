@@ -14,6 +14,9 @@ ListStringAttributeGrid.prototype.create = function () {
     this.attributeManager.on('change:recordsAttribute', function (e) {
         _this._updateUniqueStore(e.attributeName);
     });
+    this.attributeManager.on('change:data', function (e) {
+        _this._updateUniqueStore(_this.attributeName);
+    });
 
     this.controlComponent = this.control.create(function (newValue) {
         _this.store.suspendEvents();
@@ -89,6 +92,7 @@ ListStringAttributeGrid.prototype.create = function () {
         columns: columns
     });
 
+    this.grid = grid;
     return grid;
 };
 

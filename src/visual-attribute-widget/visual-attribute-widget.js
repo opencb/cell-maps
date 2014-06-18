@@ -1,4 +1,5 @@
 function VisualAttributeWidget(args) {
+    var _this = this;
     // Using Underscore 'extend' function to extend and add Backbone Events
     _.extend(this, Backbone.Events);
 
@@ -25,7 +26,7 @@ function VisualAttributeWidget(args) {
         this.types = ['List string', 'List number'];
     }
 
-    this.gridMap = {};
+//    this.gridMap = {};
     this.attributeGridMap = {};
     this.window;
     this.component;
@@ -39,21 +40,54 @@ function VisualAttributeWidget(args) {
 
     this.autoRender = true;
 
+
+    this.attributeManager.on('change:attributes', function (e) {
+//        if (_this.displayLabel === 'Color fill') {
+        _this.attributesStore.loadData(_this.attributeManager.attributes);
+        if (_this.attributeManager.attributes.length === 0) {
+            _this._eachAttributeGridMap(function (attributeGrid, attr, type) {
+                attributeGrid.destroy();
+                delete _this.attributeGridMap[attr][type];
+            });
+        } else {
+            _this._eachAttributeGridMap(function (attributeGrid, attr, type) {
+                var attribute = _this.attributeManager.getAttribute(attr);
+                if (typeof attribute === 'undefined') {
+                    attributeGrid.destroy();
+                    delete _this.attributeGridMap[attr][type];
+                } else {
+                    attributeGrid.updateUniqueStore();
+                }
+            });
+        }
+//
+//        }
+    });
+
     this.rendered = false;
     if (this.autoRender) {
         this.render();
     }
 };
 
+VisualAttributeWidget.prototype._eachAttributeGridMap = function (fn) {
+    for (var id in this.attributeGridMap) {
+        for (type in this.attributeGridMap[id]) {
+            this.attributeGridMap[id][type];
+            fn(this.attributeGridMap[id][type], id, type);
+        }
+    }
+};
 
 /************************/
 VisualAttributeWidget.prototype.applyDirectVisualSet = function (attributeName, type) {
     this.window.show();
     var found = this.attributeNameCombo.store.find("name", attributeName);
+    debugger
     if (found !== -1) {
-        this.attributeNameCombo.select(attributeName);
-        this.attributeTypeCombo.select(type);
-        var grid = this.gridMap[attributeName][type];
+        this._attributeNameComboHandler(attributeName);
+        this._attributeTypeComboHandler(type);
+        var grid = this.attributeGridMap[attributeName][type].grid;
         grid.down('button[text~=Apply]').el.dom.click();
         this.window.down('button[text~=Ok]').el.dom.click();
         return true;
@@ -70,9 +104,9 @@ VisualAttributeWidget.prototype.restoreVisualSet = function (visualSet) {
     this.window.show();
     var found = this.attributeNameCombo.store.find("name", attributeName);
     if (found !== -1) {
-        this.attributeNameCombo.select(attributeName);
-        this.attributeTypeCombo.select(type);
-        var grid = this.gridMap[attributeName][type];
+        this._attributeNameComboHandler(attributeName);
+        this._attributeTypeComboHandler(type);
+        var grid = this.attributeGridMap[attributeName][type].grid;
 
         var store = grid.store;
         //restoreMap
@@ -131,7 +165,9 @@ VisualAttributeWidget.prototype.defaultValueChanged = function (value) {
         }
 
         for (var id in this.attributeGridMap) {
-            this.attributeGridMap[id].changeDefaultValue(value);
+            for (type  in this.attributeGridMap[id]) {
+                this.attributeGridMap[id][type].changeDefaultValue(value);
+            }
         }
 
         if (typeof this.visualSet !== 'undefined') {
@@ -208,10 +244,38 @@ VisualAttributeWidget.prototype._createComponent = function () {
     });
 }
 
+
+VisualAttributeWidget.prototype._attributeNameComboHandler = function (attributeName) {
+    this.lastAttributeName = attributeName;
+    if (typeof this.lastType === 'undefined') {
+        this.lastType = this.types[0];
+    }
+    var grid = this._createGrid(this.lastAttributeName, this.lastType);
+    this.lastStore = this.attributeGridMap[this.lastAttributeName][this.lastType].grid.getStore();
+
+    console.log(this.lastAttributeName + ' - ' + this.lastType);
+    this.container.removeAll(false);
+    this.container.add(grid);
+    this.lastStore.fireEvent('refresh');
+};
+
+VisualAttributeWidget.prototype._attributeTypeComboHandler = function (type) {
+    this.lastType = type;
+
+    var grid = this._createGrid(this.lastAttributeName, this.lastType);
+    this.lastStore = this.attributeGridMap[this.lastAttributeName][this.lastType].grid.getStore();
+
+    console.log(this.lastAttributeName + ' - ' + this.lastType);
+    this.container.removeAll(false);
+    this.container.add(grid);
+    this.lastStore.fireEvent('refresh');
+};
+
+
 VisualAttributeWidget.prototype._createWindow = function () {
     var _this = this;
 
-    var container = Ext.create('Ext.container.Container', {
+    this.container = Ext.create('Ext.container.Container', {
         layout: 'fit'
     });
 
@@ -227,21 +291,18 @@ VisualAttributeWidget.prototype._createWindow = function () {
         valueField: 'name',
         forceSelection: true,
         editable: false,
+        listConfig: {
+            listeners: {
+                itemclick: function (list, record) {
+                    _this._attributeNameComboHandler(record.get('name'));
+                }
+            }
+        },
         listeners: {
             afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
-            change: function (combo, select) {
-                _this.lastAttributeName = select;
-                if (typeof _this.lastType === 'undefined') {
-                    _this.lastType = _this.types[0];
-                }
-                var grid = _this._createGrid(_this.lastAttributeName, _this.lastType);
-                _this.lastStore = _this.gridMap[_this.lastAttributeName][_this.lastType].getStore();
-
-                console.log(_this.lastAttributeName + ' - ' + _this.lastType);
-                container.removeAll(false);
-                container.add(grid);
+                var record = this.getStore().getAt(0);
+                this.select(record);
+                _this._attributeNameComboHandler(record.get('name'));
             }
         }
     });
@@ -258,21 +319,21 @@ VisualAttributeWidget.prototype._createWindow = function () {
         valueField: 'id',
         forceSelection: true,
         editable: false,
+        listConfig: {
+            listeners: {
+                itemclick: function (list, record) {
+                    _this._attributeTypeComboHandler(record.get('name'));
+                }
+            }
+        },
         listeners: {
             afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
-            change: function (combo, select) {
-                _this.lastType = select;
-
-                var grid = _this._createGrid(_this.lastAttributeName, _this.lastType);
-                _this.lastStore = _this.gridMap[_this.lastAttributeName][_this.lastType].getStore();
-
-                console.log(_this.lastAttributeName + ' - ' + _this.lastType);
-                container.removeAll(false);
-                container.add(grid);
+                var record = this.getStore().getAt(0);
+                this.select(record);
+                _this._attributeTypeComboHandler(record.get('field1'));
             }
         }
+
     });
 
     var toolbar = Ext.create('Ext.toolbar.Toolbar', {
@@ -295,7 +356,7 @@ VisualAttributeWidget.prototype._createWindow = function () {
                 margin: '0 0 0 0'
             },
             items: [
-                container
+                this.container
             ],
             dockedItems: [
                 toolbar,
@@ -329,7 +390,7 @@ VisualAttributeWidget.prototype._createWindow = function () {
                 ]
 
             }
-        },
+        }
     });
 }
 
@@ -337,11 +398,11 @@ VisualAttributeWidget.prototype._createWindow = function () {
 VisualAttributeWidget.prototype._createGrid = function (attributeName, type) {
     var _this = this;
 
-    if (typeof this.gridMap[attributeName] === 'undefined') {
-        this.gridMap[attributeName] = {};
+    if (typeof this.attributeGridMap[attributeName] === 'undefined') {
+        this.attributeGridMap[attributeName] = {};
     }
 
-    if (typeof this.gridMap[attributeName][type] === 'undefined') {
+    if (typeof this.attributeGridMap[attributeName][type] === 'undefined') {
 
         var attributeGrid;
         switch (type) {
@@ -356,9 +417,6 @@ VisualAttributeWidget.prototype._createGrid = function (attributeName, type) {
                         }
                     }
                 });
-//                this.on('change:default', function (e) {
-//                    attributeGrid.changeDefaultValue(e.value);
-//                });
                 break;
             case 'Number':
                 attributeGrid = new NumberAttributeGrid({
@@ -371,9 +429,6 @@ VisualAttributeWidget.prototype._createGrid = function (attributeName, type) {
                         }
                     }
                 });
-//                this.on('change:default', function (e) {
-//                    attributeGrid.changeDefaultValue(e.value);
-//                });
                 break;
             case 'List string':
                 attributeGrid = new ListStringAttributeGrid({
@@ -386,9 +441,6 @@ VisualAttributeWidget.prototype._createGrid = function (attributeName, type) {
                         }
                     }
                 });
-//                this.on('change:default', function (e) {
-//                    attributeGrid.changeDefaultValue(e.value);
-//                });
                 break;
             case 'List number':
                 attributeGrid = new ListNumberAttributeGrid({
@@ -401,15 +453,12 @@ VisualAttributeWidget.prototype._createGrid = function (attributeName, type) {
                         }
                     }
                 });
-//                this.on('change:default', function (e) {
-//                    attributeGrid.changeDefaultValue(e.value);
-//                });
                 break;
             default:
         }
-        this.gridMap[attributeName][type] = attributeGrid.create();
-        this.attributeGridMap[attributeGrid.id] = attributeGrid;
-    }
+        attributeGrid.create();
+        this.attributeGridMap[attributeName][type] = attributeGrid;
 
-    return this.gridMap[attributeName][type];
+    }
+    return this.attributeGridMap[attributeName][type].grid;
 }

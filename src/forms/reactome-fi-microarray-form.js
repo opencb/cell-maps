@@ -50,47 +50,54 @@ ReactomeFIMicroarrayForm.prototype.beforeRun = function () {
 
 
 ReactomeFIMicroarrayForm.prototype.getPanels = function () {
-    return [this._getForm()];
+    return [
+        this._getExampleForm(),
+        this._getForm()
+    ];
 };
 
 
-//ReactomeFIMicroarrayForm.prototype._getExampleForm = function () {
-//    var _this = this;
-//
-//    var example1 = Ext.create('Ext.Component', {
-//        html: '<span class="s140"><span class="btn btn-default">Load</span> &nbsp; VCF file example</span>',
-//        cls: 'dedo',
-//        listeners: {
-//            afterrender: function () {
-//                this.getEl().on("click", function () {
-//                    _this.loadExample1();
-//                    Ext.example.msg("Example loaded", "");
-//                });
-//
-//            }
-//        }
-//    });
-//
-//    var exampleForm = Ext.create('Ext.container.Container', {
-//        bodyPadding: 10,
-//        cls: 'bootstrap',
-//        items: [this.note1, example1],
-//        defaults: {margin: '5 0 0 0'},
-//        margin: '0 0 10 0'
-//    });
-//
-//    return exampleForm;
-//};
+ReactomeFIMicroarrayForm.prototype._getExampleForm = function () {
+    var _this = this;
+
+    var example1 = Ext.create('Ext.container.Container', {
+        layout: 'hbox',
+        items: [
+            {
+                xtype: 'button',
+                width: this.labelWidth,
+                text: 'Load example 1',
+                handler: function () {
+                    _this.loadExample();
+                    Utils.msg("Example 1", "Loaded");
+                }
+            },
+            {
+                xtype: 'box',
+                margin: '5 0 0 15',
+                html: 'Gene list'
+
+            }
+        ]
+    });
+
+    var exampleForm = Ext.create('Ext.panel.Panel', {
+        bodyPadding: 10,
+        title: 'Examples',
+        header: this.headerFormConfig,
+        border: this.formBorder,
+        items: [example1],
+        defaults: {margin: '5 0 0 0'},
+        margin: '0 0 10 0'
+    });
+
+    return exampleForm;
+};
 
 ReactomeFIMicroarrayForm.prototype._getForm = function () {
     var _this = this;
 
-    var note1 = Ext.create('Ext.container.Container', {
-        html: 'Please select a file from your <span class="info">server account</span> using the <span class="emph">Browse</span> button'
-    });
-
-
-    var distanceCombo = Ext.create('Ext.form.field.ComboBox', {
+    this.distanceCombo = Ext.create('Ext.form.field.ComboBox', {
         labelAlign: 'left',
         labelWidth: 150,
         margin: '20 0 0 0',
@@ -113,12 +120,11 @@ ReactomeFIMicroarrayForm.prototype._getForm = function () {
         editable: false,
         displayField: 'name',
         valueField: 'value',
+        value: 'Pearson correlation',
         queryMode: 'local',
         forceSelection: true,
+        value:'c',
         listeners: {
-            afterrender: function () {
-                this.select(this.getStore().getAt(0));
-            },
             change: function (field, e) {
                 var value = field.getValue();
                 if (value != null) {
@@ -169,16 +175,15 @@ ReactomeFIMicroarrayForm.prototype._getForm = function () {
 //        padding: "5 0 0 0",
         bodyPadding: 10,
         items: [
-            note1,
             this.createOpencgaBrowserCmp({
                 fieldLabel: 'Expression matrix (normalized)',
                 dataParamName: 'eFile',
-                id: this.id + 'file',
+                id: this.id + 'eFile',
                 mode: 'fileSelection',
                 allowedTypes: ['txt'],
                 allowBlank: false
             }),
-            distanceCombo,
+            this.distanceCombo,
             absCheckbox,
             inflationNumber,
             minSizeNumber,
@@ -187,67 +192,14 @@ ReactomeFIMicroarrayForm.prototype._getForm = function () {
     });
     return formBrowser;
 };
-ReactomeFIMicroarrayForm.prototype._getCorrelationForm = function () {
-    var _this = this;
-//    ## Possible correlation distances
 
 
-    var formBrowser = Ext.create('Ext.panel.Panel', {
-        title: "Correlation",
-        header: this.headerFormConfig,
-        padding: "5 0 0 0",
-        bodyPadding: 10,
-        items: [
+ReactomeFIMicroarrayForm.prototype.loadExample = function () {
+    this.clean();
 
-        ]
-    });
-    return formBrowser;
+    Ext.getCmp(this.id + 'eFile').setValue('NejmLogRatioNormGlobalZScore_070111.txt');
+    Ext.getCmp(this.id + 'eFile' + 'hidden').setValue('example_NejmLogRatioNormGlobalZScore_070111.txt');
+
+    Ext.getCmp(this.id + 'jobname').setValue("Example");
+    Ext.getCmp(this.id + 'jobdescription').setValue("Example");
 };
-
-ReactomeFIMicroarrayForm.prototype._getClusteringForm = function () {
-    var _this = this;
-
-
-    var formBrowser = Ext.create('Ext.panel.Panel', {
-        title: "Network clustering",
-        header: this.headerFormConfig,
-        border: true,
-        padding: "5 0 0 0",
-        bodyPadding: 10,
-        items: [
-            inflationNumber
-        ]
-    });
-    return formBrowser;
-};
-
-
-ReactomeFIMicroarrayForm.prototype._getFilteringForm = function () {
-    var _this = this;
-
-
-    var formBrowser = Ext.create('Ext.panel.Panel', {
-        title: "Module filtering",
-        header: this.headerFormConfig,
-        border: true,
-        padding: "5 0 0 0",
-        bodyPadding: 10,
-        items: [
-
-        ]
-    });
-    return formBrowser;
-};
-
-
-//ReactomeFIMicroarrayForm.prototype.loadExample1 = function () {
-//    Ext.getCmp(this.id + 'vcf-file').setText('<span class="emph">Example file.vcf</span>', false);
-//    Ext.getCmp(this.id + 'vcf-file' + 'hidden').setValue('example_file.vcf');
-//
-//    Ext.getCmp(this.id + 'ped-file').setText('<span class="emph">Example file.ped</span>', false);
-//    Ext.getCmp(this.id + 'ped-file' + 'hidden').setValue('example_file.ped');
-//
-//
-//    Ext.getCmp(this.id + 'jobname').setValue("VCF example");
-//    Ext.getCmp(this.id + 'jobdescription').setValue("VCF example");
-//};
