@@ -21,10 +21,22 @@ function VisualAttributeWidget(args) {
 
     this.visualSet;
 
-    this.types = ['String', 'Number'];
+
+    this.types = [
+        {name: 'String'},
+        {name: 'Number'}
+    ];
     if (this.list) {
-        this.types = ['List string', 'List number'];
+        this.types = [
+            {name: 'List string'},
+            {name: 'List number'}
+        ];
     }
+
+    this.typesStore = Ext.create('Ext.data.Store', {
+        fields: ['name'],
+        data: this.types
+    })
 
 //    this.gridMap = {};
     this.attributeGridMap = {};
@@ -83,7 +95,6 @@ VisualAttributeWidget.prototype._eachAttributeGridMap = function (fn) {
 VisualAttributeWidget.prototype.applyDirectVisualSet = function (attributeName, type) {
     this.window.show();
     var found = this.attributeNameCombo.store.find("name", attributeName);
-    debugger
     if (found !== -1) {
         this._attributeNameComboHandler(attributeName);
         this._attributeTypeComboHandler(type);
@@ -248,7 +259,7 @@ VisualAttributeWidget.prototype._createComponent = function () {
 VisualAttributeWidget.prototype._attributeNameComboHandler = function (attributeName) {
     this.lastAttributeName = attributeName;
     if (typeof this.lastType === 'undefined') {
-        this.lastType = this.types[0];
+        this.lastType = this.typesStore.getAt(0).get('name');
     }
     var grid = this._createGrid(this.lastAttributeName, this.lastType);
     this.lastStore = this.attributeGridMap[this.lastAttributeName][this.lastType].grid.getStore();
@@ -313,7 +324,7 @@ VisualAttributeWidget.prototype._createWindow = function () {
         labelWidth: 90,
         fieldLabel: 'Attribute type',
         qid: 'typeCombo',
-        store: this.types,
+        store: this.typesStore,
         queryMode: 'local',
         displayField: 'name',
         valueField: 'id',
@@ -330,7 +341,7 @@ VisualAttributeWidget.prototype._createWindow = function () {
             afterrender: function () {
                 var record = this.getStore().getAt(0);
                 this.select(record);
-                _this._attributeTypeComboHandler(record.get('field1'));
+                _this._attributeTypeComboHandler(record.get('name'));
             }
         }
 

@@ -51,37 +51,39 @@ NumberAttributeGrid.prototype.create = function () {
 };
 
 
-
 NumberAttributeGrid.prototype._updateNormArray = function () {
     this.normArray = [];
-    var items = this.numberPanel.items.getAt(0).items.items;
-    for (var i = 0; i < items.length; i++) {
-        var item = items[i];
-        var contValue = item.items.getAt(0).getRawValue();
-        var normValue = item.items.getAt(1).getRawValue();
-        this.normArray.push({cont: contValue, norm: normValue});
+    var component = this.numberPanel.items.getAt(0);
+    if (component) {
+        var items = component.items.items;
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            var contValue = item.items.getAt(0).getRawValue();
+            var normValue = item.items.getAt(1).getRawValue();
+            this.normArray.push({cont: contValue, norm: normValue});
+        }
     }
 };
 
 NumberAttributeGrid.prototype._normalizeFunction = function (value) {
-        var value = parseFloat(value);
-        if (isNaN(value)) {
-            return 'not a number'
-        }
-        var first = this.normArray[0];
-        var second = this.normArray[this.normArray.length - 1];
-        for (var i = 0; i < this.normArray.length; i++) {
-            var contValue = this.normArray[i].cont;
-            if (this.normArray[i + 1]) {
-                var nextContValue = this.normArray[i + 1].cont;
-                if (value >= contValue && value <= nextContValue) {
-                    var first = this.normArray[i];
-                    var second = this.normArray[i + 1];
-                }
+    var value = parseFloat(value);
+    if (isNaN(value)) {
+        return 'not a number'
+    }
+    var first = this.normArray[0];
+    var second = this.normArray[this.normArray.length - 1];
+    for (var i = 0; i < this.normArray.length; i++) {
+        var contValue = this.normArray[i].cont;
+        if (this.normArray[i + 1]) {
+            var nextContValue = this.normArray[i + 1].cont;
+            if (value >= contValue && value <= nextContValue) {
+                var first = this.normArray[i];
+                var second = this.normArray[i + 1];
             }
         }
-        var val = this.control.getNormalizedValue(first, second, value);
-        return val;
+    }
+    var val = this.control.getNormalizedValue(first, second, value);
+    return val;
 };
 
 NumberAttributeGrid.prototype.changeDefaultValue = function (value) {
