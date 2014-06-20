@@ -70,20 +70,23 @@ NumberAttributeGrid.prototype._normalizeFunction = function (value) {
     if (isNaN(value)) {
         return 'not a number'
     }
-    var first = this.normArray[0];
-    var second = this.normArray[this.normArray.length - 1];
-    for (var i = 0; i < this.normArray.length; i++) {
-        var contValue = this.normArray[i].cont;
-        if (this.normArray[i + 1]) {
-            var nextContValue = this.normArray[i + 1].cont;
-            if (value >= contValue && value <= nextContValue) {
-                var first = this.normArray[i];
-                var second = this.normArray[i + 1];
+    if (this.normArray.length > 0) {
+        var first = this.normArray[0];
+        var second = this.normArray[this.normArray.length - 1];
+        for (var i = 0; i < this.normArray.length; i++) {
+            var contValue = this.normArray[i].cont;
+            if (this.normArray[i + 1]) {
+                var nextContValue = this.normArray[i + 1].cont;
+                if (value >= contValue && value <= nextContValue) {
+                    var first = this.normArray[i];
+                    var second = this.normArray[i + 1];
+                }
             }
         }
+        var val = this.control.getNormalizedValue(first, second, value);
+        return val;
     }
-    var val = this.control.getNormalizedValue(first, second, value);
-    return val;
+    return value;
 };
 
 NumberAttributeGrid.prototype.changeDefaultValue = function (value) {

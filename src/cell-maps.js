@@ -35,7 +35,8 @@ function CellMaps(args) {
         "network-miner.default": true,
         "fatigo.default": true
     };
-    this.version = "2.0.4";
+    this.version = "2.0.6";
+    this.autoRender = true;
     this.border = false;
     this.target;
     this.width;
@@ -659,10 +660,7 @@ CellMaps.prototype = {
                 'click:newsession': function (event) {
                     Ext.Msg.confirm('Start over', 'All changes will be lost. Are you sure?', function (btn, text) {
                         if (btn == 'yes') {
-                            localStorage.removeItem("CELLMAPS_SESSION");
-                            var session = new NetworkSession();
-                            _this.session.loadJSON(session);
-                            _this.loadSession();
+                            _this.newSession();
                         }
                     });
                 },
@@ -823,6 +821,12 @@ CellMaps.prototype = {
         this.networkViewer.loadSession();
         this.configuration.loadSession();
     },
+    newSession: function () {
+        localStorage.removeItem("CELLMAPS_SESSION");
+        var session = new NetworkSession();
+        this.session.loadJSON(session);
+        this.loadSession();
+    },
     sessionInitiated: function () {
 
 
@@ -848,6 +852,9 @@ CellMaps.prototype = {
             var title = '';
 
             var jobId = record.get('id');
+
+            this.newSession();
+
             switch (record.get('toolName')) {
                 case 'reactome-fi.default':
                     collapseInformation = true;
@@ -901,7 +908,6 @@ CellMaps.prototype = {
                     dataSource: new StringDataSource(data),
                     handlers: {
                         'data:load': function (event) {
-                            _this.configuration.cleanVisualSets();
                             _this.networkViewer.setGraph(event.graph);
                             _this.networkViewer.setLayout('Force directed');
                         },
@@ -984,7 +990,6 @@ CellMaps.prototype = {
                     dataSource: new StringDataSource(data),
                     handlers: {
                         'data:load': function (event) {
-                            _this.configuration.cleanVisualSets();
                             _this.networkViewer.setGraph(event.graph);
                             _this.networkViewer.setLayout('Force directed');
                         },
@@ -1062,7 +1067,6 @@ CellMaps.prototype = {
                     dataSource: new StringDataSource(data),
                     handlers: {
                         'data:load': function (event) {
-                            _this.configuration.cleanVisualSets();
                             _this.networkViewer.setGraph(event.graph);
                             _this.networkViewer.setLayout('Force directed');
                         },

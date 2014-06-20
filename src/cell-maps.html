@@ -191,7 +191,6 @@
         }
         cellMaps = new CellMaps({
             target: 'application',
-            autoRender: true,
             session: session,
             width: $('html').width(),
             height: $('html').height(),
@@ -207,7 +206,7 @@
 
         setTimeout(function () {
             var intervalId = setInterval(function () {
-                console.time('Save session')
+                console.time('Save session');
                 cellMaps.saveSession();
                 localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(session));
                 save_count++;
@@ -226,7 +225,6 @@
                 });
             }, 500);
         });
-
     });
 
 
@@ -267,7 +265,6 @@
 </STYLE>
 <div id="checkBrowser"></div>
 <div id="application"></div>
-
 
 </body>
 </html>
