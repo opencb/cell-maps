@@ -232,7 +232,7 @@ VisualAttributeWidget.prototype._createComponent = function () {
 
     this.removeButton = Ext.create('Ext.Button', {
         disabled: true,
-        text: '<span class="bootstrap"><span class="glyphicon glyphicon-trash"></span></span>',
+        text: '<i class="fa fa-trash-o"></i>',
         width: 35,
         height: 25,
         handler: function (bt) {

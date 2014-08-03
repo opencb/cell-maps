@@ -258,7 +258,7 @@ CellMapsConfiguration.prototype = {
                     xtype: 'button',
                     margin: '0 0 0 2',
                     tooltip: 'Configure',
-                    text: '<span class="bootstrap"><span class="glyphicon glyphicon-eye-open"></span></span>',
+                    text: '<i class="fa fa-eye"></i>',
                     enableToggle: true,
                     width: 35,
                     height: 25,

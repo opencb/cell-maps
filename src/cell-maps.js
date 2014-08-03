@@ -255,6 +255,7 @@ CellMaps.prototype = {
         this.fatigoForm = new FatigoForm({
             webapp: _this,
             type: 'window',
+            width: 650,
             testing: false,
             closable: false,
             minimizable: true,
@@ -874,6 +875,10 @@ CellMaps.prototype = {
                     title = 'Network miner';
                     this._jobNetworkMinerClick(jobId);
                     break;
+                case 'fatigo.default':
+                    drawIndex = false;
+                    title = 'Fatigo';
+                    break;
             }
 
             var resultWidget = new ResultWidget({
@@ -882,6 +887,9 @@ CellMaps.prototype = {
                 application: 'cellmaps',
                 app: this,
                 collapseInformation: collapseInformation,
+                width: 1000,
+                height: 600,
+                drawInformation: false,
                 drawIndex: drawIndex,
                 layoutName: record.get('toolName')
             });
@@ -1075,6 +1083,7 @@ CellMaps.prototype = {
                         }
                     }
                 });
+                n : resul
             }
         });
         OpencgaManager.poll({

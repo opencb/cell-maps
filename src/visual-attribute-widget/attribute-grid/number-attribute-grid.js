@@ -2,9 +2,28 @@ NumberAttributeGrid.prototype = new AttributeGrid();
 function NumberAttributeGrid(args) {
     AttributeGrid.prototype.constructor.call(this, args);
 
+    var _this = this;
+    
     this.id = Utils.genId('NumberAttributeGrid');
 
     this.normArray = [];
+
+
+    this.attributeManager.on('change:recordsAttribute', function (e) {
+    });
+    this.attributeManager.on('change:data', function (e) {
+
+    });
+
+    this.changeRecordsAttributeHandler = function (e) {
+        _this._updateNormArray();
+        _this._updateUniqueStore(e.attributeName);
+    };
+    this.changeDataHandler = function (e) {
+        _this._updateNormArray();
+        _this._updateUniqueStore(_this.attributeName);
+    };
+
 };
 
 NumberAttributeGrid.prototype.create = function () {
@@ -18,14 +37,9 @@ NumberAttributeGrid.prototype.create = function () {
 
     this.store = this._createUniqueStore();
 
-    this.attributeManager.on('change:recordsAttribute', function (e) {
-        _this._updateNormArray();
-        _this._updateUniqueStore(e.attributeName);
-    });
-    this.attributeManager.on('change:data', function (e) {
-        _this._updateNormArray();
-        _this._updateUniqueStore(_this.attributeName);
-    });
+    this.attributeManager.on('change:recordsAttribute', this.changeRecordsAttributeHandler);
+    this.attributeManager.on('change:data', this.changeDataHandler);
+
 
     var cols = [
         { text: this.attributeName, dataIndex: 'value', menuDisabled: true, flex: 1}

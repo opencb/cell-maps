@@ -2,7 +2,16 @@ ListStringAttributeGrid.prototype = new AttributeGrid();
 function ListStringAttributeGrid(args) {
     AttributeGrid.prototype.constructor.call(this, args);
 
+    var _this = this;
+
     this.id = Utils.genId('ListStringAttributeGrid');
+
+    this.changeRecordsAttributeHandler = function (e) {
+        _this._updateUniqueStore(e.attributeName);
+    };
+    this.changeDataHandler = function (e) {
+        _this._updateUniqueStore(_this.attributeName);
+    };
 };
 
 
@@ -11,12 +20,8 @@ ListStringAttributeGrid.prototype.create = function () {
 
     this.store = this._createUniqueStore();
 
-    this.attributeManager.on('change:recordsAttribute', function (e) {
-        _this._updateUniqueStore(e.attributeName);
-    });
-    this.attributeManager.on('change:data', function (e) {
-        _this._updateUniqueStore(_this.attributeName);
-    });
+    this.attributeManager.on('change:recordsAttribute', this.changeRecordsAttributeHandler);
+    this.attributeManager.on('change:data', this.changeDataHandler);
 
     this.controlComponent = this.control.create(function (newValue) {
         _this.store.suspendEvents();

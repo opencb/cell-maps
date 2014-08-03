@@ -2,10 +2,22 @@ ListNumberAttributeGrid.prototype = new AttributeGrid();
 function ListNumberAttributeGrid(args) {
     AttributeGrid.prototype.constructor.call(this, args);
 
+    var _this = this;
+
     this.id = Utils.genId('ListNumberAttributeGrid');
 
     this.normArray = [];
+
+    this.changeRecordsAttributeHandler = function (e) {
+        _this._updateNormArray();
+        _this._updateUniqueStore(e.attributeName);
+    };
+    this.changeDataHandler = function (e) {
+        _this._updateNormArray();
+        _this._updateUniqueStore(_this.attributeName);
+    };
 };
+
 
 ListNumberAttributeGrid.prototype.create = function () {
     var _this = this;
@@ -18,14 +30,8 @@ ListNumberAttributeGrid.prototype.create = function () {
 
     this.store = this._createUniqueStore();
 
-    this.attributeManager.on('change:recordsAttribute', function (e) {
-        _this._updateNormArray();
-        _this._updateUniqueStore(e.attributeName);
-    });
-    this.attributeManager.on('change:data', function (e) {
-        _this._updateNormArray();
-        _this._updateUniqueStore(_this.attributeName);
-    });
+    this.attributeManager.on('change:recordsAttribute', this.changeRecordsAttributeHandler);
+    this.attributeManager.on('change:data', this.changeDataHandler);
 
     var cols = [
         { text: this.attributeName, dataIndex: 'value', menuDisabled: true, flex: 1}
@@ -51,7 +57,6 @@ ListNumberAttributeGrid.prototype.create = function () {
 };
 
 
-
 ListNumberAttributeGrid.prototype._updateNormArray = function () {
     this.normArray = [];
     var items = this.numberPanel.items.getAt(0).items.items;
@@ -64,24 +69,24 @@ ListNumberAttributeGrid.prototype._updateNormArray = function () {
 };
 
 ListNumberAttributeGrid.prototype._normalizeFunction = function (value) {
-        var value = parseFloat(value);
-        if (isNaN(value)) {
-            return 'not a number'
-        }
-        var first = this.normArray[0];
-        var second = this.normArray[this.normArray.length - 1];
-        for (var i = 0; i < this.normArray.length; i++) {
-            var contValue = this.normArray[i].cont;
-            if (this.normArray[i + 1]) {
-                var nextContValue = this.normArray[i + 1].cont;
-                if (value >= contValue && value <= nextContValue) {
-                    var first = this.normArray[i];
-                    var second = this.normArray[i + 1];
-                }
+    var value = parseFloat(value);
+    if (isNaN(value)) {
+        return 'not a number'
+    }
+    var first = this.normArray[0];
+    var second = this.normArray[this.normArray.length - 1];
+    for (var i = 0; i < this.normArray.length; i++) {
+        var contValue = this.normArray[i].cont;
+        if (this.normArray[i + 1]) {
+            var nextContValue = this.normArray[i + 1].cont;
+            if (value >= contValue && value <= nextContValue) {
+                var first = this.normArray[i];
+                var second = this.normArray[i + 1];
             }
         }
-        var val = this.control.getNormalizedValue(first, second, value);
-        return val;
+    }
+    var val = this.control.getNormalizedValue(first, second, value);
+    return val;
 };
 
 ListNumberAttributeGrid.prototype.changeDefaultValue = function (value) {

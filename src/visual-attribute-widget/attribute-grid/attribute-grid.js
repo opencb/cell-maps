@@ -12,6 +12,10 @@ function AttributeGrid(args) {
 
     this.grid;
 
+
+    this.changeRecordsAttributeHandler;
+    this.changeDataHandler;
+
     this.on(this.handlers);
 };
 
@@ -24,4 +28,6 @@ AttributeGrid.prototype.updateUniqueStore = function () {
 };
 AttributeGrid.prototype.destroy = function () {
     this.grid.destroy();
+    this.attributeManager.off('change:recordsAttribute', this.changeRecordsAttributeHandler);
+    this.attributeManager.off('change:data', this.changeDataHandler);
 };

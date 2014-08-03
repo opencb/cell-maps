@@ -245,8 +245,7 @@ CmToolBar.prototype = {
                 '->',
                 {
                     tooltip: 'Configure',
-                    cls: 'bootstrap',
-                    text: '<span class="glyphicon glyphicon-cog"></span> Visual settings',
+                    text: '<i class="fa fa-cog"></i> Visual settings',
                     enableToggle: true,
                     pressed: true,
                     hidden: false,
@@ -613,7 +612,6 @@ CmToolBar.prototype = {
                 },
                 {
                     text: "Fatigo",
-                    hidden: true,
                     handler: function () {
                         _this.trigger('click:fatigo', {sender: _this});
                     }
