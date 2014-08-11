@@ -82,6 +82,7 @@ CmToolBar.prototype = {
                     text: "STRING",
                     hidden: true,
                     handler: function () {
+                        //OLD CODE
                         var stringNetworkFileWidget = new StringNetworkFileWidget({"networkData": _this.networkViewer.networkData});
                         stringNetworkFileWidget.draw();
                         stringNetworkFileWidget.onOk.addEventListener(function (sender, data) {
@@ -178,7 +179,6 @@ CmToolBar.prototype = {
                                     items: [
                                         {
                                             text: 'Network as SIF',
-//                                            cls: 'bootstrap',
                                             handler: function () {
                                                 _this.trigger('saveSIF:click', {sender: _this});
                                             }
@@ -186,14 +186,12 @@ CmToolBar.prototype = {
                                         '-',
                                         {
                                             text: 'Network as SVG',
-//                                            cls: 'bootstrap',
                                             handler: function () {
                                                 _this.trigger('saveSVG:click', {sender: _this});
                                             }
                                         },
                                         {
                                             text: 'PNG image',
-//                                            cls: 'bootstrap',
                                             handler: function () {
                                                 _this.trigger('savePNG:click', {sender: _this});
                                             }
@@ -201,14 +199,12 @@ CmToolBar.prototype = {
                                         '-',
                                         {
                                             text: 'Node attributes as file',
-//                                            cls: 'bootstrap',
                                             handler: function () {
                                                 _this.trigger('click:exportVertexAttributes', {sender: _this});
                                             }
                                         },
                                         {
                                             text: 'Edge attributes as file',
-//                                            cls: 'bootstrap',
                                             handler: function () {
                                                 _this.trigger('click:exportEdgeAttributes', { sender: _this});
                                             }
