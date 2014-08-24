@@ -12,7 +12,6 @@ module.exports = function (grunt) {
             dist: {
                 src: [
                     'src/cell-maps-configuration.js',
-                    'src/cm-toolbar.js',
 
                     'src/plugins/**/*.js',
                     'src/forms/**/*.js',

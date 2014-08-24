@@ -4,10 +4,11 @@
     <title>Cell Maps</title>
 
     <!--Importing Web Component's Polyfill -->
-    <script src="../lib/jsorolla/vendor/platform/platform.js"></script>
+    <script src="../lib/jsorolla/vendor/platform.js"></script>
 
     <!--Importing Custom Elements -->
     <link rel="import" href="../lib/jsorolla/src/lib/components/jso-color-picker.html">
+    <link rel="import" href="cm-toolbar.html">
 
 </head>
 <body>
@@ -24,7 +25,7 @@
 <link type="text/css" rel="stylesheet" href="../lib/jsorolla/styles/css/style.css"/>
 <!-- /build -->
 
-<script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/5.0.0/build/ext-all.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/vendor/ext-5/ext-all.js"></script>
 <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/5.0.0/build/packages/ext-charts/build/ext-charts.js"></script>
 
 
@@ -88,6 +89,7 @@
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/circos-vertex-renderer.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/default-edge-renderer.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/graph-layout.js"></script>
+<script type="text/javascript" src="../lib/jsorolla/src/lib/network/point.js"></script>
 
 <script type="text/javascript" src="../lib/jsorolla/src/lib/cellbase-manager.js"></script>
 
@@ -154,7 +156,6 @@
 
 
 <!-- build:script js -->
-<script type="text/javascript" src="cm-toolbar.js"></script>
 <script type="text/javascript" src="visual-attribute-widget/visual-attribute-widget.js"></script>
 <script type="text/javascript" src="visual-attribute-widget/pie-attribute-widget.js"></script>
 

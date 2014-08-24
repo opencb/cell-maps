@@ -41,7 +41,9 @@ function CellMaps(args) {
     this.target;
     this.width;
     this.height;
+    this.menuEl;
     this.session;
+    this.drawHeaderWidget = true;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -282,7 +284,7 @@ CellMaps.prototype = {
         this.targetDiv.appendChild(this.div);
 
         this.headerWidget.draw();
-        this.toolbar.draw();
+//        this.toolbar.draw();
         this.networkViewer.draw();
         this.jobListWidget.draw();
         this.jobListWidget.hide();
@@ -311,7 +313,7 @@ CellMaps.prototype = {
 
         this.toolbar.setWidth();
 
-        var topOffset = this.headerWidget.getHeight() + this.toolbar.getHeight();
+        var topOffset = this.headerWidget.getHeight() + parseInt(this.toolbar.style.height);
         this.networkViewer.resize({
             width: this.width,
             height: this.height - topOffset
@@ -333,6 +335,7 @@ CellMaps.prototype = {
             helpLink: "http://cellmaps.babelomics.org/",
             tutorialLink: "http://cellmaps.babelomics.org/",
             aboutText: '',
+            applicationMenuEl: this.menuEl,
             handlers: {
                 'login': function (event) {
                     Utils.msg('Welcome', 'You logged in');
@@ -361,7 +364,7 @@ CellMaps.prototype = {
         var _this = this;
 
         /* check height */
-        var topOffset = this.headerWidget.getHeight() + this.toolbar.getHeight();
+        var topOffset = this.headerWidget.getHeight() + parseInt(this.toolbar.style.height);
         var networkViewer = new NetworkViewer({
             target: target,
             autoRender: true,
@@ -378,7 +381,7 @@ CellMaps.prototype = {
                     _this.edgeAttributeEditWidget.checkSelectedFilter();
                 },
                 'change:vertexAttributes': function (e) {
-                    _this.toolbar.setVertexAttributes(e.sender);
+                    _this.toolbar.setVertexAttributes(e.sender.attributes);
                 },
                 'change:edgeAttributes': function (e) {
 
@@ -394,321 +397,330 @@ CellMaps.prototype = {
     },
     _createToolBar: function (target) {
         var _this = this;
-        var cmToolBar = new CmToolBar({
-            target: target,
-            autoRender: true,
-            handlers: {
-                /* File */
-                'saveJSON:click': function (event) {
-                    var content = JSON.stringify(_this.session);
-                    var blob = new Blob([content], {type: "application/json"});
-                    var url = URL.createObjectURL(blob);
-                    var link = document.createElement('a');
-                    link.href = url;
-                    link.download = "network.json";
-                    var event = new MouseEvent('click', {
-                        'view': window,
-                        'bubbles': true,
-                        'cancelable': true
-                    });
-                    link.dispatchEvent(event);
-                },
-                'openJSON:click': function (event) {
-                    var jsonNetworkFileWidget = new JSONNetworkFileWidget({
-                        layoutSelector: false,
-                        handlers: {
-                            'okButton:click': function (widgetEvent) {
-                                _this.session.loadJSON(widgetEvent.content);
-                                _this.loadSession();
-//                                _this.networkViewer.setLayout(widgetEvent.layout);
-                            }
-                        }
-                    });
-                    jsonNetworkFileWidget.draw();
-                },
-                'openDOT:click': function (event) {
-                    //TODO fix
-                    var dotNetworkFileWidget = new DOTNetworkFileWidget({
-                        handlers: {
-                            'okButton:click': function (widgetEvent) {
-                                _this.networkViewer.setNetwork(widgetEvent.content);
-                                _this.networkViewer.setLayout(widgetEvent.layout);
-                            }
-                        }
-                    });
-                    dotNetworkFileWidget.draw();
-                },
-                'openSIF:click': function (event) {
-//                    _this.networkViewer.clean();
-                    var sifNetworkFileWidget = new SIFNetworkFileWidget({
-                        handlers: {
-                            'okButton:click': function (widgetEvent) {
-                                _this.configuration.cleanVisualSets();
-                                var graph = widgetEvent.content;
-                                _this.networkViewer.setGraph(graph);
-                                _this.networkViewer.setLayout(widgetEvent.layout);
-                            }
-                        }
-                    });
-                    sifNetworkFileWidget.draw();
-                },
-                'click:openXLSX': function (event) {
-                    var xlsxNetworkFileWidget = new XLSXNetworkFileWidget({
-                        handlers: {
-                            'okButton:click': function (widgetEvent) {
-                                _this.configuration.cleanVisualSets();
-                                var graph = widgetEvent.content;
-                                _this.networkViewer.setGraph(graph);
-                                _this.networkViewer.setLayout(widgetEvent.layout);
-                            }
-                        }
-                    });
-                    xlsxNetworkFileWidget.draw();
-                },
-                'click:openText': function (event) {
-                    var textNetworkFileWidget = new TextNetworkFileWidget({
-                        handlers: {
-                            'okButton:click': function (widgetEvent) {
-                                _this.configuration.cleanVisualSets();
-                                var graph = widgetEvent.content;
-                                _this.networkViewer.setGraph(graph);
-                                _this.networkViewer.setLayout(widgetEvent.layout);
-                            }
-                        }
-                    });
-                    textNetworkFileWidget.draw();
-                },
-                'savePNG:click': function (event) {
-                    var svg = new XMLSerializer().serializeToString(_this.networkViewer.networkSvgLayout.getSvgEl());
-                    var canvas = document.createElement('canvas');
-                    canvg(canvas, svg);
+        var toolbar = document.createElement('cm-toolbar');
 
-                    var dataURL = canvas.toDataURL("image/png");
-                    var data = atob(dataURL.substring("data:image/png;base64,".length));
-                    var asArray = new Uint8Array(data.length);
-                    //data is a string, so when you pass it to blob, the binary data will be that string in UTF-8 encoding. You want binary data not a string.
-                    for (var i = 0, len = data.length; i < len; ++i) {
-                        asArray[i] = data.charCodeAt(i);
-                    }
+        this._createToolBarHandlers(toolbar)
 
-                    var blob = new Blob([ asArray.buffer ], {type: "image/png"});
-                    var url = URL.createObjectURL(blob);
+        target.appendChild(toolbar);
+        return toolbar;
+    },
+    _createToolBarHandlers: function (toolbar) {
+        var _this = this;
 
-                    var link = document.createElement('a');
-                    link.href = url;
-                    link.download = "network.png";
-                    var event = new MouseEvent('click', {
-                        'view': window,
-                        'bubbles': true,
-                        'cancelable': true
-                    });
-                    link.dispatchEvent(event);
-                },
-                'saveSVG:click': function (event) {
-                    var svg = new XMLSerializer().serializeToString(_this.networkViewer.networkSvgLayout.getSvgEl());
-                    var blob = new Blob([svg], {type: "image/svg+xml"});
-                    var url = URL.createObjectURL(blob);
-
-                    var link = document.createElement('a');
-                    link.href = url;
-                    link.download = "network.svg";
-                    var event = new MouseEvent('click', {
-                        'view': window,
-                        'bubbles': true,
-                        'cancelable': true
-                    });
-                    link.dispatchEvent(event);
-                },
-                'saveSIF:click': function (event) {
-                    var content = _this.networkViewer.getAsSIF();
-                    var blob = new Blob([content], {type: "data:text/tsv"});
-                    var url = URL.createObjectURL(blob);
-                    var link = document.createElement('a');
-                    link.href = url;
-                    link.download = "network.sif";
-                    var event = new MouseEvent('click', {
-                        'view': window,
-                        'bubbles': true,
-                        'cancelable': true
-                    });
-                    link.dispatchEvent(event);
-                },
-                'click:exportVertexAttributes': function (event) {
-                    var content = _this.networkViewer.network.vertexAttributeManager.getAsFile();
-                    var blob = new Blob([content], {type: "data:text/tsv"});
-                    var url = URL.createObjectURL(blob);
-                    var link = document.createElement('a');
-                    link.href = url;
-                    link.download = "node.attr";
-                    var event = new MouseEvent('click', {
-                        'view': window,
-                        'bubbles': true,
-                        'cancelable': true
-                    });
-                    link.dispatchEvent(event);
-                },
-                'click:exportEdgeAttributes': function (event) {
-                    var content = _this.networkViewer.network.edgeAttributeManager.getAsFile();
-                    var blob = new Blob([content], {type: "data:text/tsv"});
-                    var url = URL.createObjectURL(blob);
-                    var link = document.createElement('a');
-                    link.href = url;
-                    link.download = "edge.attr";
-                    var event = new MouseEvent('click', {
-                        'view': window,
-                        'bubbles': true,
-                        'cancelable': true
-                    });
-                    link.dispatchEvent(event);
-                },
-                /* Network */
-                'click:editNetwork': function (event) {
-                    _this.networkEditWidget.show();
-                },
-                /* Attributes */
-                'importVertexAttributes:click': function (event) {
-                    var attributeNetworkFileWidget = new AttributeNetworkFileWidget({
-                        handlers: {
-                            'okButton:click': function (attrEvent) {
-                                _this.networkViewer.importVertexWithAttributes(attrEvent.content);
-                            }
-                        }
-                    });
-                    attributeNetworkFileWidget.draw();
-                },
-                'importEdgeAttributes:click': function (event) {
-                    var attributeNetworkFileWidget = new AttributeNetworkFileWidget({
-                        handlers: {
-                            'okButton:click': function (attrEvent) {
-                                _this.networkViewer.importEdgesWithAttributes(attrEvent.content);
-                            }
-                        }
-                    });
-                    attributeNetworkFileWidget.draw();
-                },
-                'editVertexAttributes:click': function (event) {
-                    _this.vertexAttributeEditWidget.draw();
-                },
-                'editEdgeAttributes:click': function (event) {
-                    _this.edgeAttributeEditWidget.draw();
-                },
-                'filterVertexAttributes:click': function (event) {
-                    _this.vertexAttributeFilterWidget.draw();
-                },
-
-                /* Plugins */
-                'click:cellbase': function (event) {
-                    _this.cellbasePlugin.show();
-                },
-
-                'click:reactome': function (event) {
-//                    _this.reactomePlugin.show();
-                },
-                'click:intact': function (event) {
-                    _this.intActPlugin.show(_this);
-                },
-                'click:communitiesStructureDetection': function (event) {
-                    _this.communitiesStructureDetectionPlugin.show();
-                },
-                'click:topologicalStudy': function (event) {
-                    _this.topologicalStudyPlugin.show();
-                },
-                'click:reactimeFIMicroarray': function (event) {
-                    _this.reactomeFIMicroarrayForm.show();
-                },
-                'click:snow': function (event) {
-                    _this.snowForm.show();
-                },
-                'click:networkMiner': function (event) {
-                    _this.networkMinerForm.show();
-                },
-                'click:fatigo': function (event) {
-                    _this.fatigoForm.show();
-                },
-
-                'example:click': function (event) {
-                    if (event.example == 1) {
-                        $.ajax({
-                            url: './example-files/ppi_histone_network.json',
-                            dataType: 'json',
-                            success: function (data) {
-                                _this.session.loadJSON(data);
-                                _this.networkViewer.loadSession();
-                            }
-                        })
-                    }
-                    if (event.example == 2) {
-                        $.ajax({
-                            url: './example-files/reactome_network.json',
-                            dataType: 'json',
-                            success: function (data) {
-                                _this.session.loadJSON(data);
-                                _this.networkViewer.loadSession();
-                            }
-                        })
-                    }
-                    if (event.example == 3) {
-                        $.ajax({
-                            url: './example-files/ppi_network.json',
-                            dataType: 'json',
-                            success: function (data) {
-                                _this.session.loadJSON(data);
-                                _this.networkViewer.loadSession(data);
-                            }
-                        })
-                    }
-                },
-                'click:newsession': function (event) {
-                    Ext.Msg.confirm('Start over', 'All changes will be lost. Are you sure?', function (btn, text) {
-                        if (btn == 'yes') {
-                            _this.newSession();
-                        }
-                    });
-                },
-                'configuration-button:change': function (event) {
-                    if (event.selected) {
-                        _this.configuration.show();
-                    } else {
-                        _this.configuration.hide();
-                    }
-                },
-                /* Selection */
-                'click:selectAllVertices': function (event) {
-                    _this.networkViewer.selectAllVertices();
-                },
-                'click:selectVerticesNeighbour': function (event) {
-                    _this.networkViewer.selectVerticesNeighbour()
-                },
-                'click:selectVerticesInvert': function (event) {
-                    _this.networkViewer.selectVerticesInvert();
-                },
-                'click:selectAllEdges': function (event) {
-                    _this.networkViewer.selectAllEdges();
-                },
-                'click:selectEdgesNeighbour': function (event) {
-                    _this.networkViewer.selectEdgesNeighbour();
-                },
-                'click:selectAll': function (event) {
-                    _this.networkViewer.selectAll();
-                },
-                'click:layout': function (event) {
-                    _this.networkViewer.setLayout(event.option, event);
-                },
-                'click:configureLayout': function (event) {
-                    _this.layoutConfigureWidget.show();
-                },
-                'click:configureAttributeLayout': function (event) {
-                    _this.attributeLayoutConfigureWidget.show();
-                }
-
-
-//                '': function (event) {
-//                },
-
-
+        /** FILE **/
+        /*SESSION*/
+        toolbar.addEventListener('session-start', function (e) {
+            var r = confirm('All changes will be lost. Are you sure?');
+            if (r == true) {
+                _this.newSession();
             }
         });
-        return cmToolBar;
+        toolbar.addEventListener('session-open', function (e) {
+            var jsonNetworkFileWidget = new JSONNetworkFileWidget({
+                layoutSelector: false,
+                handlers: {
+                    'okButton:click': function (widgetEvent) {
+                        _this.session.loadJSON(widgetEvent.content);
+                        _this.loadSession();
+                    }
+                }
+            });
+            jsonNetworkFileWidget.draw();
+        });
+        toolbar.addEventListener('session-save', function (e) {
+            var content = JSON.stringify(_this.session);
+            var blob = new Blob([content], {type: "application/json"});
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = "network.json";
+            var event = new MouseEvent('click', {
+                'view': window,
+                'bubbles': true,
+                'cancelable': true
+            });
+            link.dispatchEvent(event);
+        });
+
+        /*IMPORT*/
+        toolbar.addEventListener('import-sif', function (e) {
+            var sifNetworkFileWidget = new SIFNetworkFileWidget({
+                handlers: {
+                    'okButton:click': function (widgetEvent) {
+                        _this.configuration.cleanVisualSets();
+                        var graph = widgetEvent.content;
+                        _this.networkViewer.setGraph(graph);
+                        _this.networkViewer.setLayout(widgetEvent.layout);
+                    }
+                }
+            });
+            sifNetworkFileWidget.draw();
+        });
+        toolbar.addEventListener('import-xlsx', function (e) {
+            var xlsxNetworkFileWidget = new XLSXNetworkFileWidget({
+                handlers: {
+                    'okButton:click': function (widgetEvent) {
+                        _this.configuration.cleanVisualSets();
+                        var graph = widgetEvent.content;
+                        _this.networkViewer.setGraph(graph);
+                        _this.networkViewer.setLayout(widgetEvent.layout);
+                    }
+                }
+            });
+            xlsxNetworkFileWidget.draw();
+        });
+        toolbar.addEventListener('import-dot', function (e) {
+            //TODO fix and test
+            var dotNetworkFileWidget = new DOTNetworkFileWidget({
+                handlers: {
+                    'okButton:click': function (widgetEvent) {
+                        _this.configuration.cleanVisualSets();
+                        var graph = widgetEvent.content;
+                        _this.networkViewer.setGraph(graph);
+                        _this.networkViewer.setLayout(widgetEvent.layout);
+                    }
+                }
+            });
+            dotNetworkFileWidget.draw();
+        });
+        toolbar.addEventListener('import-text', function (e) {
+            var textNetworkFileWidget = new TextNetworkFileWidget({
+                handlers: {
+                    'okButton:click': function (widgetEvent) {
+                        _this.configuration.cleanVisualSets();
+                        var graph = widgetEvent.content;
+                        _this.networkViewer.setGraph(graph);
+                        _this.networkViewer.setLayout(widgetEvent.layout);
+                    }
+                }
+            });
+            textNetworkFileWidget.draw();
+        });
+        toolbar.addEventListener('import-node-attributes', function (e) {
+            var attributeNetworkFileWidget = new AttributeNetworkFileWidget({
+                handlers: {
+                    'okButton:click': function (attrEvent) {
+                        _this.networkViewer.importVertexWithAttributes(attrEvent.content);
+                    }
+                }
+            });
+            attributeNetworkFileWidget.draw();
+        });
+        toolbar.addEventListener('import-edge-attributes', function (e) {
+            var attributeNetworkFileWidget = new AttributeNetworkFileWidget({
+                handlers: {
+                    'okButton:click': function (attrEvent) {
+                        _this.networkViewer.importEdgesWithAttributes(attrEvent.content);
+                    }
+                }
+            });
+            attributeNetworkFileWidget.draw();
+        });
+
+        /*EXPORT*/
+        toolbar.addEventListener('export-sif', function (e) {
+            var content = _this.networkViewer.getAsSIF();
+            var blob = new Blob([content], {type: "data:text/tsv"});
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = "network.sif";
+            var event = new MouseEvent('click', {
+                'view': window,
+                'bubbles': true,
+                'cancelable': true
+            });
+            link.dispatchEvent(event);
+        });
+        toolbar.addEventListener('export-svg', function (e) {
+            var svg = new XMLSerializer().serializeToString(_this.networkViewer.networkSvgLayout.getSvgEl());
+            var blob = new Blob([svg], {type: "image/svg+xml"});
+            var url = URL.createObjectURL(blob);
+
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = "network.svg";
+            var event = new MouseEvent('click', {
+                'view': window,
+                'bubbles': true,
+                'cancelable': true
+            });
+            link.dispatchEvent(event);
+        });
+        toolbar.addEventListener('export-png', function (e) {
+            var svg = new XMLSerializer().serializeToString(_this.networkViewer.networkSvgLayout.getSvgEl());
+            var canvas = document.createElement('canvas');
+            canvg(canvas, svg);
+
+            var dataURL = canvas.toDataURL("image/png");
+            var data = atob(dataURL.substring("data:image/png;base64,".length));
+            var asArray = new Uint8Array(data.length);
+            //data is a string, so when you pass it to blob, the binary data will be that string in UTF-8 encoding. You want binary data not a string.
+            for (var i = 0, len = data.length; i < len; ++i) {
+                asArray[i] = data.charCodeAt(i);
+            }
+
+            var blob = new Blob([ asArray.buffer ], {type: "image/png"});
+            var url = URL.createObjectURL(blob);
+
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = "network.png";
+            var event = new MouseEvent('click', {
+                'view': window,
+                'bubbles': true,
+                'cancelable': true
+            });
+            link.dispatchEvent(event);
+        });
+        toolbar.addEventListener('export-node-attributes', function (e) {
+            var content = _this.networkViewer.network.vertexAttributeManager.getAsFile();
+            var blob = new Blob([content], {type: "data:text/tsv"});
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = "node.attr";
+            var event = new MouseEvent('click', {
+                'view': window,
+                'bubbles': true,
+                'cancelable': true
+            });
+            link.dispatchEvent(event);
+        });
+        toolbar.addEventListener('export-edge-attributes', function (e) {
+            var content = _this.networkViewer.network.edgeAttributeManager.getAsFile();
+            var blob = new Blob([content], {type: "data:text/tsv"});
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = "edge.attr";
+            var event = new MouseEvent('click', {
+                'view': window,
+                'bubbles': true,
+                'cancelable': true
+            });
+            link.dispatchEvent(event);
+        });
+
+
+        /** NETWORK **/
+        toolbar.addEventListener('network-edit', function (e) {
+            _this.networkEditWidget.show();
+        });
+        /*SELECT*/
+        toolbar.addEventListener('nodes-select-all', function (e) {
+            _this.networkViewer.selectAllVertices();
+        });
+        toolbar.addEventListener('nodes-select-first-neighbourhood', function (e) {
+            _this.networkViewer.selectVerticesNeighbour()
+        });
+        toolbar.addEventListener('nodes-select-invert', function (e) {
+            _this.networkViewer.selectVerticesInvert();
+        });
+        toolbar.addEventListener('edges-select-all', function (e) {
+            _this.networkViewer.selectAllEdges();
+        });
+        toolbar.addEventListener('edges-select-adjacent', function (e) {
+            _this.networkViewer.selectEdgesNeighbour();
+        });
+        toolbar.addEventListener('network-select-all', function (e) {
+            _this.networkViewer.selectAll();
+        });
+        /*LAYOUT*/
+        toolbar.addEventListener('layout-force-directed', function (e) {
+            _this.networkViewer.setLayout('Force directed');
+        });
+        toolbar.addEventListener('layout-configure-force-directed', function (e) {
+            _this.layoutConfigureWidget.show();
+        });
+        toolbar.addEventListener('layout-circle', function (e) {
+            _this.networkViewer.setLayout('Circle', {attributeName: e.detail.subvalue});
+        });
+        toolbar.addEventListener('layout-random', function (e) {
+            _this.networkViewer.setLayout('Random');
+        });
+        toolbar.addEventListener('layout-attribute', function (e) {
+            _this.attributeLayoutConfigureWidget.show();
+        });
+
+        /**ATTRIBUTES**/
+        toolbar.addEventListener('nodes-edit', function (e) {
+            _this.vertexAttributeEditWidget.draw();
+        });
+        toolbar.addEventListener('edges-edit', function (e) {
+            _this.edgeAttributeEditWidget.draw();
+        });
+        toolbar.addEventListener('cellbase', function (e) {
+            _this.cellbasePlugin.show();
+        });
+
+        /**PLUGINS**/
+        toolbar.addEventListener('reactome', function (e) {
+//                    _this.reactomePlugin.show();
+        });
+        toolbar.addEventListener('intact', function (e) {
+            _this.intActPlugin.show(_this);
+        });
+        toolbar.addEventListener('communities-structure-detection', function (e) {
+            _this.communitiesStructureDetectionPlugin.show();
+        });
+        toolbar.addEventListener('topological-study', function (e) {
+            _this.topologicalStudyPlugin.show();
+        });
+        toolbar.addEventListener('reactome-fi-microarray', function (e) {
+            _this.reactomeFIMicroarrayForm.show();
+        });
+        toolbar.addEventListener('snow', function (e) {
+            _this.snowForm.show();
+        });
+        toolbar.addEventListener('network-miner', function (e) {
+            _this.networkMinerForm.show();
+        });
+        toolbar.addEventListener('fatigo', function (e) {
+            _this.fatigoForm.show();
+        });
+
+
+        /**EXAMPLE**/
+        toolbar.addEventListener('example', function (e) {
+            if (e.detail.subvalue == 1) {
+                $.ajax({
+                    url: './example-files/ppi_histone_network.json',
+                    dataType: 'json',
+                    success: function (data) {
+                        _this.session.loadJSON(data);
+                        _this.networkViewer.loadSession();
+                    }
+                })
+            }
+            if (e.detail.subvalue == 2) {
+                $.ajax({
+                    url: './example-files/reactome_network.json',
+                    dataType: 'json',
+                    success: function (data) {
+                        _this.session.loadJSON(data);
+                        _this.networkViewer.loadSession();
+                    }
+                })
+            }
+            if (e.detail.subvalue == 3) {
+                $.ajax({
+                    url: './example-files/ppi_network.json',
+                    dataType: 'json',
+                    success: function (data) {
+                        _this.session.loadJSON(data);
+                        _this.networkViewer.loadSession(data);
+                    }
+                })
+            }
+        });
+
+        /**CONFIGURE**/
+        toolbar.addEventListener('configure-click', function (e) {
+            _this.configuration.toggle();
+        });
+
+//                _this.vertexAttributeFilterWidget.draw();
     },
     _createConfiguration: function (target) {
         var _this = this;
@@ -1083,7 +1095,6 @@ CellMaps.prototype = {
                         }
                     }
                 });
-                n : resul
             }
         });
         OpencgaManager.poll({

@@ -113,11 +113,19 @@ CellMapsConfiguration.prototype = {
     hide: function () {
         this.panel.hide();
     },
-    toggle: function () {
-        if (this.panel.isVisible()) {
-            this.panel.hide();
-        } else {
+    toggle: function (bool) {
+        if (bool === true) {
             this.panel.show();
+        }
+        if (bool === false) {
+            this.panel.hide();
+        }
+        if (typeof bool === 'undefined') {
+            if (this.panel.isVisible()) {
+                this.panel.hide();
+            } else {
+                this.panel.show();
+            }
         }
     },
     _getVisualSets: function () {
