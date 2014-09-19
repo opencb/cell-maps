@@ -842,7 +842,6 @@ CellMaps.prototype = {
     },
     sessionInitiated: function () {
 
-
     },
     sessionFinished: function () {
         this.jobListWidget.hide();
