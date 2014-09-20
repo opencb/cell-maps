@@ -162,7 +162,8 @@ VisualAttributeWidget.prototype._updateVisualSet = function () {
         map[d.value] = d.visualParam;
     }
 //                        console.log(map);
-    this.visualSet = {displayAttribute: Utils.camelCase(this.displayAttribute), attribute: attributeName, map: map, type: this.lastType};
+
+    this.visualSet = {displayAttribute: this.displayAttribute, attribute: attributeName, map: map, type: this.lastType};
     this.trigger('change:visualSet', {visualSet: this.visualSet, sender: this});
 };
 

@@ -27,7 +27,7 @@ function CellMapsConfiguration(args) {
     this.id = Utils.genId('CellMapsConfigurationPanel');
 
     this.width = 300;
-    this.height = 825;
+    this.height = 700;
     this.session;
     this.autoRender = true;
 
@@ -41,6 +41,8 @@ function CellMapsConfiguration(args) {
     this.panel;
     this.vertexComboStore;
     this.edgeComboStore;
+
+    this.settingsMode = "simple";
 
     this.on(this.handlers);
 
@@ -486,7 +488,27 @@ CellMapsConfiguration.prototype = {
             settings.push({configs: configs, label: label, slicesName: 'donutSlices'});
         }
     },
-
+    _setDefaultSetting: function (type, e) {
+        this.session.setVertexDefault(e.sender.displayAttribute, e.sender.getDefaultValue());
+        console.log("settings mode = " + this.settingsMode);
+        if (this.settingsMode === "simple") {
+            if (e.sender.visualSet) {
+                this.trigger('change:' + type + 'DisplayAttribute', e.sender.visualSet);
+            } else {
+                this.trigger('change:' + type, e);
+            }
+        } else if (this.settingsMode === "complex") {
+            this._processComplexVisualSet();
+        } else {
+            console.log("GM Configuration, settings mode not valid")
+        }
+    },
+    _setSimpleVisualSet: function (type, e, widgetName) {
+        if(e.visualSet){
+            this.session.setVisualSet(widgetName, e.visualSet);
+            this.trigger('change:' + type + 'DisplayAttribute', e.visualSet);
+        }
+    },
     createPropertiesPanel: function () {
         var _this = this;
 
@@ -502,12 +524,12 @@ CellMapsConfiguration.prototype = {
 
 
         this.vertexOpacityAttributeWidget = new VisualAttributeWidget({
-            displayAttribute: 'Opacity',
+            displayAttribute: 'opacity',
             displayLabel: 'Opacity',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
             control: new NumberAttributeControl({
-                displayAttribute: 'Opacity',
+                displayAttribute: 'opacity',
                 defaultValue: this.session.getVertexDefault('opacity'),
                 maxValue: 1,
                 minValue: 0,
@@ -515,24 +537,23 @@ CellMapsConfiguration.prototype = {
             }),
             handlers: {
                 'change:default': function (e) {
-                    _this.session.setVertexDefault('opacity', e.sender.getDefaultValue()),
-                        _this.trigger('change:vertexOpacity', e);
+                    _this._setDefaultSetting('vertex', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.session.setVisualSet('vertexOpacityAttributeWidget', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexOpacityAttributeWidget');
                 },
                 'click:ok': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexOpacityAttributeWidget');
                 }
             }
         });
         this.vertexLabelSizeAttributeWidget = new VisualAttributeWidget({
-            displayAttribute: 'Label size',
+            displayAttribute: 'labelSize',
             displayLabel: 'Label size',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
             control: new NumberAttributeControl({
-                displayAttribute: 'Label size',
+                displayAttribute: 'labelSize',
                 defaultValue: this.session.getVertexDefault('labelSize'),
                 maxValue: 16,
                 minValue: 0,
@@ -543,14 +564,14 @@ CellMapsConfiguration.prototype = {
                     _this.session.setVertexDefault('labelSize', e.sender.getDefaultValue());
                     var btn = _this.vertexLabelComponent.down('button');
                     if (btn.pressed) {
-                        _this.trigger('change:vertexLabelSize', e);
+                        _this.trigger('change:vertex', e);
                     }
                 },
                 'change:visualSet': function (e) {
-                    _this.session.setVisualSet('vertexLabelSizeAttributeWidget', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexLabelSizeAttributeWidget');
                 },
                 'click:ok': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexLabelSizeAttributeWidget');
                 }
             }
         });
@@ -560,7 +581,7 @@ CellMapsConfiguration.prototype = {
             pressed: true,
             changeVisibility: function (bool) {
                 var value = (bool === true) ? _this.vertexLabelSizeAttributeWidget.getDefaultValue() : 0;
-                _this.trigger('change:vertexLabelSize', {value: value, sender: _this});
+                _this.trigger('change:verte', {value: value, sender: {displayAttribute: 'labelSize'}});
             },
             changeAttribute: function (attribute) {
                 _this.trigger('change:vertexLabel', {value: attribute});
@@ -568,12 +589,12 @@ CellMapsConfiguration.prototype = {
         });
 
         this.vertexShapeAttributeWidget = new VisualAttributeWidget({
-            displayAttribute: 'Shape',
+            displayAttribute: 'shape',
             displayLabel: 'Shape',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
             control: new SelectAttributeControl({
-                displayAttribute: 'Shape',
+                displayAttribute: 'shape',
                 defaultValue: this.session.getVertexDefault('shape'),
                 comboValues: [
                     {name: 'circle'},
@@ -584,16 +605,13 @@ CellMapsConfiguration.prototype = {
             }),
             handlers: {
                 'change:default': function (e) {
-                    _this.session.setVertexDefault('shape', e.sender.getDefaultValue());
-                    if (!_this._checkComplexVisualSet()) {
-                        _this.trigger('change:vertexShape', e);
-                    }
+                    _this._setDefaultSetting('vertex', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.session.setVisualSet('vertexShapeAttributeWidget', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexShapeAttributeWidget');
                 },
                 'click:ok': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexShapeAttributeWidget');
                 }
             }
         });
@@ -601,44 +619,35 @@ CellMapsConfiguration.prototype = {
 
         /* Vertex */
         this.vertexColorAttributeWidget = new VisualAttributeWidget({
-            displayAttribute: 'Color',
+            displayAttribute: 'color',
             displayLabel: 'Color fill',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
             control: new ColorAttributeControl({
-                displayAttribute: 'Color',
+                displayAttribute: 'color',
                 defaultValue: this.session.getVertexDefault('color')
             }),
             handlers: {
                 'change:default': function (e) {
-                    _this.session.setVertexDefault('color', e.sender.getDefaultValue());
                     _this.vertexPieColorAttributeWidget.defaultValueChanged(e.value);
-                    if (!_this._checkComplexVisualSet()) {
-                        if (e.sender.visualSet) {
-                            _this.trigger('change:vertexDisplayAttribute', e.sender.visualSet);
-                        } else {
-                            _this.trigger('change:vertexColor', e);
-                        }
-                    } else {
-                        _this._processComplexVisualSet();
-                    }
+                    _this._setDefaultSetting('vertex', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.session.setVisualSet('vertexColorAttributeWidget', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexColorAttributeWidget');
                 },
                 'click:ok': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexColorAttributeWidget');
                 }
             }
         });
 
         this.vertexSizeAttributeWidget = new VisualAttributeWidget({
-            displayAttribute: 'Size',
+            displayAttribute: 'size',
             displayLabel: 'Size',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
             control: new NumberAttributeControl({
-                displayAttribute: 'Size',
+                displayAttribute: 'size',
                 defaultValue: this.session.getVertexDefault('size'),
                 maxValue: 160,
                 minValue: 0,
@@ -646,66 +655,48 @@ CellMapsConfiguration.prototype = {
             }),
             handlers: {
                 'change:default': function (e) {
-                    _this.session.setVertexDefault('size', e.sender.getDefaultValue());
                     _this.vertexPieSizeAttributeWidget.defaultValueChanged(e.value);
-                    if (!_this._checkComplexVisualSet()) {
-                        if (e.sender.visualSet) {
-                            _this.trigger('change:vertexDisplayAttribute', e.sender.visualSet);
-                        } else {
-                            _this.trigger('change:vertexSize', e);
-                        }
-                    } else {
-                        _this._processComplexVisualSet();
-                    }
+                    _this._setDefaultSetting('vertex', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.session.setVisualSet('vertexSizeAttributeWidget', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexSizeAttributeWidget');
                 },
                 'click:ok': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexSizeAttributeWidget');
                 }
             }
         });
 
         this.vertexStrokeColorAttributeWidget = new VisualAttributeWidget({
-            displayAttribute: 'Stroke color',
+            displayAttribute: 'strokeColor',
             displayLabel: 'Stroke color',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
             control: new ColorAttributeControl({
-                displayAttribute: 'Stroke color',
+                displayAttribute: 'strokeColor',
                 defaultValue: this.session.getVertexDefault('strokeColor')
             }),
             handlers: {
                 'change:default': function (e) {
-                    _this.session.setVertexDefault('strokeColor', e.sender.getDefaultValue());
                     _this.vertexDonutColorAttributeWidget.defaultValueChanged(e.value);
-                    if (!_this._checkComplexVisualSet()) {
-                        if (e.sender.visualSet) {
-                            _this.trigger('change:vertexDisplayAttribute', e.sender.visualSet);
-                        } else {
-                            _this.trigger('change:vertexStrokeColor', e);
-                        }
-                    } else {
-                        _this._processComplexVisualSet();
-                    }
+                    _this._setDefaultSetting('vertex', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.session.setVisualSet('vertexStrokeColorAttributeWidget', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexStrokeColorAttributeWidget');
                 },
                 'click:ok': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexStrokeColorAttributeWidget');
                 }
             }
         });
 
         this.vertexStrokeSizeAttributeWidget = new VisualAttributeWidget({
-            displayAttribute: 'Stroke size',
+            displayAttribute: 'strokeSize',
             displayLabel: 'Stroke size',
             attributeManager: this.vertexAttributeManager,
             attributesStore: this.vertexComboStore,
             control: new NumberAttributeControl({
-                displayAttribute: 'Stroke size',
+                displayAttribute: 'strokeSize',
                 defaultValue: this.session.getVertexDefault('strokeSize'),
                 maxValue: 20,
                 minValue: 0,
@@ -713,23 +704,14 @@ CellMapsConfiguration.prototype = {
             }),
             handlers: {
                 'change:default': function (e) {
-                    _this.session.setVertexDefault('strokeSize', e.sender.getDefaultValue());
                     _this.vertexDonutSizeAttributeWidget.defaultValueChanged(e.value);
-                    if (!_this._checkComplexVisualSet()) {
-                        if (e.sender.visualSet) {
-                            _this.trigger('change:vertexDisplayAttribute', e.sender.visualSet);
-                        } else {
-                            _this.trigger('change:vertexStrokeSize', e);
-                        }
-                    } else {
-                        _this._processComplexVisualSet();
-                    }
+                    _this._setDefaultSetting('vertex', e);
                 },
                 'change:visualSet': function (e) {
-                    _this.session.setVisualSet('vertexStrokeSizeAttributeWidget', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexStrokeSizeAttributeWidget');
                 },
                 'click:ok': function (e) {
-                    _this.trigger('change:vertexDisplayAttribute', e.visualSet);
+                    _this._setSimpleVisualSet('vertex', e, 'vertexStrokeSizeAttributeWidget');
                 }
             }
         });
@@ -1112,7 +1094,7 @@ CellMapsConfiguration.prototype = {
 //            plain:true,
             defaults: {
                 border: false,
-                bodyPadding: 5
+//                bodyPadding: 5
             },
             items: [
                 {
@@ -1120,6 +1102,7 @@ CellMapsConfiguration.prototype = {
                     defaults: {
                         margin: '2 0 2 0'
                     },
+                    bodyPadding: 5,
                     items: [
                         {
                             xtype: 'box',
@@ -1139,44 +1122,80 @@ CellMapsConfiguration.prototype = {
                         this.vertexOpacityAttributeWidget.getComponent(),
                         this.vertexShapeAttributeWidget.getComponent(),
                         {
-                            xtype: 'box',
-                            margin: '20 0 5 0',
-                            flex: 1,
-                            style: {
-                                fontWeight: 'bold',
-                                fontSize: '110%',
-                                borderBottom: '1px solid gray'
+                            xtype: 'tabpanel',
+                            border: 0,
+                            margin: '20 0 0 0',
+                            width: '100%',
+                            plain: true,
+                            listeners: {
+                                tabchange: function (tabPanel, newCard, oldCard, eOpts) {
+                                    if (newCard.title === "Simple settings") {
+                                        _this.settingsMode = "simple";
+                                        _this.vertexShapeAttributeWidget.component.enable()
+                                    } else {
+                                        _this.settingsMode = "complex";
+                                        _this.vertexShapeAttributeWidget.component.disable()
+                                    }
+                                }
                             },
-                            html: 'Simple node settings'
+                            items: [
+                                {
+                                    title: 'Simple settings',
+                                    border: 0,
+                                    items: [
+                                        attrSettingsHeader,
+                                        this.vertexColorAttributeWidget.getComponent(),
+                                        this.vertexStrokeColorAttributeWidget.getComponent(),
+                                        this.vertexSizeAttributeWidget.getComponent(),
+                                        this.vertexStrokeSizeAttributeWidget.getComponent(),
+                                    ]
+                                },
+                                {
+                                    title: 'Complex settings',
+                                    border: 0,
+                                    items: [
+                                        complexSettingsHeader,
+                                        this.vertexPieColorAttributeWidget.getComponent(),
+                                        this.vertexPieSizeAttributeWidget.getComponent(),
+                                        this.vertexPieAreaAttributeWidget.getComponent(),
+                                        this.vertexPieLabelComponent,
+                                        this.vertexPieComplexLabelComponent,
+                                        complexSettingsHeader,
+                                        this.vertexDonutColorAttributeWidget.getComponent(),
+                                        this.vertexDonutSizeAttributeWidget.getComponent(),
+                                        this.vertexDonutAreaAttributeWidget.getComponent(),
+                                        this.vertexDonutLabelComponent,
+                                        this.vertexDonutComplexLabelComponent
+                                    ]
+                                }
+                            ]
                         },
-                        attrSettingsHeader,
-                        this.vertexColorAttributeWidget.getComponent(),
-                        this.vertexStrokeColorAttributeWidget.getComponent(),
-                        this.vertexSizeAttributeWidget.getComponent(),
-                        this.vertexStrokeSizeAttributeWidget.getComponent(),
-                        {
-                            xtype: 'box',
-                            margin: '20 0 5 0',
-                            flex: 1,
-                            style: {
-                                fontWeight: 'bold',
-                                fontSize: '110%',
-                                borderBottom: '1px solid gray'
-                            },
-                            html: 'Complex node settings'
-                        },
-                        complexSettingsHeader,
-                        this.vertexPieColorAttributeWidget.getComponent(),
-                        this.vertexPieSizeAttributeWidget.getComponent(),
-                        this.vertexPieAreaAttributeWidget.getComponent(),
-                        this.vertexPieLabelComponent,
-                        this.vertexPieComplexLabelComponent,
-                        complexSettingsHeader,
-                        this.vertexDonutColorAttributeWidget.getComponent(),
-                        this.vertexDonutSizeAttributeWidget.getComponent(),
-                        this.vertexDonutAreaAttributeWidget.getComponent(),
-                        this.vertexDonutLabelComponent,
-                        this.vertexDonutComplexLabelComponent
+
+
+//                        {
+//                            xtype: 'box',
+//                            margin: '20 0 5 0',
+//                            flex: 1,
+//                            style: {
+//                                fontWeight: 'bold',
+//                                fontSize: '110%',
+//                                borderBottom: '1px solid gray'
+//                            },
+//                            html: 'Simple node settings'
+//                        },
+
+//                        {
+//                            xtype: 'box',
+//                            margin: '20 0 5 0',
+//                            flex: 1,
+//                            style: {
+//                                fontWeight: 'bold',
+//                                fontSize: '110%',
+//                                borderBottom: '1px solid gray'
+//                            },
+//                            html: 'Complex node settings'
+//                        },
+
                     ]
                 },
                 {
@@ -1186,6 +1205,7 @@ CellMapsConfiguration.prototype = {
                         labelWidth: 100,
                         margin: '0 0 2 0'
                     },
+                    bodyPadding: 5,
                     items: [
                         {
                             xtype: 'box',

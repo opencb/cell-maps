@@ -35,7 +35,7 @@ function CellMaps(args) {
         "network-miner.default": true,
         "fatigo.default": true
     };
-    this.version = "2.0.6";
+    this.version = "2.0.7";
     this.autoRender = true;
     this.border = false;
     this.target;
@@ -731,26 +731,12 @@ CellMaps.prototype = {
             edgeAttributeManager: this.networkViewer.network.edgeAttributeManager,
             session: this.session,
             handlers: {
-                'change:vertexColor': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('color', e.value);
-                },
-                'change:vertexStrokeColor': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('strokeColor', e.value);
-                },
-                'change:vertexSize': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('size', e.value, true);
-                },
-                'change:vertexStrokeSize': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('strokeSize', e.value, true);
-                },
-                'change:vertexShape': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('shape', e.value, true);
-                },
-                'change:vertexOpacity': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('opacity', e.value);
-                },
-                'change:vertexLabelSize': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttribute('labelSize', e.value);
+                'change:vertex': function (e) {
+                    var redraw = false;
+                    if (["size", "strokeSize", "shape"].indexOf(e.sender.displayAttribute) !== -1) {
+                        redraw = true;
+                    }
+                    _this.networkViewer.network.setVerticesRendererAttribute(e.sender.displayAttribute, e.value, redraw);
                 },
                 'change:vertexLabelPositionX': function (e) {
                     _this.networkViewer.network.setVerticesRendererAttribute('labelPositionX', e.value);
@@ -761,6 +747,27 @@ CellMaps.prototype = {
                 'change:vertexLabel': function (e) {
                     _this.networkViewer.network.setVertexLabelByAttribute(e.value);
                 },
+//                'change:vertexColor': function (e) {
+//                    _this.networkViewer.network.setVerticesRendererAttribute('color', e.value);
+//                },
+//                'change:vertexStrokeColor': function (e) {
+//                    _this.networkViewer.network.setVerticesRendererAttribute('strokeColor', e.value);
+//                },
+//                'change:vertexSize': function (e) {
+//                    _this.networkViewer.network.setVerticesRendererAttribute('size', e.value, true);
+//                },
+//                'change:vertexStrokeSize': function (e) {
+//                    _this.networkViewer.network.setVerticesRendererAttribute('strokeSize', e.value, true);
+//                },
+//                'change:vertexShape': function (e) {
+//                    _this.networkViewer.network.setVerticesRendererAttribute('shape', e.value, true);
+//                },
+//                'change:vertexOpacity': function (e) {
+//                    _this.networkViewer.network.setVerticesRendererAttribute('opacity', e.value);
+//                },
+//                'change:vertexLabelSize': function (e) {
+//                    _this.networkViewer.network.setVerticesRendererAttribute('labelSize', e.value);
+//                },
 
 
                 'change:edgeColor': function (e) {
@@ -783,7 +790,8 @@ CellMaps.prototype = {
                 },
 
                 'change:vertexDisplayAttribute': function (e) {
-                    _this.networkViewer.network.setVerticesRendererAttributeMap(e.displayAttribute, e.attribute, e.map);
+                    var redraw = true;
+                    _this.networkViewer.network.setVerticesRendererAttributeMap(e.displayAttribute, e.attribute, e.map, redraw);
                 },
                 'change:edgeDisplayAttribute': function (e) {
                     _this.networkViewer.network.setEdgesRendererAttributeMap(e.displayAttribute, e.attribute, e.map);

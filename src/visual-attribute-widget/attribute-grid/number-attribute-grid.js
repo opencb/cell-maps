@@ -8,13 +8,6 @@ function NumberAttributeGrid(args) {
 
     this.normArray = [];
 
-
-    this.attributeManager.on('change:recordsAttribute', function (e) {
-    });
-    this.attributeManager.on('change:data', function (e) {
-
-    });
-
     this.changeRecordsAttributeHandler = function (e) {
         _this._updateNormArray();
         _this._updateUniqueStore(e.attributeName);

@@ -133,7 +133,7 @@ ColorAttributeControl.prototype._getColorSelect = function (defaultColor, handle
     return Ext.create('Ext.Component', {
         margin: '4 10 0 0',
         name: 'control',
-        html: '<div style="border:1px solid gray;width:65px;height:15px;background-color: ' + defaultColor + ';" color="' + defaultColor + '"></div>',
+        html: '<div style="border:1px solid gray;width:65px;height:18px;background-color: ' + defaultColor + ';" color="' + defaultColor + '"></div>',
         setRawValue: function (color) {
             // check if rendered to modify the color div
             this.color = color;
@@ -182,7 +182,7 @@ ColorAttributeControl.prototype._createColorMenu = function () {
     $(this.colorSelect).simplecolorpicker()
     var colorMenu = Ext.create('Ext.menu.Menu', {
         plain: true,
-        width: 206,
+        width: 218,
         items: [
             {
                 xtype: 'box',
@@ -210,11 +210,7 @@ ColorAttributeControl.prototype._showColorMenu = function (x, y, func) {
 };
 
 ColorAttributeControl.prototype._setColorSelect = function (select) {
-    var colors = ["cccccc", "888888",
-        "ac725e", "d06b64", "f83a22", "fa573c", "ff7537", "ffad46", "42d692", "16a765", "7bd148", "b3dc6c", "fbe983", "fad165",
-        "92e1c0", "9fe1e7", "9fc6e7", "4986e7", "9a9cff", "b99aff", "c2c2c2", "cabdbf", "cca6ac", "f691b2", "cd74e6", "a47ae2",
-        "ffffff", "000000"
-    ];
+    var colors = ["d88c8c", "d8ac8c", "d8cc8c", "c5d88c", "a5d88c", "8cd892", "8cd8b2", "8cd8d2", "8cbfd8", "8c9fd8", "988cd8", "b88cd8", "e19797", "e1b697", "e1d597", "cfe197", "b0e197", "97e19d", "97e1bc", "97e1db", "97c9e1", "97aae1", "a397e1", "c297e1", "eba7a7", "ebc3a7", "ebdfa7", "daeba7", "beeba7", "a7ebad", "a7ebc9", "a7ebe5", "a7d4eb", "a7b8eb", "b2a7eb", "cfa7eb", "f2b9b9", "f2d1b9", "f2e9b9", "e4f2b9", "ccf2b9", "b9f2be", "b9f2d6", "b9f2ee", "b9dff2", "b9c7f2", "c3b9f2", "dab9f2", "f7c9c9", "f7dcc9", "f7efc9", "ecf7c9", "d8f7c9", "c9f7cd", "c9f7e0", "c9f7f3", "c9e8f7", "c9d4f7", "d0c9f7", "e4c9f7", "fbdede", "fbeade", "fbf7de", "f4fbde", "e8fbde", "defbe0", "defbed", "defbf9", "def2fb", "dee5fb", "e3defb", "efdefb", "ffffff", "eaeaea", "d5d5d5", "c0c0c0", "aaaaaa", "959595", "808080", "6b6b6b", "555555", "404040", "2b2b2b", "161616"];
 
     for (var i in colors) {
         var menuEntry = $('<option value="#' + colors[i] + '">#' + colors[i] + '</option>')[0];
