@@ -5,14 +5,17 @@
 
     <!-- build:[src] vendor/ -->
     <script src="../lib/jsorolla/vendor/platform.js"></script>
+    <script src="../lib/jsorolla/vendor/polymer/polymer.js"></script>
     <!-- /build -->
 
     <link rel="import" href="cm-toolbar.html">
+    <link rel="import" href="plugins/reactome-plugin.html">
 
     <!-- build:[href] components/ -->
     <link rel="import" href="../lib/jsorolla/src/lib/components/jso-color-picker.html">
     <!-- /build -->
 
+    <script src="../lib/jsorolla/vendor/modernizr.custom.01488.js"></script>
 
 </head>
 <body>
@@ -37,7 +40,8 @@
 <!-- build:[src] vendor/ext-5/  -->
 <script src="../lib/jsorolla/vendor/ext-5/ext-all.js"></script>
 <!-- /build -->
-<script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/5.0.0/build/packages/ext-charts/build/ext-charts.js"></script>
+<script type="text/javascript"
+        src="http://cdn.sencha.io/ext/gpl/5.0.0/build/packages/ext-charts/build/ext-charts.js"></script>
 
 <script>
     WORKERS_PATH = "./";
@@ -53,6 +57,7 @@
 <script src="../lib/jsorolla/vendor/xml2json.js"></script>
 <script src="../lib/jsorolla/vendor/jszip.min.js"></script>
 <script src="../lib/jsorolla/vendor/xlsx.min.js"></script>
+<script src="../lib/jsorolla/vendor/jxon.js"></script>
 
 
 <!-- These dependencies must go AFTER jquery -->
@@ -79,7 +84,8 @@
 
 <script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/network-edit-widget.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/layout-configure-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attribute-layout-configure-widget.js"></script>
+<script type="text/javascript"
+        src="../lib/jsorolla/src/lib/widgets/network/attribute-layout-configure-widget.js"></script>
 
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-idb.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-store.js"></script>
@@ -116,7 +122,8 @@
 <script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/sif-network-data-adapter.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/text-network-data-adapter.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/xlsx-network-data-adapter.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/data-adapter/network/attribute-network-data-adapter.js"></script>
+<script type="text/javascript"
+        src="../lib/jsorolla/src/lib/data-adapter/network/attribute-network-data-adapter.js"></script>
 
 <script type="text/javascript" src="../lib/jsorolla/src/lib/data-source/data-source.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/data-source/file-data-source.js"></script>
@@ -130,8 +137,10 @@
 <script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/xlsx-network-file-widget.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attribute-network-file-widget.js"></script>
 
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attributes/attribute-edit-widget.js"></script>
-<script type="text/javascript" src="../lib/jsorolla/src/lib/widgets/network/attributes/attribute-filter-widget.js"></script>
+<script type="text/javascript"
+        src="../lib/jsorolla/src/lib/widgets/network/attributes/attribute-edit-widget.js"></script>
+<script type="text/javascript"
+        src="../lib/jsorolla/src/lib/widgets/network/attributes/attribute-filter-widget.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-store.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/network/attributes/attribute-manager-idb.js"></script>
 
@@ -148,7 +157,6 @@
 <!-- /build -->
 
 
-
 <!-- build:js cell-maps.min.js -->
 <script type="text/javascript" src="plugins/fatigo-plugin.js"></script>
 <script type="text/javascript" src="plugins/intact-plugin.js"></script>
@@ -162,7 +170,6 @@
 <script type="text/javascript" src="forms/snow-form.js"></script>
 <script type="text/javascript" src="forms/network-miner-form.js"></script>
 <script type="text/javascript" src="forms/fatigo-form.js"></script>
-
 
 
 <script type="text/javascript" src="visual-attribute-widget/visual-attribute-widget.js"></script>
@@ -182,7 +189,6 @@
 <script type="text/javascript" src="cell-maps-configuration.js"></script>
 <script type="text/javascript" src="cell-maps.js"></script>
 <!-- /build -->
-
 
 
 <script>
@@ -209,8 +215,8 @@
         cellMaps = new CellMaps({
             target: 'application',
             session: session,
-            width: $('html').width(),
-            height: $('html').height(),
+            width: $(document).width(),
+            height: $(document).height(),
             handlers: {
                 'session:save-request': function (e) {
                     localStorage.setItem('CELLMAPS_SESSION', JSON.stringify(session));
@@ -237,8 +243,8 @@
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function () {
                 cellMaps.resize({
-                    width: $('html').width(),
-                    height: $('html').height()
+                    width: $(document).width(),
+                    height: $(document).height()
                 });
             }, 500);
         });

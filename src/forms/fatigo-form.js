@@ -123,6 +123,9 @@ FatigoForm.prototype.beforeRun = function () {
         this.paramsWS['go-cc-keyword-operator'] = 'all';
     }
 
+    if (!('list2' in this.paramsWS)) {
+        this.paramsWS['genome'] = '';
+    }
 
     this.paramsWS['annotations'] = 'none';
 };
@@ -306,7 +309,7 @@ FatigoForm.prototype._getDataForm = function () {
     });
 
     this.radioInputType1 = Ext.create('Ext.form.RadioGroup', {
-        fieldLabel: '<span style="color:'+this.EMPH_COLOR+'">Select your list 1 from</span>',
+        fieldLabel: '<span style="color:' + this.EMPH_COLOR + '">Select your list 1 from</span>',
         labelWidth: this.labelWidth,
         labelAlign: 'top',
         defaults: {
@@ -461,7 +464,7 @@ FatigoForm.prototype._getDataForm = function () {
     });
 
     this.radioInputType2 = Ext.create('Ext.form.RadioGroup', {
-        fieldLabel: '<span style="color:'+this.EMPH_COLOR+'">Select your list 2 from</span>',
+        fieldLabel: '<span style="color:' + this.EMPH_COLOR + '">Select your list 2 from</span>',
         labelWidth: this.labelWidth,
         labelAlign: 'top',
         defaults: {
@@ -731,12 +734,12 @@ FatigoForm.prototype._getOptionsForm = function () {
         items: [
             {
                 xtype: 'box',
-                html: '<span style="color:'+this.EMPH_COLOR+'">Select the side of the comparison of the Fisher test.</span>'
+                html: '<span style="color:' + this.EMPH_COLOR + '">Select the side of the comparison of the Fisher test.</span>'
             },
             this.fisherTestCombo,
             {
                 xtype: 'box',
-                html: '<span style="color:'+this.EMPH_COLOR+'">Do you want to remove duplicates from your list?</span>',
+                html: '<span style="color:' + this.EMPH_COLOR + '">Do you want to remove duplicates from your list?</span>',
                 margin: '20 0 10 0'
             },
             this.removeDuplicatesCombo,

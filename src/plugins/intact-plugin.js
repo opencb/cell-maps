@@ -426,8 +426,8 @@ IntActPlugin.prototype.retrieveData = function () {
                 });
                 network.addEdge({edge: edge});
             }
-            network.batchEnd();
             _this.cellMaps.networkViewer.refreshNetwork();
+            network.batchEnd();
             _this.progress.updateProgress(1, 'Complete!');
             _this.cellMaps.networkViewer.setLayout('Force directed');
         }

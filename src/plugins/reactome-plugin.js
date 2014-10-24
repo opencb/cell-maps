@@ -29,6 +29,9 @@ function ReactomePlugin(args) {
     this.nodeIdNameDic = {};
     this.pathwayComponents = {};
     this.reusedNodes = {};
+
+    this.cellbase_host = "http://ws-beta.bioinfo.cipf.es/cellbase/rest";
+    this.cellbase_version = "v3";
 }
 
 ReactomePlugin.prototype.show = function () {
@@ -38,7 +41,7 @@ ReactomePlugin.prototype.show = function () {
 ReactomePlugin.prototype.draw = function () {
     var _this = this;
 
-    var speciesSelected = "hsapiens", pathwaySelected;
+    this.speciesSelected = "hsapiens", this.pathwaySelected;
     var speciesStore = Ext.create('Ext.data.Store', {
         fields: [ 'name', 'value' ],
         data: [
@@ -77,7 +80,7 @@ ReactomePlugin.prototype.draw = function () {
         width: 400,
 //        labelWidth: 60,
 //        fieldLabel: 'Species',
-        value: speciesSelected,
+        value: this.speciesSelected,
         allowBlank: false,
         editable: false,
         displayField: 'name',
@@ -86,75 +89,8 @@ ReactomePlugin.prototype.draw = function () {
         store: speciesStore,
         listeners: {
             change: function (combo, newValue, oldValue) {
-                speciesSelected = newValue;
+                _this.speciesSelected = newValue;
                 renderTree();
-            }
-        }
-    });
-
-    var selectionType = Ext.create('Ext.form.RadioGroup', {
-        fieldLabel: 'Selection',
-        labelWidth: 50,
-        width: 200,
-        items: [
-            { boxLabel: 'Single', name: 'st', inputValue: 'single', checked: true},
-            { boxLabel: 'Multiple', name: 'st', inputValue: 'multiple'}
-        ]
-    });
-
-    Ext.define('pathwayModel', {
-        extend: 'Ext.data.Model',
-        fields: [
-            {name: 'text', mapping: 'displayName'},
-            {name: 'name', mapping: 'name'},
-            {name: 'checked', defaultValue: false, disabled: true}
-//	             {name:'children', mapping :'subPathways'}
-        ]
-    });
-
-    var treeStore = Ext.create('Ext.data.TreeStore', {
-        model: 'pathwayModel',
-        root: {
-            title: 'Pathways',
-            expand: true,
-            children: []
-        }
-    });
-
-    var tree = Ext.create('Ext.tree.Panel', {
-        store: treeStore,
-        title: 'Pathways',
-        flex: 3,
-        border: 0,
-        rootVisible: false,
-        useArrows: true,
-        viewConfig: {
-            markDirty: false
-        },
-        tbar: {
-            items: [selectionType]
-        },
-        listeners: {
-            itemclick: function (i, record, item, index, e, eOpts) {
-                pathwaySelected = record.raw.name;
-                var selectMode = selectionType.getChecked()[0].inputValue;
-
-                if (selectMode == "multiple") {
-                    if (record.data.checked) {
-                        _this.removePathway(pathwaySelected);
-                    }
-                    else {
-                        _this.addPathway(speciesSelected, pathwaySelected);
-                    }
-                }
-                else {
-                    var itemsChecked = this.getChecked();
-                    for (var i = 0; i < itemsChecked.length; i++) {
-                        itemsChecked[i].set("checked", false);
-                    }
-                    _this.loadPathway(speciesSelected, pathwaySelected);
-                }
-                record.set("checked", !record.data.checked);
             }
         }
     });
@@ -176,15 +112,15 @@ ReactomePlugin.prototype.draw = function () {
         disabled: true,
         listeners: {
             click: function (btn, event, eOpts) {
-                tree.setLoading(true);
-                tree.collapseAll();
-                var rootNode = tree.getRootNode();
+                _this.tree.setLoading(true);
+                _this.tree.collapseAll();
+                var rootNode = _this.tree.getRootNode();
 
                 //remove style for each node
                 rootNode.cascadeBy(function (node) {
                     var nodeText = node.get("text");
                     if (!(nodeText instanceof Array)) {
-                        var newText = nodeText.replace("<span class='err'>", "").replace("</span>", "");
+                        var newText = nodeText.replace('<span style="color:red">', '').replace('</span>', '');
                         node.set("text", newText);
                     }
                 });
@@ -193,7 +129,7 @@ ReactomePlugin.prototype.draw = function () {
                 var searchBy = searchRadioGrp.getChecked()[0].inputValue;
 
                 $.ajax({
-                    url: CELLBASE_HOST + "/" + CELLBASE_VERSION + "/" + speciesSelected + "/network/reactome-pathway/search?by=" + searchBy + "&text=" + searchText + "&onlyIds=true",
+                    url: _this.cellbase_host + "/" + _this.cellbase_version + "/" + _this.speciesSelected + "/network/reactome-pathway/search?by=" + searchBy + "&text=" + searchText + "&onlyIds=true",
                     dataType: 'json',
                     success: function (res) {
                         var data = res.response;
@@ -203,10 +139,10 @@ ReactomePlugin.prototype.draw = function () {
                             var child = rootNode.findChild("name", json[i].name, true);
 //    					child.set("checked", true);
 //    					child.expand();
-                            child.set("text", "<span class='err'>" + child.get("text") + "</span>");
-                            tree.expandPath(child.getPath("name"), "name");
+                            child.set("text", '<span style="color:red">' + child.get("text") + "</span>");
+                            _this.tree.expandPath(child.getPath("name"), "name");
                         }
-                        tree.setLoading(false);
+                        _this.tree.setLoading(false);
                     }});
             }
         }
@@ -215,7 +151,7 @@ ReactomePlugin.prototype.draw = function () {
     var searchRadioGrp = Ext.create('Ext.form.RadioGroup', {
         layout: 'hbox',
         defaults: {
-            width: 70
+            width: 80
         },
         items: [
             { boxLabel: 'Pathway', name: 'rb', inputValue: 'pathway', checked: true},
@@ -228,6 +164,11 @@ ReactomePlugin.prototype.draw = function () {
         title: "Reactome plugin",
         height: 500,
         width: 600,
+        closable: false,
+        minimizable: true,
+        maximizable: true,
+        constrain: true,
+        collapsible: true,
         layout: {
             type: 'hbox',
             align: 'stretch'
@@ -259,9 +200,13 @@ ReactomePlugin.prototype.draw = function () {
 //                        items: [speciesCombo]
 //                    },
                 ]
-            },
-            tree
-        ]
+            }
+        ],
+        listeners: {
+            minimize: function () {
+                this.hide();
+            }
+        }
     });
 
 
@@ -283,9 +228,9 @@ ReactomePlugin.prototype.draw = function () {
     };
 
     function renderTree() {
-        tree.setLoading(true);
+        _this.window.setLoading(true);
         $.ajax({
-            url: CELLBASE_HOST + "/" + CELLBASE_VERSION + "/" + speciesSelected + "/network/reactome-pathway/tree",
+            url: _this.cellbase_host + "/" + _this.cellbase_version + "/" + _this.speciesSelected + "/network/reactome-pathway/tree",
             dataType: 'json',
             success: function (res) {
                 var data = res.response;
@@ -295,14 +240,99 @@ ReactomePlugin.prototype.draw = function () {
                 });
                 check(json);
 //                var json = JSON.parse(data.replace(/\"subPathways\" : \[ \]/g, "\"leaf\":true").replace(/subPathways/g, "children"));
-                treeStore.setRootNode({
-                    children: json
-                });
-                tree.setLoading(false);
+
+                _this._createTreePanel(json);
+
+                _this.window.setLoading(false);
             }});
     }
+
     renderTree();
 
+};
+
+ReactomePlugin.prototype._createTreePanel = function (json) {
+    var _this = this;
+    if (this.window) {
+        this.tree = this.window.child('treepanel');
+        if (this.tree) {
+            this.window.remove(this.tree, false).destroy();
+        }
+    }
+
+    var selectionType = Ext.create('Ext.form.RadioGroup', {
+        fieldLabel: 'Selection',
+        labelWidth: 50,
+        width: 200,
+        items: [
+            { boxLabel: 'Single', name: 'st', inputValue: 'single', checked: true},
+            { boxLabel: 'Multiple', name: 'st', inputValue: 'multiple'}
+        ]
+    });
+
+    Ext.define('pathwayModel', {
+        extend: 'Ext.data.Model',
+        fields: [
+            {name: 'text', mapping: 'displayName'},
+            {name: 'name', mapping: 'name'},
+            {name: 'checked', defaultValue: false, disabled: true}
+//	             {name:'children', mapping :'subPathways'}
+        ]
+    });
+
+    var treeStore = Ext.create('Ext.data.TreeStore', {
+        model: 'pathwayModel',
+        root: {
+            title: 'Pathways',
+            expand: true,
+            children: json
+        }
+    });
+
+    this.tree = Ext.create('Ext.tree.Panel', {
+        store: treeStore,
+        title: 'Pathways',
+        flex: 3,
+        border: 0,
+        rootVisible: false,
+        useArrows: true,
+        viewConfig: {
+            markDirty: false
+        },
+        tbar: {
+            items: [selectionType]
+        },
+        listeners: {
+            itemclick: function (i, record, item, index, e, eOpts) {
+                _this.pathwaySelected = record.data.name;
+                var selectMode = selectionType.getChecked()[0].inputValue;
+
+                if (selectMode == "multiple") {
+                    if (record.data.checked) {
+                        _this.removePathway(_this.pathwaySelected);
+                    }
+                    else {
+                        _this.addPathway(_this.speciesSelected, _this.pathwaySelected);
+                    }
+                }
+                else {
+                    var itemsChecked = this.getChecked();
+                    for (var i = 0; i < itemsChecked.length; i++) {
+                        itemsChecked[i].set("checked", false);
+                    }
+                    _this.loadPathway(_this.speciesSelected, _this.pathwaySelected);
+                }
+                record.set("checked", !record.data.checked);
+            }
+        }
+    });
+
+
+    if (this.window) {
+        this.window.getLayout().animate = false;
+        this.window.insert(1, this.tree);
+        this.window.getLayout().animate = true;
+    }
 };
 
 ReactomePlugin.prototype.loadPathway = function (speciesSelected, pathwayId) {
@@ -318,10 +348,10 @@ ReactomePlugin.prototype.loadPathway = function (speciesSelected, pathwayId) {
     _this.pathwayComponents[pathwayId] = {};
 
     $.ajax({
-        url: CELLBASE_HOST + "/" + CELLBASE_VERSION + "/" + speciesSelected + "/network/reactome-pathway/" + pathwayId + "/info",
+        url: this.cellbase_host + "/" + this.cellbase_version + "/" + speciesSelected + "/network/reactome-pathway/" + pathwayId + "/info",
         dataType: 'json',
         success: function (res) {
-            debugger
+            network.batchStart();
             var data = res.response;
             var json = JSON.parse(data)[0];
 
@@ -356,6 +386,7 @@ ReactomePlugin.prototype.loadPathway = function (speciesSelected, pathwayId) {
                 if (!_this.reusedNodes[name]) _this.reusedNodes[name] = {};
                 _this.reusedNodes[name][pathwayId] = true;
             }
+            network.batchEnd();
             _this.cellMaps.networkViewer.drawNetwork();
             _this.cellMaps.networkViewer.setLayout('Force directed');
             network.setVertexLabelByAttribute('Name');
@@ -371,7 +402,7 @@ ReactomePlugin.prototype.addPathway = function (speciesSelected, pathwayId) {
     var network = this.cellMaps.networkViewer.network;
 
     $.ajax({
-        url: CELLBASE_HOST + "/" + CELLBASE_VERSION + "/" + speciesSelected + "/network/reactome-pathway/" + pathwayId + "/info",
+        url: this.cellbase_host + "/" + this.cellbase_version + "/" + speciesSelected + "/network/reactome-pathway/" + pathwayId + "/info",
         dataType: 'json',
         success: function (res) {
             var data = res.response;

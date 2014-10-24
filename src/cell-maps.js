@@ -211,9 +211,11 @@ CellMaps.prototype = {
             cellMaps: _this
         });
 
-//        this.reactomePlugin = new ReactomePlugin({
-//            cellMaps: _this
-//        });
+        this.reactomePlugin = new ReactomePlugin({
+            cellMaps: _this
+        });
+//        this.reactomePlugin2 = new ReactomePlugin2();
+//        this.reactomePlugin2.application = _this;
 
 
         /* Job forms */
@@ -299,12 +301,11 @@ CellMaps.prototype = {
         this.intActPlugin.draw();
         this.communitiesStructureDetectionPlugin.draw();
         this.topologicalStudyPlugin.draw();
-//        this.reactomePlugin.draw();
+        this.reactomePlugin.draw();
         this.reactomeFIMicroarrayForm.draw();
         this.snowForm.draw();
         this.networkMinerForm.draw();
         this.fatigoForm.draw();
-
 
     },
     resize: function (args) {
@@ -656,7 +657,8 @@ CellMaps.prototype = {
 
         /**PLUGINS**/
         toolbar.addEventListener('reactome', function (e) {
-//                    _this.reactomePlugin.show();
+            _this.reactomePlugin.show();
+//            _this.reactomePlugin2.show();
         });
         toolbar.addEventListener('intact', function (e) {
             _this.intActPlugin.show(_this);

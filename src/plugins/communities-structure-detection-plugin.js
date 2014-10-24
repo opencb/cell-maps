@@ -160,6 +160,21 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
         html: ''
     });
 
+
+    this.applyButton = Ext.create('Ext.button.Button', {
+        xtype: 'button',
+        text: 'Apply as color',
+        enableToggle: true,
+        pressed: false,
+        toggleHandler: function () {
+            if (this.pressed) {
+                _this.cellMaps.configuration.vertexColorAttributeWidget.applyDirectVisualSet("Community color", "String");
+            } else {
+                _this.cellMaps.configuration.vertexColorAttributeWidget.removeVisualSet();
+            }
+        }
+    });
+
     this.resultContainer = Ext.create('Ext.panel.Panel', {
         hidden: true,
         title: 'Results',
@@ -191,19 +206,7 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
                 align: 'center',
                 html: 'A color has been assigned to the top communities.'
             },
-            {
-                xtype: 'button',
-                text: 'Apply as color',
-                enableToggle: true,
-                pressed: false,
-                toggleHandler: function () {
-                    if (this.pressed) {
-                        _this.cellMaps.configuration.vertexColorAttributeWidget.applyDirectVisualSet("Community color", "String");
-                    } else {
-                        _this.cellMaps.configuration.vertexColorAttributeWidget.removeVisualSet();
-                    }
-                }
-            },
+            this.applyButton,
             this.results
         ]
     });
@@ -213,13 +216,13 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
         closable: false,
         minimizable: true,
         collapsible: true,
-        layout:'fit',
+        layout: 'fit',
         items: {
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
-            width:500,
+            width: 500,
             border: 0,
             items: [
                 {
@@ -256,10 +259,11 @@ CommunitiesStructureDetectionPlugin.prototype.draw = function () {
                     {
                         text: 'Run',
                         handler: function () {
+                            _this.applyButton.toggle(false);
                             _this.retrieveData();
                         }
                     }
-                ],
+                ]
             }
         },
 

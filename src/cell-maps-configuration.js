@@ -27,7 +27,7 @@ function CellMapsConfiguration(args) {
     this.id = Utils.genId('CellMapsConfigurationPanel');
 
     this.width = 300;
-    this.height = 700;
+    this.height = 600;
     this.session;
     this.autoRender = true;
 
@@ -1077,7 +1077,7 @@ CellMapsConfiguration.prototype = {
                 type: 'hbox',
                 align: 'stretch'
             },
-            margin: '10 0 5 0',
+            margin: '5 0 5 0',
             style: {
                 borderBottom: '1px solid lightgray'
             },
@@ -1085,6 +1085,17 @@ CellMapsConfiguration.prototype = {
                 {xtype: 'box', width: 145, margin: '0 0 0 0', html: 'Name'},
                 {xtype: 'box', width: 100, html: 'Attribute'}
             ]
+        };
+        var complexSettingsHeader2 = {
+            xtype: 'container',
+            layout: {
+                type: 'hbox',
+                align: 'stretch'
+            },
+            margin: '5 0 5 0',
+            style: {
+                borderBottom: '1px solid lightgray'
+            }
         };
 
         this.propertiesPanel = Ext.create('Ext.tab.Panel', {
@@ -1104,17 +1115,17 @@ CellMapsConfiguration.prototype = {
                     },
                     bodyPadding: 5,
                     items: [
-                        {
-                            xtype: 'box',
-//                            margin: '5 0 5 0',
-                            flex: 1,
-                            style: {
-                                fontWeight: 'bold',
-                                fontSize: '110%',
-                                borderBottom: '1px solid gray'
-                            },
-                            html: 'General settings'
-                        },
+//                        {
+//                            xtype: 'box',
+////                            margin: '5 0 5 0',
+//                            flex: 1,
+//                            style: {
+//                                fontWeight: 'bold',
+//                                fontSize: '110%',
+//                                borderBottom: '1px solid gray'
+//                            },
+//                            html: 'General settings'
+//                        },
                         this.vertexLabelComponent,
                         this.vertexLabelPositionComponent,
                         attrSettingsHeader,
@@ -1124,7 +1135,7 @@ CellMapsConfiguration.prototype = {
                         {
                             xtype: 'tabpanel',
                             border: 0,
-                            margin: '20 0 0 0',
+                            margin: '5 0 0 0',
                             width: '100%',
                             plain: true,
                             listeners: {
@@ -1160,7 +1171,7 @@ CellMapsConfiguration.prototype = {
                                         this.vertexPieAreaAttributeWidget.getComponent(),
                                         this.vertexPieLabelComponent,
                                         this.vertexPieComplexLabelComponent,
-                                        complexSettingsHeader,
+                                        complexSettingsHeader2,
                                         this.vertexDonutColorAttributeWidget.getComponent(),
                                         this.vertexDonutSizeAttributeWidget.getComponent(),
                                         this.vertexDonutAreaAttributeWidget.getComponent(),
@@ -1207,17 +1218,17 @@ CellMapsConfiguration.prototype = {
                     },
                     bodyPadding: 5,
                     items: [
-                        {
-                            xtype: 'box',
-                            margin: '5 0 5 0',
-                            flex: 1,
-                            style: {
-                                fontWeight: 'bold',
-                                fontSize: '110%',
-                                borderBottom: '1px solid gray'
-                            },
-                            html: 'Simple edge settings'
-                        },
+//                        {
+//                            xtype: 'box',
+//                            margin: '5 0 5 0',
+//                            flex: 1,
+//                            style: {
+//                                fontWeight: 'bold',
+//                                fontSize: '110%',
+//                                borderBottom: '1px solid gray'
+//                            },
+//                            html: 'Simple edge settings'
+//                        },
                         this.edgeLabelComponent,
                         this.edgeLabelSizeAttributeWidget.getComponent(),
                         this.edgeOpacityAttributeWidget.getComponent(),
