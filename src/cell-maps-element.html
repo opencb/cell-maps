@@ -1,0 +1,174 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer-fontawesome/polymer-fontawesome.html">
+<link rel="import" href="../bower_components/sortable-table/sortable-table.html">
+
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
+<link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-sif-network-file-open.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-text-network-file-open.html">
+<link rel="import" href="cm-toolbar.html">
+
+
+<script src="../lib/jsorolla/src/lib/data-adapter/network/sif-network-data-adapter.js"></script>
+<script src="../lib/jsorolla/src/lib/data-adapter/network/attribute-network-data-adapter.js"></script>
+<script src="../lib/jsorolla/src/lib/data-adapter/network/json-network-data-adapter.js"></script>
+<script src="../lib/jsorolla/src/lib/data-adapter/network/text-network-data-adapter.js"></script>
+<script src="../lib/jsorolla/src/lib/data-adapter/network/xlsx-network-data-adapter.js"></script>
+
+<script src="../lib/jsorolla/src/lib/data-source/data-source.js"></script>
+<script src="../lib/jsorolla/src/lib/data-source/file-data-source.js"></script>
+<script src="../lib/jsorolla/src/lib/data-source/string-data-source.js"></script>
+
+<polymer-element name="cell-maps-element">
+    <template>
+        <link rel="stylesheet" href="../lib/jsorolla/styles/css/style.css">
+        <link rel="stylesheet" href="../bower_components/fontawesome/css/font-awesome.min.css">
+        <style>
+            :host {
+                display: block;
+                position: relative;
+
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                cursor: default;
+
+                font-size: 13px;
+            }
+
+            #home {
+                position: relative;
+                background-color: #FFFFFF;
+            }
+
+            div.side-panel {
+                box-sizing: border-box;
+                visibility: hidden;
+                opacity: 0;
+                position: absolute;
+                z-index: 50000;
+                top: 33px;
+                right: 0px;
+                width: 350px;
+                margin: 0;
+                padding: 0;
+                background: white;
+                /*border: 1px solid #c6d0da;*/
+                /*border-right-width: 0px;*/
+                transition: all 0.2s;
+            }
+
+            div.side-panel-shown {
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+
+            [hide=true] {
+                display: none !important;
+            }
+
+            jso-project-browser {
+                height: calc(100vh - 60px);
+            }
+
+            cm-toolbar {
+                background-color: #ffffff;
+            }
+
+            jso-network-viewer {
+                height: calc(100vh - 90px);
+            }
+
+            /*#header{*/
+            /*height:60px;*/
+            /*background-color: #ffffff;*/
+            /*}*/
+            /*#title{*/
+            /*height:60px;*/
+            /*line-height: 60px;*/
+            /*font-size: 25px;*/
+            /*color:blueviolet;*/
+            /*margin-left:5vw;*/
+            /*}*/
+
+        </style>
+        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}" appTitle="Cell Maps"
+                    description="Systems Biology Visualization">
+
+        </jso-header>
+
+        <cm-toolbar hide="{{selectedOption != 'home'}}"
+                    on-import-sif="{{handleImportSifMenu}}"
+                    on-import-text="{{handleImportTextMenu}}"
+                >
+        </cm-toolbar>
+
+        <jso-network-viewer id="networkViewer" hide="{{selectedOption != 'home'}}">
+        </jso-network-viewer>
+
+
+        <template if="{{selectedMenu == 'opensif' && selectedOption == 'home'}}">
+            <jso-sif-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportSif}}">
+
+            </jso-sif-network-file-open>
+        </template>
+        <template if="{{selectedMenu == 'opentext' && selectedOption == 'home'}}">
+            <jso-text-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportText}}">
+
+            </jso-text-network-file-open>
+        </template>
+
+
+        <jso-project-browser hide="{{selectedOption != 'projects' }}" userData="{{userData}}"
+                             selectedProject="{{selectedProject}}" selectedStudy="{{selectedStudy}}">
+
+        </jso-project-browser>
+
+
+    </template>
+    <script>
+        Polymer({
+            created: function () {
+                this.selectedOption = 'home';
+                this.selectedMenu = '';
+                this.userData;
+
+                this.selectedProject;
+                this.selectedStudy;
+
+            },
+            ready: function () {
+            },
+            handleAppMenu: function (e) {
+                this.$.sidePanel.classList.toggle('side-panel-shown');
+            },
+            __iliketomoveit: function () {
+                this.$.networkViewer.setLayout('Force directed (simulation)')
+            },
+            handleImportSifMenu: function (e) {
+                this.selectedMenu = 'opensif';
+            },
+            handleImportTextMenu: function (e) {
+                this.selectedMenu = 'opentext';
+            },
+            handleImportSif: function (e) {
+//                _this.configuration.cleanVisualSets();
+                this.$.networkViewer.setGraph(e.detail.graph);
+//                this.$.networkViewer.setLayout(e.detail.layout);
+                this.$.networkViewer.setLayout('Force directed');
+
+            },
+            handleImportText: function (e) {
+//                _this.configuration.cleanVisualSets();
+                this.$.networkViewer.setGraph(e.detail.graph);
+//                this.$.networkViewer.setLayout(e.detail.layout);
+                this.$.networkViewer.setLayout('Force directed');
+
+            }
+        });
+    </script>
+</polymer-element>
