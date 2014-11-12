@@ -22,8 +22,9 @@
     "backbone": "~1.1.2",
     "underscore": "~1.7.0",
     "sortable-table": "~0.10.0",
-    "platform": "Polymer/platform#~0.4.2",
-    "js-xlsx": "~0.7.11"
+    "polymer": "Polymer/polymer#~0.5.0",
+    "js-xlsx": "~0.7.11",
+    "core-list": "polymer/core-list#~0.5.0"
   },
   "devDependencies": {
     "backbone": "~1.1.2"

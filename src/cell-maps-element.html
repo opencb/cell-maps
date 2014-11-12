@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/polymer-fontawesome/polymer-fontawesome.html">
 <link rel="import" href="../bower_components/sortable-table/sortable-table.html">
+<link rel="import" href="../bower_components/core-list/core-list.html">
 
 <script src="../bower_components/js-xlsx/dist/jszip.js"></script>
 <script src="../bower_components/js-xlsx/dist/xlsx.min.js"></script>
@@ -13,6 +14,9 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-xlsx-network-file-open.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-attribute-network-file-open.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-attribute-edit.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-node-render.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-edge-render.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-table.html">
 <link rel="import" href="cm-toolbar.html">
 
 <script src="../lib/jsorolla/src/lib/data-adapter/network/attribute-network-data-adapter.js"></script>
@@ -26,293 +30,308 @@
 <script src="../lib/jsorolla/src/lib/data-source/string-data-source.js"></script>
 
 <polymer-element name="cell-maps-element">
-<template>
-    <link rel="stylesheet" href="../lib/jsorolla/styles/css/style.css">
-    <link rel="stylesheet" href="../bower_components/fontawesome/css/font-awesome.min.css">
-    <style>
-        :host {
-            display: block;
-            position: relative;
+    <template>
+        <link rel="stylesheet" href="../lib/jsorolla/styles/css/style.css">
+        <link rel="stylesheet" href="../bower_components/fontawesome/css/font-awesome.min.css">
+        <style>
+            :host {
+                display: block;
+                position: relative;
 
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            cursor: default;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                cursor: default;
 
-            font-size: 13px;
-        }
+                font-size: 13px;
+            }
 
-        #home {
-            position: relative;
-            background-color: #FFFFFF;
-        }
+            #home {
+                position: relative;
+                background-color: #FFFFFF;
+            }
 
-        div.side-panel {
-            box-sizing: border-box;
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            z-index: 50000;
-            top: 33px;
-            right: 0px;
-            width: 350px;
-            margin: 0;
-            padding: 0;
-            background: white;
-            /*border: 1px solid #c6d0da;*/
-            /*border-right-width: 0px;*/
-            transition: all 0.2s;
-        }
+            div.side-panel {
+                box-sizing: border-box;
+                visibility: hidden;
+                opacity: 0;
+                position: absolute;
+                z-index: 50000;
+                top: 33px;
+                right: 0px;
+                width: 350px;
+                margin: 0;
+                padding: 0;
+                background: white;
+                /*border: 1px solid #c6d0da;*/
+                /*border-right-width: 0px;*/
+                transition: all 0.2s;
+            }
 
-        div.side-panel-shown {
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
+            div.side-panel-shown {
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
 
-        [hide=true] {
-            display: none !important;
-        }
+            [hide=true] {
+                display: none !important;
+            }
 
-        jso-project-browser {
-            height: calc(100vh - 60px);
-        }
+            jso-project-browser {
+                height: calc(100vh - 60px);
+            }
 
-        cm-toolbar {
-            background-color: #ffffff;
-        }
+            cm-toolbar {
+                background-color: #ffffff;
+            }
 
-        jso-network-viewer {
-            height: calc(100vh - 90px);
-        }
+            jso-network-viewer {
+                height: calc(100vh - 90px);
+            }
 
-        /*#header{*/
-        /*height:60px;*/
-        /*background-color: #ffffff;*/
-        /*}*/
-        /*#title{*/
-        /*height:60px;*/
-        /*line-height: 60px;*/
-        /*font-size: 25px;*/
-        /*color:blueviolet;*/
-        /*margin-left:5vw;*/
-        /*}*/
+            /*#header{*/
+            /*height:60px;*/
+            /*background-color: #ffffff;*/
+            /*}*/
+            /*#title{*/
+            /*height:60px;*/
+            /*line-height: 60px;*/
+            /*font-size: 25px;*/
+            /*color:blueviolet;*/
+            /*margin-left:5vw;*/
+            /*}*/
 
-    </style>
-    <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}" appTitle="Cell Maps"
-                description="Systems Biology Visualization">
+        </style>
+        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}" appTitle="Cell Maps"
+                    description="Systems Biology Visualization">
 
-    </jso-header>
+        </jso-header>
 
-    <cm-toolbar hide="{{selectedOption != 'home'}}"
-                on-session-start="{{handleSessionStartMenu}}"
-                on-session-open="{{handleSessionOpenMenu}}"
-                on-session-save="{{handleSessionSaveMenu}}"
+        <cm-toolbar hide="{{selectedOption != 'home'}}"
+                    columns="{{vAttr.columns}}"
 
-                on-import-sif="{{handleImportSifMenu}}"
-                on-import-text="{{handleImportTextMenu}}"
-                on-import-xlsx="{{handleImportXlsxMenu}}"
-                on-import-node-attributes="{{handleImportNodeAttrMenu}}"
-                on-import-edge-attributes="{{handleImportEdgeAttrMenu}}"
+                    on-session-start="{{handleSessionStartMenu}}"
+                    on-session-open="{{handleSessionOpenMenu}}"
+                    on-session-save="{{handleSessionSaveMenu}}"
 
-                on-export-sif="{{handleExportSifMenu}}"
-                on-export-svg="{{handleExportSvgMenu}}"
-                on-export-png="{{handleExportPngMenu}}"
+                    on-import-sif="{{handleImportSifMenu}}"
+                    on-import-text="{{handleImportTextMenu}}"
+                    on-import-xlsx="{{handleImportXlsxMenu}}"
+                    on-import-node-attributes="{{handleImportNodeAttrMenu}}"
+                    on-import-edge-attributes="{{handleImportEdgeAttrMenu}}"
 
-                on-export-node-attributes="{{handleExportNodeAttrMenu}}"
-                on-export-edge-attributes="{{handleExportEdgeAttrMenu}}"
+                    on-export-sif="{{handleExportSifMenu}}"
+                    on-export-svg="{{handleExportSvgMenu}}"
+                    on-export-png="{{handleExportPngMenu}}"
 
-                on-nodes-edit="{{handleNodesEditMenu}}"
-                on-edges-edit="{{handleEdgesEditMenu}}"
+                    on-export-node-attributes="{{handleExportNodeAttrMenu}}"
+                    on-export-edge-attributes="{{handleExportEdgeAttrMenu}}"
+
+                    on-nodes-edit="{{handleNodesEditMenu}}"
+                    on-edges-edit="{{handleEdgesEditMenu}}"
+
+                    on-configure="{{handleConfigureMenu}}"
+                >
+        </cm-toolbar>
+
+        <jso-network-viewer
+                id="networkViewer"
+                hide="{{selectedOption != 'home'}}"
+
+                vAttr="{{vAttr}}"
+                eAttr="{{eAttr}}"
+                >
+        </jso-network-viewer>
 
 
-            >
-    </cm-toolbar>
+        <!--Menu file-->
+        <template if="{{selectedMenu == 'import-sif' && selectedOption == 'home'}}">
+            <jso-sif-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportSif}}">
 
-    <jso-network-viewer
-            id="networkViewer"
-            hide="{{selectedOption != 'home'}}"
+            </jso-sif-network-file-open>
+        </template>
+        <template if="{{selectedMenu == 'import-text' && selectedOption == 'home'}}">
+            <jso-text-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportText}}">
 
-            vAttr="{{vAttr}}"
-            eAttr="{{eAttr}}"
-            >
-    </jso-network-viewer>
+            </jso-text-network-file-open>
+        </template>
+        <template if="{{selectedMenu == 'import-xlsx' && selectedOption == 'home'}}">
+            <jso-xlsx-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportXlsx}}">
+            </jso-xlsx-network-file-open>
+        </template>
+        <template if="{{selectedMenu == 'import-node-attributes' && selectedOption == 'home'}}">
+            <jso-attribute-network-file-open selectedMenu="{{selectedMenu}}" on-open="{{handleImportNodeAttr}}"
+                                             type="node">
+            </jso-attribute-network-file-open>
+        </template>
+        <template if="{{selectedMenu == 'import-edge-attributes' && selectedOption == 'home'}}">
+            <jso-attribute-network-file-open selectedMenu="{{selectedMenu}}" on-open="{{handleImportEdgeAttr}}"
+                                             type="edge">
+            </jso-attribute-network-file-open>
+        </template>
 
 
-    <!--Menu file-->
-    <template if="{{selectedMenu == 'import-sif' && selectedOption == 'home'}}">
-        <jso-sif-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportSif}}">
+        <jso-attribute-edit
+                hide="{{selectedMenu != 'nodes-edit' || selectedOption != 'home'}}"
+                selectedMenu="{{selectedMenu}}" attributeManager="{{vAttr}}" type="node">
+        </jso-attribute-edit>
+        <jso-attribute-edit
+                hide="{{selectedMenu != 'edges-edit' || selectedOption != 'home'}}"
+                selectedMenu="{{selectedMenu}}" attributeManager="{{eAttr}}" type="edge">
+        </jso-attribute-edit>
 
-        </jso-sif-network-file-open>
+        <jso-project-browser hide="{{selectedOption != 'projects' }}" userData="{{userData}}"
+                             selectedProject="{{selectedProject}}" selectedStudy="{{selectedStudy}}">
+        </jso-project-browser>
+
+        <jso-attribute-node-render
+                hide="{{hideAttributeRender}}"
+                hideAttributeRender="{{hideAttributeRender}}"
+                attributeManager="{{vAttr}}"
+                >
+        </jso-attribute-node-render>
+
+        <jso-attribute-edge-render hide="{{hideAttributeRender}}" hideAttributeRender="{{hideAttributeRender}}">
+
+        </jso-attribute-edge-render>
     </template>
-    <template if="{{selectedMenu == 'import-text' && selectedOption == 'home'}}">
-        <jso-text-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportText}}">
+    <script>
+        Polymer({
+            created: function () {
+                this.selectedOption = 'home';
+                this.selectedMenu = 'nodes-edit';
+                this.hideAttributeRender = false;
 
-        </jso-text-network-file-open>
-    </template>
-    <template if="{{selectedMenu == 'import-xlsx' && selectedOption == 'home'}}">
-        <jso-xlsx-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportXlsx}}">
-        </jso-xlsx-network-file-open>
-    </template>
-    <template if="{{selectedMenu == 'import-node-attributes' && selectedOption == 'home'}}">
-        <jso-attribute-network-file-open selectedMenu="{{selectedMenu}}" on-open="{{handleImportNodeAttr}}"
-                                         type="node">
-        </jso-attribute-network-file-open>
-    </template>
-    <template if="{{selectedMenu == 'import-edge-attributes' && selectedOption == 'home'}}">
-        <jso-attribute-network-file-open selectedMenu="{{selectedMenu}}" on-open="{{handleImportEdgeAttr}}"
-                                         type="edge">
-        </jso-attribute-network-file-open>
-    </template>
+                this.userData;
 
+                this.selectedProject;
+                this.selectedStudy;
 
-    <jso-attribute-edit
-            hide="{{selectedMenu != 'nodes-edit' || selectedOption != 'home'}}"
-            selectedMenu="{{selectedMenu}}" attributeManager="{{vAttr}}" type="node">
-    </jso-attribute-edit>
-    <jso-attribute-edit
-            hide="{{selectedMenu != 'edges-edit' || selectedOption != 'home'}}"
-            selectedMenu="{{selectedMenu}}" attributeManager="{{eAttr}}" type="edge">
-    </jso-attribute-edit>
+                this.vAttr;
+                this.eAttr;
+            },
+            handleAppMenu: function (e) {
+                this.$.sidePanel.classList.toggle('side-panel-shown');
+            },
+            __iliketomoveit: function () {
+                this.$.networkViewer.setLayout('Force directed (simulation)')
+            },
+            handleNodesEditMenu: function (e) {
+                this.selectedMenu = 'nodes-edit';
+            },
+            handleEdgesEditMenu: function (e) {
+                this.selectedMenu = 'edges-edit';
+            },
+            handleImportSifMenu: function (e) {
+                this.selectedMenu = 'import-sif';
+            },
+            handleImportTextMenu: function (e) {
+                this.selectedMenu = 'import-text';
+            },
+            handleImportXlsxMenu: function (e) {
+                this.selectedMenu = 'import-xlsx';
+            },
+            handleImportNodeAttrMenu: function (e) {
+                this.selectedMenu = 'import-node-attributes';
+            },
+            handleImportEdgeAttrMenu: function (e) {
+                this.selectedMenu = 'import-edge-attributes';
+            },
+            handleExportSifMenu: function (e) {
+                var content = this.$.networkViewer.getAsSIF();
+                var blob = new Blob([content], {type: "data:text/tsv"});
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = "network.sif";
+                var event = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                link.dispatchEvent(event);
+            },
+            handleExportNodeAttrMenu: function (e) {
+                var content = this.$.networkViewer.network.vertexAttributeManager.getAsFile();
+                var blob = new Blob([content], {type: "data:text/tsv"});
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = "node.attr";
+                var event = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                link.dispatchEvent(event);
+            },
+            handleExportEdgeAttrMenu: function (e) {
+                var content = this.$.networkViewer.network.edgeAttributeManager.getAsFile();
+                var blob = new Blob([content], {type: "data:text/tsv"});
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = "edge.attr";
+                var event = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                link.dispatchEvent(event);
+            },
+            handleExportSvgMenu: function (e) {
+                var svg = new XMLSerializer().serializeToString(this.$.networkViewer.$.networkLayout.$.svg);
+                var blob = new Blob([svg], {type: "image/svg+xml"});
+                var url = URL.createObjectURL(blob);
 
-    <jso-project-browser hide="{{selectedOption != 'projects' }}" userData="{{userData}}"
-                         selectedProject="{{selectedProject}}" selectedStudy="{{selectedStudy}}">
-    </jso-project-browser>
-
-
-</template>
-<script>
-    Polymer({
-        created: function () {
-            this.selectedOption = 'home';
-            this.selectedMenu = 'nodes-edit';
-            this.userData;
-
-            this.selectedProject;
-            this.selectedStudy;
-
-            this.vAttr;
-            this.eAttr;
-        },
-        handleAppMenu: function (e) {
-            this.$.sidePanel.classList.toggle('side-panel-shown');
-        },
-        __iliketomoveit: function () {
-            this.$.networkViewer.setLayout('Force directed (simulation)')
-        },
-        handleNodesEditMenu: function (e) {
-            this.selectedMenu = 'nodes-edit';
-        },
-        handleEdgesEditMenu: function (e) {
-            this.selectedMenu = 'edges-edit';
-        },
-        handleImportSifMenu: function (e) {
-            this.selectedMenu = 'import-sif';
-        },
-        handleImportTextMenu: function (e) {
-            this.selectedMenu = 'import-text';
-        },
-        handleImportXlsxMenu: function (e) {
-            this.selectedMenu = 'import-xlsx';
-        },
-        handleImportNodeAttrMenu: function (e) {
-            this.selectedMenu = 'import-node-attributes';
-        },
-        handleImportEdgeAttrMenu: function (e) {
-            this.selectedMenu = 'import-edge-attributes';
-        },
-        handleExportSifMenu: function (e) {
-            var content = this.$.networkViewer.getAsSIF();
-            var blob = new Blob([content], {type: "data:text/tsv"});
-            var url = URL.createObjectURL(blob);
-            var link = document.createElement('a');
-            link.href = url;
-            link.download = "network.sif";
-            var event = new MouseEvent('click', {
-                'view': window,
-                'bubbles': true,
-                'cancelable': true
-            });
-            link.dispatchEvent(event);
-        },
-        handleExportNodeAttrMenu: function (e) {
-            var content = this.$.networkViewer.network.vertexAttributeManager.getAsFile();
-            var blob = new Blob([content], {type: "data:text/tsv"});
-            var url = URL.createObjectURL(blob);
-            var link = document.createElement('a');
-            link.href = url;
-            link.download = "node.attr";
-            var event = new MouseEvent('click', {
-                'view': window,
-                'bubbles': true,
-                'cancelable': true
-            });
-            link.dispatchEvent(event);
-        },
-        handleExportEdgeAttrMenu: function (e) {
-            var content = this.$.networkViewer.network.edgeAttributeManager.getAsFile();
-            var blob = new Blob([content], {type: "data:text/tsv"});
-            var url = URL.createObjectURL(blob);
-            var link = document.createElement('a');
-            link.href = url;
-            link.download = "edge.attr";
-            var event = new MouseEvent('click', {
-                'view': window,
-                'bubbles': true,
-                'cancelable': true
-            });
-            link.dispatchEvent(event);
-        },
-        handleExportSvgMenu: function (e) {
-            var svg = new XMLSerializer().serializeToString(this.$.networkViewer.$.networkLayout.$.svg);
-            var blob = new Blob([svg], {type: "image/svg+xml"});
-            var url = URL.createObjectURL(blob);
-
-            var link = document.createElement('a');
-            link.href = url;
-            link.download = "network.svg";
-            var event = new MouseEvent('click', {
-                'view': window,
-                'bubbles': true,
-                'cancelable': true
-            });
-            link.dispatchEvent(event);
-        },
-        handleExportPngMenu: function (e) {
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = "network.svg";
+                var event = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                link.dispatchEvent(event);
+            },
+            handleExportPngMenu: function (e) {
 //            Deprecated
-        },
+            },
+            handleConfigureMenu: function (e) {
+                this.hideAttributeRender = !this.hideAttributeRender;
+            },
 
-
-        /**/
-        handleImportSif: function (e) {
+            /**/
+            handleImportSif: function (e) {
 //                _this.configuration.cleanVisualSets();
-            this.$.networkViewer.setGraph(e.detail.graph);
+                this.$.networkViewer.setGraph(e.detail.graph);
 //                this.$.networkViewer.setLayout(e.detail.layout);
-            this.$.networkViewer.setLayout('Force directed');
+                this.$.networkViewer.setLayout('Force directed');
 
-        },
-        handleImportText: function (e) {
+            },
+            handleImportText: function (e) {
 //                _this.configuration.cleanVisualSets();
-            this.$.networkViewer.setGraph(e.detail.graph);
+                this.$.networkViewer.setGraph(e.detail.graph);
 //                this.$.networkViewer.setLayout(e.detail.layout);
-            this.$.networkViewer.setLayout('Force directed');
+                this.$.networkViewer.setLayout('Force directed');
 
-        },
-        handleImportXlsx: function (e) {
+            },
+            handleImportXlsx: function (e) {
 //                _this.configuration.cleanVisualSets();
-            this.$.networkViewer.setGraph(e.detail.graph);
+                this.$.networkViewer.setGraph(e.detail.graph);
 //                this.$.networkViewer.setLayout(e.detail.layout);
-            this.$.networkViewer.setLayout('Force directed');
+                this.$.networkViewer.setLayout('Force directed');
 
-        },
-        handleImportNodeAttr: function (e) {
-            this.$.networkViewer.importVertexAttributeManager(e.detail.attributeManager);
-        },
-        handleImportEdgeAttr: function (e) {
-            this.$.networkViewer.importEdgeAttributeManager(e.detail.attributeManager);
-        }
-    });
-</script>
+            },
+            handleImportNodeAttr: function (e) {
+                this.$.networkViewer.importVertexAttributeManager(e.detail.attributeManager);
+            },
+            handleImportEdgeAttr: function (e) {
+                this.$.networkViewer.importEdgeAttributeManager(e.detail.attributeManager);
+            }
+        });
+    </script>
 </polymer-element>
