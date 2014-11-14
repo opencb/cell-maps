@@ -16,7 +16,10 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-attribute-edit.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-node-render.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-edge-render.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-table.html">
+<link rel="import"
+      href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-number-table.html">
+<link rel="import"
+      href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-color-table.html">
 <link rel="import" href="cm-toolbar.html">
 
 <script src="../lib/jsorolla/src/lib/data-adapter/network/attribute-network-data-adapter.js"></script>
@@ -49,6 +52,17 @@
                 font-size: 13px;
             }
 
+            .left-side{
+                top:154px;
+                left:0px;
+                position:absolute;
+            }
+            .right-side{
+                top:154px;
+                right:0px;
+                position:absolute;
+
+            }
             #home {
                 position: relative;
                 background-color: #FFFFFF;
@@ -109,6 +123,9 @@
                     description="Systems Biology Visualization">
 
         </jso-header>
+        <jso-project-browser hidden?="{{selectedOption != 'projects' }}" userData="{{userData}}"
+                             selectedProject="{{selectedProject}}" selectedStudy="{{selectedStudy}}">
+        </jso-project-browser>
 
         <cm-toolbar hide="{{selectedOption != 'home'}}"
                     columns="{{vAttr.columns}}"
@@ -133,7 +150,11 @@
                     on-nodes-edit="{{handleNodesEditMenu}}"
                     on-edges-edit="{{handleEdgesEditMenu}}"
 
-                    on-configure="{{handleConfigureMenu}}"
+                    on-node-simple-rendering="{{handleNodeSimpleRenderingMenu}}"
+                    on-node-list-rendering="{{handleNodeListRenderingMenu}}"
+                    on-edge-simple-rendering="{{handleEdgeSimpleRenderingMenu}}"
+
+                    on-configure="{{}}"
                 >
         </cm-toolbar>
 
@@ -174,36 +195,43 @@
         </template>
 
 
-        <jso-attribute-edit
-                hide="{{selectedMenu != 'nodes-edit' || selectedOption != 'home'}}"
-                selectedMenu="{{selectedMenu}}" attributeManager="{{vAttr}}" type="node">
-        </jso-attribute-edit>
-        <jso-attribute-edit
-                hide="{{selectedMenu != 'edges-edit' || selectedOption != 'home'}}"
-                selectedMenu="{{selectedMenu}}" attributeManager="{{eAttr}}" type="edge">
-        </jso-attribute-edit>
+        <div class="left-side">
+            <template if="{{selectedMenu == 'nodes-edit' && selectedOption == 'home'}}">
+                <jso-attribute-edit
+                        selectedMenu="{{selectedMenu}}" attributeManager="{{vAttr}}" type="node">
+                </jso-attribute-edit>
+            </template>
+            <template if="{{selectedMenu == 'edges-edit' && selectedOption == 'home'}}">
+                <jso-attribute-edit
+                        selectedMenu="{{selectedMenu}}" attributeManager="{{eAttr}}" type="edge">
+                </jso-attribute-edit>
+            </template>
+        </div>
+        <div class="right-side">
+            <jso-attribute-node-render
+                    hidden?="{{hideNodeSimpleRendering || selectedOption != 'home'}}"
+                    hideFlag="{{hideNodeSimpleRendering}}"
+                    attributeManager="{{vAttr}}">
+            </jso-attribute-node-render>
 
-        <jso-project-browser hide="{{selectedOption != 'projects' }}" userData="{{userData}}"
-                             selectedProject="{{selectedProject}}" selectedStudy="{{selectedStudy}}">
-        </jso-project-browser>
+            <jso-attribute-edge-render
+                    hidden?="{{hideEdgeSimpleRendering || selectedOption != 'home'}}"
+                    hideFlag="{{hideEdgeSimpleRendering}}"
+                    attributeManager="{{eAttr}}">
+            </jso-attribute-edge-render>
+        </div>
 
-        <jso-attribute-node-render
-                hide="{{hideAttributeRender}}"
-                hideAttributeRender="{{hideAttributeRender}}"
-                attributeManager="{{vAttr}}"
-                >
-        </jso-attribute-node-render>
 
-        <jso-attribute-edge-render hide="{{hideAttributeRender}}" hideAttributeRender="{{hideAttributeRender}}">
-
-        </jso-attribute-edge-render>
     </template>
     <script>
         Polymer({
             created: function () {
                 this.selectedOption = 'home';
                 this.selectedMenu = 'nodes-edit';
-                this.hideAttributeRender = false;
+
+                this.hideNodeSimpleRendering = false;
+                this.hideNodeListRendering = true;
+                this.hideEdgeSimpleRendering = true;
 
                 this.userData;
 
@@ -300,8 +328,16 @@
             handleExportPngMenu: function (e) {
 //            Deprecated
             },
-            handleConfigureMenu: function (e) {
-                this.hideAttributeRender = !this.hideAttributeRender;
+
+
+            handleNodeSimpleRenderingMenu: function (e) {
+                this.hideNodeSimpleRendering = false;
+            },
+            handleNodeListRenderingMenu: function (e) {
+                this.hideNodeListRendering = false;
+            },
+            handleEdgeSimpleRenderingMenu: function (e) {
+                this.hideEdgeSimpleRendering = false;
             },
 
             /**/

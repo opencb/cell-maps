@@ -106,6 +106,17 @@
             </ul>
         </div>
         <div class="dropdown" style="margin-left: 10px">
+            <div tabindex="-1" id="renderingButton" class="button" style="border-width:0;">
+                Rendering
+            </div>
+            <ul id="renderingMenu" on-click="{{handleClick}}">
+                <li data-value="node-simple-rendering">Simple node attribute rendering</li>
+                <li data-value="node-list-rendering">Complex node attribute rendering</li>
+                <li data-divider>
+                <li data-value="edge-simple-rendering">Edge attribute rendering</li>
+            </ul>
+        </div>
+        <div class="dropdown" style="margin-left: 10px">
             <div tabindex="-1" id="pluginsButton" class="button" style="border-width:0;">
                 Plugins
             </div>
@@ -148,7 +159,7 @@
                 <li data-value="example" data-subvalue="3">PPI network with attributes</li>
             </ul>
         </div>
-        <div id="configureButton" class="button" style="margin-right:10px;float:right;border-width:0;"
+        <div hidden id="configureButton" class="button" style="margin-right:10px;float:right;border-width:0;"
              on-click="{{handleConfigureClick}}"
                 >
             Configure
