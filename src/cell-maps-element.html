@@ -52,17 +52,19 @@
                 font-size: 13px;
             }
 
-            .left-side{
-                top:154px;
-                left:0px;
-                position:absolute;
+            .left-side {
+                top: 154px;
+                left: 0px;
+                position: absolute;
             }
-            .right-side{
-                top:154px;
-                right:0px;
-                position:absolute;
+
+            .right-side {
+                top: 154px;
+                right: 0px;
+                position: absolute;
 
             }
+
             #home {
                 position: relative;
                 background-color: #FFFFFF;
@@ -195,18 +197,6 @@
         </template>
 
 
-        <div class="left-side">
-            <template if="{{selectedMenu == 'nodes-edit' && selectedOption == 'home'}}">
-                <jso-attribute-edit
-                        selectedMenu="{{selectedMenu}}" attributeManager="{{vAttr}}" type="node">
-                </jso-attribute-edit>
-            </template>
-            <template if="{{selectedMenu == 'edges-edit' && selectedOption == 'home'}}">
-                <jso-attribute-edit
-                        selectedMenu="{{selectedMenu}}" attributeManager="{{eAttr}}" type="edge">
-                </jso-attribute-edit>
-            </template>
-        </div>
         <div class="right-side">
             <jso-attribute-node-render
                     hidden?="{{hideNodeSimpleRendering || selectedOption != 'home'}}"
@@ -219,6 +209,16 @@
                     hideFlag="{{hideEdgeSimpleRendering}}"
                     attributeManager="{{eAttr}}">
             </jso-attribute-edge-render>
+        </div>
+        <div class="left-side">
+            <jso-attribute-edit
+                    hidden?="{{selectedMenu != 'nodes-edit' || selectedOption != 'home'}}"
+                    selectedMenu="{{selectedMenu}}" attributeManager="{{vAttr}}" type="node">
+            </jso-attribute-edit>
+            <jso-attribute-edit
+                    hidden?="{{selectedMenu != 'edges-edit' || selectedOption != 'home'}}"
+                    selectedMenu="{{selectedMenu}}" attributeManager="{{eAttr}}" type="edge">
+            </jso-attribute-edit>
         </div>
 
 
