@@ -20,6 +20,8 @@
       href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-number-table.html">
 <link rel="import"
       href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-color-table.html">
+<link rel="import"
+      href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-select-table.html">
 <link rel="import" href="cm-toolbar.html">
 
 <script src="../lib/jsorolla/src/lib/data-adapter/network/attribute-network-data-adapter.js"></script>
@@ -34,21 +36,12 @@
 
 <polymer-element name="cell-maps-element">
     <template>
-        <link rel="stylesheet" href="../lib/jsorolla/styles/css/style.css">
-        <link rel="stylesheet" href="../bower_components/fontawesome/css/font-awesome.min.css">
         <style>
             :host {
                 display: block;
                 position: relative;
 
-                -webkit-touch-callout: none;
-                -webkit-user-select: none;
-                -khtml-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
                 cursor: default;
-
                 font-size: 13px;
             }
 
@@ -107,19 +100,6 @@
             jso-network-viewer {
                 height: calc(100vh - 90px);
             }
-
-            /*#header{*/
-            /*height:60px;*/
-            /*background-color: #ffffff;*/
-            /*}*/
-            /*#title{*/
-            /*height:60px;*/
-            /*line-height: 60px;*/
-            /*font-size: 25px;*/
-            /*color:blueviolet;*/
-            /*margin-left:5vw;*/
-            /*}*/
-
         </style>
         <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}" appTitle="Cell Maps"
                     description="Systems Biology Visualization">
@@ -130,7 +110,7 @@
         </jso-project-browser>
 
         <cm-toolbar hide="{{selectedOption != 'home'}}"
-                    columns="{{vAttr.columns}}"
+                    columns="{{networkViewer.vAttr.columns}}"
 
                     on-session-start="{{handleSessionStartMenu}}"
                     on-session-open="{{handleSessionOpenMenu}}"
@@ -156,6 +136,7 @@
                     on-node-list-rendering="{{handleNodeListRenderingMenu}}"
                     on-edge-simple-rendering="{{handleEdgeSimpleRenderingMenu}}"
 
+                    on-save="{{handleSave}}"
                     on-configure="{{}}"
                 >
         </cm-toolbar>
@@ -163,9 +144,6 @@
         <jso-network-viewer
                 id="networkViewer"
                 hide="{{selectedOption != 'home'}}"
-
-                vAttr="{{vAttr}}"
-                eAttr="{{eAttr}}"
                 >
         </jso-network-viewer>
 
@@ -201,23 +179,28 @@
             <jso-attribute-node-render
                     hidden?="{{hideNodeSimpleRendering || selectedOption != 'home'}}"
                     hideFlag="{{hideNodeSimpleRendering}}"
-                    attributeManager="{{vAttr}}">
+                    attributeManager="{{networkViewer.vAttr}}"
+                    defaults="{{networkViewer.vertexDefaults}}"
+                    visualSets="{{networkViewer.vertexVisualSets}}">
             </jso-attribute-node-render>
 
             <jso-attribute-edge-render
                     hidden?="{{hideEdgeSimpleRendering || selectedOption != 'home'}}"
                     hideFlag="{{hideEdgeSimpleRendering}}"
-                    attributeManager="{{eAttr}}">
+                    attributeManager="{{networkViewer.eAttr}}"
+                    defaults="{{networkViewer.edgeDefaults}}"
+                    visualSets="{{networkViewer.edgeVisualSets}}"
+                    >
             </jso-attribute-edge-render>
         </div>
         <div class="left-side">
             <jso-attribute-edit
                     hidden?="{{selectedMenu != 'nodes-edit' || selectedOption != 'home'}}"
-                    selectedMenu="{{selectedMenu}}" attributeManager="{{vAttr}}" type="node">
+                    selectedMenu="{{selectedMenu}}" attributeManager="{{networkViewer.vAttr}}" type="node">
             </jso-attribute-edit>
             <jso-attribute-edit
                     hidden?="{{selectedMenu != 'edges-edit' || selectedOption != 'home'}}"
-                    selectedMenu="{{selectedMenu}}" attributeManager="{{eAttr}}" type="edge">
+                    selectedMenu="{{selectedMenu}}" attributeManager="{{networkViewer.eAttr}}" type="edge">
             </jso-attribute-edit>
         </div>
 
@@ -230,16 +213,41 @@
                 this.selectedMenu = 'nodes-edit';
 
                 this.hideNodeSimpleRendering = false;
-                this.hideNodeListRendering = true;
-                this.hideEdgeSimpleRendering = true;
+                this.hideEdgeSimpleRendering = false;
+                this.hideNodeListRendering = true;//TODO remove
 
                 this.userData;
 
                 this.selectedProject;
                 this.selectedStudy;
 
-                this.vAttr;
-                this.eAttr;
+                this.saveInProgress = false;
+            },
+            ready: function () {
+                var me = this;
+                this.networkViewer = this.$.networkViewer;
+                this._loadNetworkSessionLocalStorage();
+
+                setInterval(function () {
+                    if(me.saveInProgress == false){
+                        me.handleSave();
+                    }else{
+                        console.log("saveInProgress is true");
+                    }
+                }, 15000);
+            },
+            handleSave: function () {
+                this.saveInProgress = true;
+                this.networkViewer.saveLocalStorage();
+                this.saveInProgress = false;
+            },
+            _loadNetworkSessionLocalStorage: function () {
+                if (this.networkViewer.loadLocalStorage()) {
+                    console.log('Session found :), restoring information... ')
+
+                } else {
+                    console.log('Session not found :( ')
+                }
             },
             handleAppMenu: function (e) {
                 this.$.sidePanel.classList.toggle('side-panel-shown');
@@ -252,6 +260,11 @@
             },
             handleEdgesEditMenu: function (e) {
                 this.selectedMenu = 'edges-edit';
+            },
+            handleSessionStartMenu: function (e) {
+                if (confirm('All changes will be lost. Are you sure?')) {
+                    this.networkViewer.deleteLocalStorage();
+                }
             },
             handleImportSifMenu: function (e) {
                 this.selectedMenu = 'import-sif';
