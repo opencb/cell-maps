@@ -24,7 +24,9 @@
       href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-select-table.html">
 <link rel="import" href="cm-toolbar.html">
 
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-cellbase-attribute-import.html">
 
+<script src="../lib/jsorolla/src/lib/cellbase-manager.js"></script>
 
 <polymer-element name="cell-maps-element">
     <template>
@@ -121,8 +123,24 @@
                     on-export-node-attributes="{{handleExportNodeAttrMenu}}"
                     on-export-edge-attributes="{{handleExportEdgeAttrMenu}}"
 
+                    on-nodes-select-all="{{handleSelectMenu}}"
+                    on-nodes-select-first-neighbourhood="{{handleSelectMenu}}"
+                    on-nodes-select-invert="{{handleSelectMenu}}"
+                    on-edges-select-all="{{handleSelectMenu}}"
+                    on-edges-select-adjacent="{{handleSelectMenu}}"
+                    on-network-select-all="{{handleSelectMenu}}"
+
+
+                    on-layout-force-directed="{{handleLayoutMenu}}"
+                    on-layout-configure-force-directed="{{handleLayoutMenu}}"
+                    on-layout-circle="{{handleLayoutMenu}}"
+                    on-layout-random="{{handleLayoutMenu}}"
+
+
                     on-nodes-edit="{{handleNodesEditMenu}}"
                     on-edges-edit="{{handleEdgesEditMenu}}"
+                    on-cellbase="{{handleCellbaseMenu}}"
+
 
                     on-node-simple-rendering="{{handleNodeSimpleRenderingMenu}}"
                     on-node-list-rendering="{{handleNodeListRenderingMenu}}"
@@ -194,6 +212,12 @@
                     hidden?="{{selectedMenu != 'edges-edit' || selectedOption != 'home'}}"
                     selectedMenu="{{selectedMenu}}" attributeManager="{{networkViewer.eAttr}}" type="edge">
             </jso-attribute-edit>
+            <jso-cellbase-attribute-import
+                    hidden?="{{hideCellbaseAttributeImport || selectedOption != 'home'}}"
+                    hideFlag="{{hideCellbaseAttributeImport}}"
+                    attributeManager="{{networkViewer.vAttr}}"
+                    >
+            </jso-cellbase-attribute-import>
         </div>
 
 
@@ -203,10 +227,13 @@
             created: function () {
                 this.selectedOption = 'home';
                 this.selectedMenu = 'nodes-edit';
+//                this.selectedMenu = '';
 
                 this.hideNodeSimpleRendering = false;
                 this.hideEdgeSimpleRendering = false;
                 this.hideNodeListRendering = true;//TODO remove
+
+                this.hideCellbaseAttributeImport = true;//TODO remove
 
                 this.userData;
 
@@ -221,9 +248,9 @@
                 this._loadNetworkSessionLocalStorage();
 
                 setInterval(function () {
-                    if(me.saveInProgress == false){
+                    if (me.saveInProgress == false) {
                         me.handleSave();
-                    }else{
+                    } else {
                         console.log("saveInProgress is true");
                     }
                 }, 15000);
@@ -253,10 +280,54 @@
             handleEdgesEditMenu: function (e) {
                 this.selectedMenu = 'edges-edit';
             },
+            handleCellbaseMenu: function (e) {
+                this.hideCellbaseAttributeImport = false;
+            },
             handleSessionStartMenu: function (e) {
                 if (confirm('All changes will be lost. Are you sure?')) {
-                    this.networkViewer.deleteLocalStorage();
+                    this.$.networkViewer.startOver();
                 }
+            },
+            handleSessionOpenMenu: function (e) {
+                var me = this;
+                var input = document.createElement('input');
+                input.setAttribute("type", "file");
+                input.addEventListener("change", function (e) {
+                    var file = e.currentTarget.files[0];
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.onload = function (evt) {
+                            me.$.networkViewer.loadJSON(JSON.parse(evt.target.result));
+                            me.$.networkViewer.saveLocalStorage();
+                        };
+                        reader.readAsText(file);
+                        e.currentTarget.value = null;
+                    }
+                });
+                var event = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                input.dispatchEvent(event);
+            },
+            handleSessionSaveMenu: function (e) {
+                var content = JSON.stringify(this.$.networkViewer);
+                var blob = new Blob([content], {type: "application/json"});
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = "network.json";
+                var fileName = window.prompt("Please enter file name", "network.json")
+                if (fileName != null && fileName != "") {
+                    link.download = fileName;
+                }
+                var event = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                link.dispatchEvent(event);
             },
             handleImportSifMenu: function (e) {
                 this.selectedMenu = 'import-sif';
@@ -274,7 +345,7 @@
                 this.selectedMenu = 'import-edge-attributes';
             },
             handleExportSifMenu: function (e) {
-                var content = this.$.networkViewer.getAsSIF();
+                var content = this.$.networkViewer.exportGraph();
                 var blob = new Blob([content], {type: "data:text/tsv"});
                 var url = URL.createObjectURL(blob);
                 var link = document.createElement('a');
@@ -288,7 +359,7 @@
                 link.dispatchEvent(event);
             },
             handleExportNodeAttrMenu: function (e) {
-                var content = this.$.networkViewer.network.vertexAttributeManager.getAsFile();
+                var content = this.$.networkViewer.exportVertexAttributes();
                 var blob = new Blob([content], {type: "data:text/tsv"});
                 var url = URL.createObjectURL(blob);
                 var link = document.createElement('a');
@@ -302,7 +373,7 @@
                 link.dispatchEvent(event);
             },
             handleExportEdgeAttrMenu: function (e) {
-                var content = this.$.networkViewer.network.edgeAttributeManager.getAsFile();
+                var content = this.$.networkViewer.exportEdgeAttributes();
                 var blob = new Blob([content], {type: "data:text/tsv"});
                 var url = URL.createObjectURL(blob);
                 var link = document.createElement('a');
@@ -372,6 +443,51 @@
             },
             handleImportEdgeAttr: function (e) {
                 this.$.networkViewer.importEdgeAttributeManager(e.detail.attributeManager);
+            },
+
+            /** NETWORK **/
+            /*SELECT*/
+            handleSelectMenu: function (e) {
+                switch (e.detail.value) {
+                    case 'nodes-select-all' :
+                        this.$.networkViewer.selectAllVertices();
+                        break;
+                    case 'edges-select-all' :
+                        this.$.networkViewer.selectAllEdges();
+                        break;
+                    case 'network-select-all' :
+                        this.$.networkViewer.selectAll();
+                        break;
+                    case 'nodes-select-first-neighbourhood' :
+                        this.$.networkViewer.selectVerticesNeighbour();
+                        break;
+                    case 'nodes-select-invert' :
+                        this.$.networkViewer.selectVerticesInvert();
+                        break;
+                    case 'edges-select-adjacent' :
+                        this.$.networkViewer.selectEdgesNeighbour();
+                        break;
+                    default :
+                        console.log(e.detail.value + " not defined");
+                }
+            },
+            /*LAYOUT*/
+            handleLayoutMenu: function (e) {
+                switch (e.detail.value) {
+                    case 'layout-force-directed' :
+                        this.$.networkViewer.setLayout('Force directed');
+                        break;
+                    case 'layout-configure-force-directed' :
+                        break;
+                    case 'layout-circle' :
+                        this.$.networkViewer.setLayout('Circle', {attributeName: e.detail.subvalue});
+                        break;
+                    case 'layout-random' :
+                        this.$.networkViewer.setLayout('Random');
+                        break;
+                    default :
+                        console.log(e.detail.value + " not defined");
+                }
             }
         });
     </script>

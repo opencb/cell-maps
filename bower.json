@@ -22,6 +22,7 @@
     "sortable-table": "~0.10.1",
     "polymer": "~0.5.1",
     "js-xlsx": "~0.7.11",
-    "core-list": "polymer/core-list#~0.5.1"
+    "core-list": "polymer/core-list#~0.5.1",
+    "jquery": "~2.1.1"
   }
 }
