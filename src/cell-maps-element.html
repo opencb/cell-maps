@@ -9,24 +9,6 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-sif-network-file-open.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-text-network-file-open.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-xlsx-network-file-open.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-attribute-network-file-open.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-attribute-edit.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-node-render.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-edge-render.html">
-<link rel="import"
-      href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-number-table.html">
-<link rel="import"
-      href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-color-table.html">
-<link rel="import"
-      href="../lib/jsorolla/src/lib/components/network/render-settings/jso-attribute-render-select-table.html">
-<link rel="import" href="cm-toolbar.html">
-
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-cellbase-attribute-import.html">
-
-<script src="../lib/jsorolla/src/lib/cellbase-manager.js"></script>
 
 <polymer-element name="cell-maps-element">
     <template>
@@ -38,57 +20,8 @@
                 cursor: default;
                 font-size: 13px;
             }
-
-            .left-side {
-                top: 154px;
-                left: 0px;
-                position: absolute;
-            }
-
-            .right-side {
-                top: 154px;
-                right: 0px;
-                position: absolute;
-
-            }
-
-            #home {
-                position: relative;
-                background-color: #FFFFFF;
-            }
-
-            div.side-panel {
-                box-sizing: border-box;
-                visibility: hidden;
-                opacity: 0;
-                position: absolute;
-                z-index: 50000;
-                top: 33px;
-                right: 0px;
-                width: 350px;
-                margin: 0;
-                padding: 0;
-                background: white;
-                /*border: 1px solid #c6d0da;*/
-                /*border-right-width: 0px;*/
-                transition: all 0.2s;
-            }
-
-            div.side-panel-shown {
-                visibility: visible !important;
-                opacity: 1 !important;
-            }
-
-            [hide=true] {
-                display: none !important;
-            }
-
             jso-project-browser {
                 height: calc(100vh - 60px);
-            }
-
-            cm-toolbar {
-                background-color: #ffffff;
             }
 
             jso-network-viewer {
@@ -103,54 +36,6 @@
                              selectedProject="{{selectedProject}}" selectedStudy="{{selectedStudy}}">
         </jso-project-browser>
 
-        <cm-toolbar hide="{{selectedOption != 'home'}}"
-                    columns="{{networkViewer.vAttr.columns}}"
-
-                    on-session-start="{{handleSessionStartMenu}}"
-                    on-session-open="{{handleSessionOpenMenu}}"
-                    on-session-save="{{handleSessionSaveMenu}}"
-
-                    on-import-sif="{{handleImportSifMenu}}"
-                    on-import-text="{{handleImportTextMenu}}"
-                    on-import-xlsx="{{handleImportXlsxMenu}}"
-                    on-import-node-attributes="{{handleImportNodeAttrMenu}}"
-                    on-import-edge-attributes="{{handleImportEdgeAttrMenu}}"
-
-                    on-export-sif="{{handleExportSifMenu}}"
-                    on-export-svg="{{handleExportSvgMenu}}"
-                    on-export-png="{{handleExportPngMenu}}"
-
-                    on-export-node-attributes="{{handleExportNodeAttrMenu}}"
-                    on-export-edge-attributes="{{handleExportEdgeAttrMenu}}"
-
-                    on-nodes-select-all="{{handleSelectMenu}}"
-                    on-nodes-select-first-neighbourhood="{{handleSelectMenu}}"
-                    on-nodes-select-invert="{{handleSelectMenu}}"
-                    on-edges-select-all="{{handleSelectMenu}}"
-                    on-edges-select-adjacent="{{handleSelectMenu}}"
-                    on-network-select-all="{{handleSelectMenu}}"
-
-
-                    on-layout-force-directed="{{handleLayoutMenu}}"
-                    on-layout-configure-force-directed="{{handleLayoutMenu}}"
-                    on-layout-circle="{{handleLayoutMenu}}"
-                    on-layout-random="{{handleLayoutMenu}}"
-
-
-                    on-nodes-edit="{{handleNodesEditMenu}}"
-                    on-edges-edit="{{handleEdgesEditMenu}}"
-                    on-cellbase="{{handleCellbaseMenu}}"
-
-
-                    on-node-simple-rendering="{{handleNodeSimpleRenderingMenu}}"
-                    on-node-list-rendering="{{handleNodeListRenderingMenu}}"
-                    on-edge-simple-rendering="{{handleEdgeSimpleRenderingMenu}}"
-
-                    on-save="{{handleSave}}"
-                    on-configure="{{}}"
-                >
-        </cm-toolbar>
-
         <jso-network-viewer
                 id="networkViewer"
                 hide="{{selectedOption != 'home'}}"
@@ -158,82 +43,12 @@
         </jso-network-viewer>
 
 
-        <!--Menu file-->
-        <template if="{{selectedMenu == 'import-sif' && selectedOption == 'home'}}">
-            <jso-sif-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportSif}}">
-
-            </jso-sif-network-file-open>
-        </template>
-        <template if="{{selectedMenu == 'import-text' && selectedOption == 'home'}}">
-            <jso-text-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportText}}">
-
-            </jso-text-network-file-open>
-        </template>
-        <template if="{{selectedMenu == 'import-xlsx' && selectedOption == 'home'}}">
-            <jso-xlsx-network-file-open selectedMenu="{{selectedMenu}}" on-graph="{{handleImportXlsx}}">
-            </jso-xlsx-network-file-open>
-        </template>
-        <template if="{{selectedMenu == 'import-node-attributes' && selectedOption == 'home'}}">
-            <jso-attribute-network-file-open selectedMenu="{{selectedMenu}}" on-open="{{handleImportNodeAttr}}"
-                                             type="node">
-            </jso-attribute-network-file-open>
-        </template>
-        <template if="{{selectedMenu == 'import-edge-attributes' && selectedOption == 'home'}}">
-            <jso-attribute-network-file-open selectedMenu="{{selectedMenu}}" on-open="{{handleImportEdgeAttr}}"
-                                             type="edge">
-            </jso-attribute-network-file-open>
-        </template>
-
-
-        <div class="right-side">
-            <jso-attribute-node-render
-                    hidden?="{{hideNodeSimpleRendering || selectedOption != 'home'}}"
-                    hideFlag="{{hideNodeSimpleRendering}}"
-                    attributeManager="{{networkViewer.vAttr}}"
-                    defaults="{{networkViewer.vertexDefaults}}"
-                    visualSets="{{networkViewer.vertexVisualSets}}">
-            </jso-attribute-node-render>
-
-            <jso-attribute-edge-render
-                    hidden?="{{hideEdgeSimpleRendering || selectedOption != 'home'}}"
-                    hideFlag="{{hideEdgeSimpleRendering}}"
-                    attributeManager="{{networkViewer.eAttr}}"
-                    defaults="{{networkViewer.edgeDefaults}}"
-                    visualSets="{{networkViewer.edgeVisualSets}}"
-                    >
-            </jso-attribute-edge-render>
-        </div>
-        <div class="left-side">
-            <jso-attribute-edit
-                    hidden?="{{selectedMenu != 'nodes-edit' || selectedOption != 'home'}}"
-                    selectedMenu="{{selectedMenu}}" attributeManager="{{networkViewer.vAttr}}" type="node">
-            </jso-attribute-edit>
-            <jso-attribute-edit
-                    hidden?="{{selectedMenu != 'edges-edit' || selectedOption != 'home'}}"
-                    selectedMenu="{{selectedMenu}}" attributeManager="{{networkViewer.eAttr}}" type="edge">
-            </jso-attribute-edit>
-            <jso-cellbase-attribute-import
-                    hidden?="{{hideCellbaseAttributeImport || selectedOption != 'home'}}"
-                    hideFlag="{{hideCellbaseAttributeImport}}"
-                    attributeManager="{{networkViewer.vAttr}}"
-                    >
-            </jso-cellbase-attribute-import>
-        </div>
-
 
     </template>
     <script>
         Polymer({
             created: function () {
                 this.selectedOption = 'home';
-                this.selectedMenu = 'nodes-edit';
-//                this.selectedMenu = '';
-
-                this.hideNodeSimpleRendering = false;
-                this.hideEdgeSimpleRendering = false;
-                this.hideNodeListRendering = true;//TODO remove
-
-                this.hideCellbaseAttributeImport = true;//TODO remove
 
                 this.userData;
 
@@ -249,16 +64,13 @@
 
                 setInterval(function () {
                     if (me.saveInProgress == false) {
-                        me.handleSave();
+                        me.saveInProgress = true;
+                        me.networkViewer.saveLocalStorage();
+                        me.saveInProgress = false;
                     } else {
                         console.log("saveInProgress is true");
                     }
                 }, 15000);
-            },
-            handleSave: function () {
-                this.saveInProgress = true;
-                this.networkViewer.saveLocalStorage();
-                this.saveInProgress = false;
             },
             _loadNetworkSessionLocalStorage: function () {
                 if (this.networkViewer.loadLocalStorage()) {
@@ -268,227 +80,9 @@
                     console.log('Session not found :( ')
                 }
             },
-            handleAppMenu: function (e) {
-                this.$.sidePanel.classList.toggle('side-panel-shown');
-            },
             __iliketomoveit: function () {
                 this.$.networkViewer.setLayout('Force directed (simulation)')
             },
-            handleNodesEditMenu: function (e) {
-                this.selectedMenu = 'nodes-edit';
-            },
-            handleEdgesEditMenu: function (e) {
-                this.selectedMenu = 'edges-edit';
-            },
-            handleCellbaseMenu: function (e) {
-                this.hideCellbaseAttributeImport = false;
-            },
-            handleSessionStartMenu: function (e) {
-                if (confirm('All changes will be lost. Are you sure?')) {
-                    this.$.networkViewer.startOver();
-                }
-            },
-            handleSessionOpenMenu: function (e) {
-                var me = this;
-                var input = document.createElement('input');
-                input.setAttribute("type", "file");
-                input.addEventListener("change", function (e) {
-                    var file = e.currentTarget.files[0];
-                    if (file) {
-                        var reader = new FileReader();
-                        reader.onload = function (evt) {
-                            me.$.networkViewer.loadJSON(JSON.parse(evt.target.result));
-                            me.$.networkViewer.saveLocalStorage();
-                        };
-                        reader.readAsText(file);
-                        e.currentTarget.value = null;
-                    }
-                });
-                var event = new MouseEvent('click', {
-                    'view': window,
-                    'bubbles': true,
-                    'cancelable': true
-                });
-                input.dispatchEvent(event);
-            },
-            handleSessionSaveMenu: function (e) {
-                var content = JSON.stringify(this.$.networkViewer);
-                var blob = new Blob([content], {type: "application/json"});
-                var url = URL.createObjectURL(blob);
-                var link = document.createElement('a');
-                link.href = url;
-                link.download = "network.json";
-                var fileName = window.prompt("Please enter file name", "network.json")
-                if (fileName != null && fileName != "") {
-                    link.download = fileName;
-                }
-                var event = new MouseEvent('click', {
-                    'view': window,
-                    'bubbles': true,
-                    'cancelable': true
-                });
-                link.dispatchEvent(event);
-            },
-            handleImportSifMenu: function (e) {
-                this.selectedMenu = 'import-sif';
-            },
-            handleImportTextMenu: function (e) {
-                this.selectedMenu = 'import-text';
-            },
-            handleImportXlsxMenu: function (e) {
-                this.selectedMenu = 'import-xlsx';
-            },
-            handleImportNodeAttrMenu: function (e) {
-                this.selectedMenu = 'import-node-attributes';
-            },
-            handleImportEdgeAttrMenu: function (e) {
-                this.selectedMenu = 'import-edge-attributes';
-            },
-            handleExportSifMenu: function (e) {
-                var content = this.$.networkViewer.exportGraph();
-                var blob = new Blob([content], {type: "data:text/tsv"});
-                var url = URL.createObjectURL(blob);
-                var link = document.createElement('a');
-                link.href = url;
-                link.download = "network.sif";
-                var event = new MouseEvent('click', {
-                    'view': window,
-                    'bubbles': true,
-                    'cancelable': true
-                });
-                link.dispatchEvent(event);
-            },
-            handleExportNodeAttrMenu: function (e) {
-                var content = this.$.networkViewer.exportVertexAttributes();
-                var blob = new Blob([content], {type: "data:text/tsv"});
-                var url = URL.createObjectURL(blob);
-                var link = document.createElement('a');
-                link.href = url;
-                link.download = "node.attr";
-                var event = new MouseEvent('click', {
-                    'view': window,
-                    'bubbles': true,
-                    'cancelable': true
-                });
-                link.dispatchEvent(event);
-            },
-            handleExportEdgeAttrMenu: function (e) {
-                var content = this.$.networkViewer.exportEdgeAttributes();
-                var blob = new Blob([content], {type: "data:text/tsv"});
-                var url = URL.createObjectURL(blob);
-                var link = document.createElement('a');
-                link.href = url;
-                link.download = "edge.attr";
-                var event = new MouseEvent('click', {
-                    'view': window,
-                    'bubbles': true,
-                    'cancelable': true
-                });
-                link.dispatchEvent(event);
-            },
-            handleExportSvgMenu: function (e) {
-                var svg = new XMLSerializer().serializeToString(this.$.networkViewer.$.networkLayout.$.svg);
-                var blob = new Blob([svg], {type: "image/svg+xml"});
-                var url = URL.createObjectURL(blob);
-
-                var link = document.createElement('a');
-                link.href = url;
-                link.download = "network.svg";
-                var event = new MouseEvent('click', {
-                    'view': window,
-                    'bubbles': true,
-                    'cancelable': true
-                });
-                link.dispatchEvent(event);
-            },
-            handleExportPngMenu: function (e) {
-//            Deprecated
-            },
-
-
-            handleNodeSimpleRenderingMenu: function (e) {
-                this.hideNodeSimpleRendering = false;
-            },
-            handleNodeListRenderingMenu: function (e) {
-                this.hideNodeListRendering = false;
-            },
-            handleEdgeSimpleRenderingMenu: function (e) {
-                this.hideEdgeSimpleRendering = false;
-            },
-
-            /**/
-            handleImportSif: function (e) {
-//                _this.configuration.cleanVisualSets();
-                this.$.networkViewer.setGraph(e.detail.graph);
-//                this.$.networkViewer.setLayout(e.detail.layout);
-                this.$.networkViewer.setLayout('Force directed');
-
-            },
-            handleImportText: function (e) {
-//                _this.configuration.cleanVisualSets();
-                this.$.networkViewer.setGraph(e.detail.graph);
-//                this.$.networkViewer.setLayout(e.detail.layout);
-                this.$.networkViewer.setLayout('Force directed');
-
-            },
-            handleImportXlsx: function (e) {
-//                _this.configuration.cleanVisualSets();
-                this.$.networkViewer.setGraph(e.detail.graph);
-//                this.$.networkViewer.setLayout(e.detail.layout);
-                this.$.networkViewer.setLayout('Force directed');
-
-            },
-            handleImportNodeAttr: function (e) {
-                this.$.networkViewer.importVertexAttributeManager(e.detail.attributeManager);
-            },
-            handleImportEdgeAttr: function (e) {
-                this.$.networkViewer.importEdgeAttributeManager(e.detail.attributeManager);
-            },
-
-            /** NETWORK **/
-            /*SELECT*/
-            handleSelectMenu: function (e) {
-                switch (e.detail.value) {
-                    case 'nodes-select-all' :
-                        this.$.networkViewer.selectAllVertices();
-                        break;
-                    case 'edges-select-all' :
-                        this.$.networkViewer.selectAllEdges();
-                        break;
-                    case 'network-select-all' :
-                        this.$.networkViewer.selectAll();
-                        break;
-                    case 'nodes-select-first-neighbourhood' :
-                        this.$.networkViewer.selectVerticesNeighbour();
-                        break;
-                    case 'nodes-select-invert' :
-                        this.$.networkViewer.selectVerticesInvert();
-                        break;
-                    case 'edges-select-adjacent' :
-                        this.$.networkViewer.selectEdgesNeighbour();
-                        break;
-                    default :
-                        console.log(e.detail.value + " not defined");
-                }
-            },
-            /*LAYOUT*/
-            handleLayoutMenu: function (e) {
-                switch (e.detail.value) {
-                    case 'layout-force-directed' :
-                        this.$.networkViewer.setLayout('Force directed');
-                        break;
-                    case 'layout-configure-force-directed' :
-                        break;
-                    case 'layout-circle' :
-                        this.$.networkViewer.setLayout('Circle', {attributeName: e.detail.subvalue});
-                        break;
-                    case 'layout-random' :
-                        this.$.networkViewer.setLayout('Random');
-                        break;
-                    default :
-                        console.log(e.detail.value + " not defined");
-                }
-            }
         });
     </script>
 </polymer-element>
