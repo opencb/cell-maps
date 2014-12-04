@@ -28,9 +28,9 @@
                 height: calc(100vh - 90px);
             }
         </style>
-        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}" appTitle="Cell Maps"
-                    description="Systems Biology Visualization">
-
+        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}">
+            <span class="title">Cell Maps</span>
+            <span class="description">Systems Biology Visualization</span>
         </jso-header>
         <jso-project-browser hidden?="{{selectedOption != 'projects' }}" userData="{{userData}}"
                              selectedProject="{{selectedProject}}" selectedStudy="{{selectedStudy}}">
@@ -38,7 +38,7 @@
 
         <jso-network-viewer
                 id="networkViewer"
-                hide="{{selectedOption != 'home'}}"
+                hidden?="{{selectedOption != 'home'}}"
                 >
         </jso-network-viewer>
 
