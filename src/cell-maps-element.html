@@ -8,6 +8,8 @@
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-list.html">
+
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 
 <polymer-element name="cell-maps-element">
@@ -27,14 +29,29 @@
             jso-network-viewer {
                 height: calc(100vh - 90px);
             }
+
+            jso-job-list {
+                height: calc(100vh - 60px);
+                width: 250px;
+                top: 60px;
+                right: 0px;
+            }
+
+
+
         </style>
-        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}">
+        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}"  showJobs="{{showJobs}}">
             <span class="title">Cell Maps</span>
             <span class="description">Systems Biology Visualization</span>
         </jso-header>
-        <jso-project-browser hidden?="{{selectedOption != 'projects' }}" userData="{{userData}}"
-                             selectedProject="{{selectedProject}}" selectedStudy="{{selectedStudy}}">
-        </jso-project-browser>
+        <template if="{{selectedOption == 'projects' }}">
+            <jso-project-browser
+                    userData="{{userData}}"
+                    studies="{{studies}}"
+                    selectedStudy="{{selectedStudy}}"
+                    selectedProject="{{selectedProject}}">
+            </jso-project-browser>
+        </template>
 
         <jso-network-viewer
                 id="networkViewer"
@@ -43,6 +60,14 @@
         </jso-network-viewer>
 
 
+        <template if="{{ showJobs }}">
+            <jso-job-list
+                    on-job-item-click="{{handleJobItemClick}}"
+                    userData="{{userData}}"
+                    selectedOption="{{selectedOption}}"
+                    selectedStudy="{{selectedStudy}}"
+                    showJobs="{{showJobs}}"></jso-job-list>
+        </template>
 
     </template>
     <script>
@@ -50,10 +75,13 @@
             created: function () {
                 this.selectedOption = 'home';
 
+                this.showJobs = false;
                 this.userData;
+
 
                 this.selectedProject;
                 this.selectedStudy;
+                this.studies;
 
                 this.saveInProgress = false;
             },
@@ -71,6 +99,32 @@
                         console.log("saveInProgress is true");
                     }
                 }, 15000);
+            },
+            userDataChanged: function (oldValue, newValue) {
+                var me = this;
+                this.selectedProject = this.userData.projects[0];
+
+                OpencgaManager.projects.studies({
+                    id: this.selectedProject.id,
+                    query: {
+                        sid: Cookies("bioinfo_sid")
+                    },
+                    request: {
+                        //method: 'POST',
+                        success: function (response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                me.studies = response.response[0].result;
+                                me.selectedStudy = me.studies[0];
+                            } else {
+                                console.log(response.error);
+                                console.log(response.response[0].errorMsg);
+                            }
+                        },
+                        error: function () {
+                            console.log('Server error, try again later.');
+                        }
+                    }
+                })
             },
             _loadNetworkSessionLocalStorage: function () {
                 if (this.networkViewer.loadLocalStorage()) {

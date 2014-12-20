@@ -3,6 +3,7 @@ CELLBASE_HOST = "http://ws-beta.bioinfo.cipf.es/cellbase/rest";
 //CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest";
 //OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga-staging-cellmaps/rest";
 OPENCGA_HOST = "http://test.babelomics.org/opencga/rest";
+//OPENCGA_HOST = "http://mem18:8080/opencga/rest";
 
 
 HEADER_HOME_LINK = "http://cellmaps.babelomics.org";
