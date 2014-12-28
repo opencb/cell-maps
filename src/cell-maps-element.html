@@ -18,10 +18,20 @@
             :host {
                 display: block;
                 position: relative;
-
                 cursor: default;
                 font-size: 13px;
             }
+
+            .content {
+                background-color: #435f7a;
+                position: relative;
+                /*min-height: calc(100vh - 160px);*/
+            }
+
+            .content > * {
+                min-height: calc(100vh - 60px);
+            }
+
             jso-project-browser {
                 height: calc(100vh - 60px);
             }
@@ -30,44 +40,40 @@
                 height: calc(100vh - 90px);
             }
 
-            jso-job-list {
-                height: calc(100vh - 60px);
-                width: 250px;
-                top: 60px;
-                right: 0px;
-            }
-
-
-
         </style>
-        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}"  showJobs="{{showJobs}}">
+        <jso-header id="jsoHeader"
+                    on-session-change="{{handleSessionChange}}"
+                    selectedOption="{{selectedOption}}"
+                    userData="{{userData}}"
+                    showJobs="{{showJobs}}"
+                    options="{{options}}"
+                    studies="{{studies}}"
+                    selectedStudy="{{selectedStudy}}"
+                    allowedTools="{{allowedTools}}"
+                    jobItem="{{jobItem}}"
+                    helpLink="https://github.com/opencb/cell-maps/wiki"
+                    tutorialLink="https://github.com/opencb/cell-maps/wiki"
+                    hideHomeLink="true">
             <span class="title">Cell Maps</span>
             <span class="description">Systems Biology Visualization</span>
         </jso-header>
-        <template if="{{selectedOption == 'projects' }}">
-            <jso-project-browser
-                    userData="{{userData}}"
-                    studies="{{studies}}"
-                    selectedStudy="{{selectedStudy}}"
-                    selectedProject="{{selectedProject}}">
-            </jso-project-browser>
-        </template>
 
-        <jso-network-viewer
-                id="networkViewer"
-                hidden?="{{selectedOption != 'home'}}"
-                >
-        </jso-network-viewer>
+        <div class="content">
+            <template if="{{selectedOption == 'projects' }}">
+                <jso-project-browser
+                        userData="{{userData}}"
+                        studies="{{studies}}"
+                        selectedStudy="{{selectedStudy}}"
+                        selectedProject="{{selectedProject}}">
+                </jso-project-browser>
+            </template>
 
-
-        <template if="{{ showJobs }}">
-            <jso-job-list
-                    on-job-item-click="{{handleJobItemClick}}"
-                    userData="{{userData}}"
-                    selectedOption="{{selectedOption}}"
-                    selectedStudy="{{selectedStudy}}"
-                    showJobs="{{showJobs}}"></jso-job-list>
-        </template>
+            <jso-network-viewer
+                    id="networkViewer"
+                    hidden?="{{selectedOption != 'home'}}"
+                    >
+            </jso-network-viewer>
+        </div>
 
     </template>
     <script>
@@ -82,6 +88,8 @@
                 this.selectedProject;
                 this.selectedStudy;
                 this.studies;
+
+//                this.allowedTools = ['aaa']
 
                 this.saveInProgress = false;
             },
