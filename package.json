@@ -6,7 +6,7 @@
     "url": "https://github.com/opencb/cell-maps.git"
   },
   "scripts": {
-    "build": "build.sh"
+    "build": "./build.sh"
   },
   "devDependencies": {
     "vulcanize": "^0.7.1"
