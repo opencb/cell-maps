@@ -1,11 +1,12 @@
 #!/bin/sh
 mkdir -p build
-rm -rf build/index.html build/index.js build/workers build/fonts
+rm -rf build/index.html build/index.js build/workers build/fonts build/example-files
 
 vulcanize cell-maps-index.html -o build/index.html --inline --strip --csp
 
 cp -r bower_components/fontawesome/fonts build/
 cp -r src/fonts/*.woff* build/fonts/
+cp -r example-files build/
 
 mkdir -p build/workers
 cp lib/jsorolla/src/lib/worker-fileupload.js build/workers/
