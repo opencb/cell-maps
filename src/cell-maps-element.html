@@ -8,18 +8,22 @@
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-help-menu.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser-window.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-biotype.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-bioformat.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-list.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-launched.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-no-ready.html">
 
-<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-nm-result.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-snow-result.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-fatigo-table.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-go-viewer.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-interactome-viewer.html">
+
 
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-network-list-select.html">
 
 <polymer-element name="cell-maps-element">
     <template>
@@ -41,6 +45,25 @@
                 min-height: calc(100vh - 160px);
             }
 
+            .link {
+                color: #CCCCCC;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+
+            .link > a {
+                color: #CCCCCC;
+                text-decoration: none;
+            }
+
+            .link > a:visited {
+                color: #CCCCCC;
+            }
+
+            .link:hover, .link > a:hover {
+                color: #FFFFFF;
+            }
+
             jso-project-browser {
                 height: calc(100vh - 60px);
             }
@@ -51,7 +74,7 @@
 
         </style>
         <jso-header id="jsoHeader"
-                    on-session-change="{{handleSessionChange}}"
+                    on-logout="{{handleLogout}}"
                     selectedOption="{{selectedOption}}"
                     userData="{{userData}}"
                     showJobs="{{showJobs}}"
@@ -59,13 +82,31 @@
                     studies="{{studies}}"
                     selectedStudy="{{selectedStudy}}"
                     allowedTools="{{allowedTools}}"
-                    jobItem="{{jobItem}}"
-                    helpLink="https://github.com/opencb/cell-maps/wiki"
-                    tutorialLink="https://github.com/opencb/cell-maps/wiki/User-Manual"
-                    workedExamplesLink="https://github.com/opencb/cell-maps/wiki/Loading-Networks-and-Attributes"
-                    hideHomeLink="true">
+                    jobItem="{{jobItem}}">
             <span class="title">Cell Maps</span>
             <span class="description">Systems Biology Visualization</span>
+
+            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
+                <div class="link">
+                    <a href="https://github.com/opencb/cell-maps/wiki" target="_blank">
+                        <font-awesome icon="book"></font-awesome>
+                        &nbsp; Documentation
+                    </a>
+                </div>
+                <div class="link">
+                    <a href="https://github.com/opencb/cell-maps/wiki/User-Manual" target="_blank">
+                        <font-awesome icon="list-alt"></font-awesome>
+                        &nbsp; Tutorial
+                    </a>
+                </div>
+                <div class="link">
+                    <a href="https://github.com/opencb/cell-maps/wiki/Loading-Networks-and-Attributes" target="_blank">
+                        <font-awesome icon="magic"></font-awesome>
+                        &nbsp; Worked examples
+                    </a>
+                </div>
+            </jso-help-menu>
+
         </jso-header>
 
         <div class="content">
@@ -152,6 +193,10 @@
                         }
                     }
                 })
+            },
+            handleLogout: function (e) {
+                this.selectedOption = 'home';
+                this.networkViewer.selectedMenu = '';
             },
             _loadNetworkSessionLocalStorage: function () {
                 if (this.networkViewer.loadLocalStorage()) {
