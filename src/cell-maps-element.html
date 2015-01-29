@@ -119,7 +119,8 @@
                         userData="{{userData}}"
                         studies="{{studies}}"
                         selectedStudy="{{selectedStudy}}"
-                        selectedProject="{{selectedProject}}">
+                        selectedProject="{{selectedProject}}"
+                        allowedTools="{{allowedTools}}">
                 </jso-project-browser>
             </template>
 
@@ -150,6 +151,7 @@
                 this.selectedStudy;
                 this.studies;
 
+                this.allowedTools = ['snow', 'fatigo', 'network-miner'];
 //                this.allowedTools = ['aaa']
 
                 this.saveInProgress = false;
