@@ -5,7 +5,7 @@ HTML5 systems biology tool
 
 ## Download code
 ```bash
-git clone https://github.com/babelomics/bierapp.git
+git clone https://github.com/opencb/cell-maps.git
 git submodule update --init
 ```
 
