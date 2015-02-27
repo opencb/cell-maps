@@ -13,7 +13,7 @@ git submodule update --init
 ## Compiling CSS and JavaScript
 
 ```bash
-cd bierapp-web/
+cd cell-maps/
 ```
 
 ### Install Node
