@@ -6,6 +6,7 @@ HTML5 systems biology tool
 ## Download code
 ```bash
 git clone https://github.com/opencb/cell-maps.git
+cd cell-maps/
 git submodule update --init
 ```
 
@@ -24,9 +25,14 @@ To install node click [here.](https://github.com/joyent/node/wiki/Installing-Nod
 ### Install bower components and npm modules
 
 ```bash
+
 sudo npm install -g bower
-bower install
 npm install
+bower install
+cd lib/jsorolla
+bower install
+
+### Run builder
 npm run build
 ```
 Minimized files will be located in the `/build` dir.
