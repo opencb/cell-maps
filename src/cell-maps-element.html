@@ -33,6 +33,10 @@
 
 <polymer-element name="cell-maps-element">
     <template>
+        <link rel="stylesheet" href="../lib/jsorolla/src/lib/components/jso-style.css">
+        <link rel="stylesheet" href="../lib/jsorolla/src/lib/components/jso-panel.css">
+        <link rel="stylesheet" href="../lib/jsorolla/src/lib/components/jso-form.css">
+        <link rel="stylesheet" href="../lib/jsorolla/src/lib/components/jso-dropdown.css">
         <style>
             :host {
                 display: block;
@@ -78,6 +82,14 @@
                 height: calc(100vh - 60px);
             }
 
+            .announce {
+                text-overflow: ellipsis;
+                background-color: #ea4242;
+                color: white;
+                padding:5px;
+                font-size: 12px;
+            }
+
         </style>
         <jso-header id="jsoHeader"
                     on-logout="{{handleLogout}}"
@@ -91,24 +103,26 @@
                     jobItem="{{jobItem}}">
             <span class="title">Cell Maps</span>
             <span class="description">Systems Biology Visualization</span>
-
+            <span class="announce">
+                 System will be down due to electric cut on 5th of March from 7pm to 9pm UTC/GMT +1 . Sorry for the inconvenience.
+            </span>
             <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
                 <div class="link">
-                    <a href="https://github.com/opencb/cell-maps/wiki" target="_blank">
+                    <a href="https://github.com/opencb/cell-maps/wiki/About-CellMaps" target="_blank">
+                        <font-awesome icon="list-alt"></font-awesome>
+                        &nbsp; About
+                    </a>
+                </div>
+                <div class="link">
+                    <a href="https://github.com/opencb/cell-maps/wiki/Documentation" target="_blank">
                         <font-awesome icon="book"></font-awesome>
                         &nbsp; Documentation
                     </a>
                 </div>
                 <div class="link">
-                    <a href="https://github.com/opencb/cell-maps/wiki/User-Manual" target="_blank">
-                        <font-awesome icon="list-alt"></font-awesome>
-                        &nbsp; Tutorial
-                    </a>
-                </div>
-                <div class="link">
-                    <a href="https://github.com/opencb/cell-maps/wiki/Loading-Networks-and-Attributes" target="_blank">
+                    <a href="https://github.com/opencb/cell-maps/wiki/Working-examples" target="_blank">
                         <font-awesome icon="magic"></font-awesome>
-                        &nbsp; Worked examples
+                        &nbsp; Working examples
                     </a>
                 </div>
             </jso-help-menu>
@@ -161,7 +175,7 @@
                 this.selectedStudy;
                 this.studies;
 
-                this.allowedTools = ['snow', 'fatigo', 'network-miner'];
+                this.allowedTools = ['snow', 'fatigo', 'network-miner', 'reactome-fi'];
 //                this.allowedTools = ['aaa']
 
                 this.saveInProgress = false;
@@ -209,7 +223,7 @@
             },
             handleLogout: function (e) {
                 this.selectedOption = 'home';
-                this.networkViewer.selectedMenu = '';
+                this.$.networkViewer.selectedMenu = '';
             },
             _loadNetworkSessionLocalStorage: function () {
                 if (this.networkViewer.loadLocalStorage()) {
