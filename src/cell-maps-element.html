@@ -74,6 +74,14 @@
                 color: #FFFFFF;
             }
 
+            .announce {
+                text-overflow: ellipsis;
+                background-color: #ea4242;
+                color: white;
+                padding: 5px;
+                font-size: 12px;
+            }
+
             jso-project-browser {
                 height: calc(100vh - 60px);
             }
@@ -86,10 +94,9 @@
                 text-overflow: ellipsis;
                 background-color: #ea4242;
                 color: white;
-                padding:5px;
+                padding: 5px;
                 font-size: 12px;
             }
-
         </style>
         <jso-header id="jsoHeader"
                     on-logout="{{handleLogout}}"
@@ -103,9 +110,9 @@
                     jobItem="{{jobItem}}">
             <span class="title">Cell Maps</span>
             <span class="description">Systems Biology Visualization</span>
-            <span class="announce">
-                 System will be down due to electric cut on 5th of March from 7pm to 9pm UTC/GMT +1 . Sorry for the inconvenience.
-            </span>
+            <!--<span class="announce">-->
+            <!--System will be down due to electric cut on 5th of March from 7pm to 9pm UTC/GMT +1 . Sorry for the inconvenience.-->
+            <!--</span>-->
             <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
                 <div class="link">
                     <a href="https://github.com/opencb/cell-maps/wiki/About-CellMaps" target="_blank">
@@ -165,7 +172,7 @@
     <script>
         Polymer({
             created: function () {
-                this.selectedOption = 'projects';
+                this.selectedOption = '';
 
                 this.showJobs = false;
                 this.userData;
@@ -197,33 +204,36 @@
             },
             userDataChanged: function (oldValue, newValue) {
                 var me = this;
-                this.selectedProject = this.userData.projects[0];
+                if (this.userData) {
+                    this.selectedProject = this.userData.projects[0];
 
-                OpencgaManager.projects.studies({
-                    id: this.selectedProject.id,
-                    query: {
-                        sid: Cookies("bioinfo_sid")
-                    },
-                    request: {
-                        //method: 'POST',
-                        success: function (response) {
-                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                me.studies = response.response[0].result;
-                                me.selectedStudy = me.studies[0];
-                            } else {
-                                console.log(response.error);
-                                console.log(response.response[0].errorMsg);
-                            }
+                    OpencgaManager.projects.studies({
+                        id: this.selectedProject.id,
+                        query: {
+                            sid: Cookies("bioinfo_sid")
                         },
-                        error: function () {
-                            console.log('Server error, try again later.');
+                        request: {
+                            //method: 'POST',
+                            success: function (response) {
+                                if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                    me.studies = response.response[0].result;
+                                    me.selectedStudy = me.studies[0];
+                                } else {
+                                    console.log(response.error);
+                                    console.log(response.response[0].errorMsg);
+                                }
+                            },
+                            error: function () {
+                                console.log('Server error, try again later.');
+                            }
                         }
-                    }
-                })
+                    })
+                }
             },
             handleLogout: function (e) {
                 this.selectedOption = 'home';
                 this.$.networkViewer.selectedMenu = '';
+                this.userData = null;
             },
             _loadNetworkSessionLocalStorage: function () {
                 if (this.networkViewer.loadLocalStorage()) {

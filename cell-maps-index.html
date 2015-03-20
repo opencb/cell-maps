@@ -11,6 +11,8 @@
     <link rel="import" href="bower_components/polymer/polymer.html">
     <link rel="import" href="src/cell-maps-element.html">
 
+    <script src="bower_components/bowser/bowser.min.js"></script>
+
 
     <!--Libraries-->
 
@@ -39,15 +41,22 @@
             /*overflow:hidden;*/
             /*overflow-x:hidden;*/
             /*overflow-y:scroll;*/
-            background-color: #314559;
-            /*background-color: #435f7a;*/
+            /*background-color: #314559;*/
+            background-color: #435f7a;
             /*background-color: #ececec;*/
+            /*background-color: #FFFFFF;*/
         }
 
         html, body {
             position: relative;
             margin: 0px;
             font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, 'sans-serif' !important;
+        }
+
+        .iconloading1:after {
+            margin: 10px;
+            font-family: FontAwesome;
+            content: '\f021';
         }
     </style>
 
@@ -58,15 +67,58 @@
 </head>
 
 <body>
-<cell-maps-element></cell-maps-element>
+<div id="loading"
+        style="
+        box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
+        display:none;
+        font-size: 18px;
+        position:fixed;
+        margin:auto auto;
+        padding:30px;
+        left:0;
+        right:0;
+        top:30px;
+        width:550px;
+        background-color:#314559;
+        text-align: center;
+        border: 1px solid #AAA;
+        color:#DDD;">
+    <b>Initializing... please wait.</b>    <span class="iconloading1" style="color:#FFAD76"></span>
+    <br>
+    <br>
+    <div style="font-size: 15px;">
+        <div>
+            Click "continue" if your browser shows:
+            "Warning: Unresponsive script"
+        </div>
+        <div>
+            This program has been optimized for:
+            Chrome, Chromium and Opera
+        </div>
+    </div>
+</div>
 <script>
-    //    if (navigator.userAgent.indexOf("Chrome") == -1) {
-    //        alert('NOTE: This web application makes an intensive use of new web technologies and standards like HTML5, so only the browser Chrome 39 is fully supported. we are working hard to make it compatible with other browsers.');
-    //    }
-    var cellMaps;
-    window.addEventListener('polymer-ready', function (debuggere) {
+    var element;
+    var loadingEl = document.querySelector('#loading');
+
+    var init = function () {
+        element = document.createElement('cell-maps-element');
+        document.body.appendChild(element);
+        document.body.removeChild(loadingEl);
+    };
+
+    if (bowser.name == "Chrome" || bowser.name == "Opera") {
+        init();
+    } else {
+        loadingEl.style.display = 'block';
+    }
+    window.addEventListener('polymer-ready', function () {
         console.log('polymer-ready');
-        cellMaps = document.querySelector('cell-maps-element');
+        if (!(bowser.name == "Chrome" || bowser.name == "Opera")) {
+            setTimeout(function () {
+                init();
+            }, 20);
+        }
     });
 </script>
 
