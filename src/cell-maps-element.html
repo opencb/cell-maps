@@ -55,23 +55,19 @@
                 min-height: calc(100vh - 160px);
             }
 
-            .link {
+            .a {
+                text-decoration: none;
                 color: #CCCCCC;
                 cursor: pointer;
-                white-space: nowrap;
             }
 
-            .link > a {
-                color: #CCCCCC;
-                text-decoration: none;
-            }
-
-            .link > a:visited {
+            .a:visited {
                 color: #CCCCCC;
             }
 
-            .link:hover, .link > a:hover {
-                color: #FFFFFF;
+            .a:hover {
+                color: white;
+                /*text-decoration: underline;*/
             }
 
             .announce {
@@ -115,19 +111,19 @@
             <!--</span>-->
             <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
                 <div class="link">
-                    <a href="https://github.com/opencb/cell-maps/wiki/About-CellMaps" target="_blank">
+                    <a class="a" href="https://github.com/opencb/cell-maps/wiki/About-CellMaps" target="_blank">
                         <font-awesome icon="list-alt"></font-awesome>
                         &nbsp; About
                     </a>
                 </div>
                 <div class="link">
-                    <a href="https://github.com/opencb/cell-maps/wiki/Documentation" target="_blank">
+                    <a class="a" href="https://github.com/opencb/cell-maps/wiki/Documentation" target="_blank">
                         <font-awesome icon="book"></font-awesome>
                         &nbsp; Documentation
                     </a>
                 </div>
                 <div class="link">
-                    <a href="https://github.com/opencb/cell-maps/wiki/Working-examples" target="_blank">
+                    <a class="a" href="https://github.com/opencb/cell-maps/wiki/Working-examples" target="_blank">
                         <font-awesome icon="magic"></font-awesome>
                         &nbsp; Working examples
                     </a>
