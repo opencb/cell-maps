@@ -86,14 +86,38 @@
                 height: calc(100vh - 60px);
             }
 
-            .announce {
-                text-overflow: ellipsis;
-                background-color: #ea4242;
-                color: white;
-                padding: 5px;
-                font-size: 12px;
+            .infobox {
+                position: fixed;
+                z-index: 110000;
+                top: 5px;
+                left: 400px;
+                padding: 8px 10px 8px 40px;
+                border-left: 5px solid #e9d295;
+                background-color: #faf3d7;
+                color: #585858;
+                font-weight: normal;
+                text-align: center;
+                width: 500px;
+                margin: 0px auto;
+                box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.5);
             }
+
+            .infobox:after {
+                position: absolute;
+                left: 10px;
+                top: 10px;
+                box-sizing: border-box;
+                font-family: FontAwesome;
+                content: '\f071';
+                color: #bf9947;
+                font-size: 16px;
+            }
+
         </style>
+        <!--<div class="infobox">-->
+        <!--On March 30th, 2015 there will be interruptions due to electrical cuts. <br>-->
+        <!--Mainly from 7pm to 9pm GMT +1. Sorry for the inconvenience.-->
+        <!--</div>-->
         <jso-header id="jsoHeader"
                     on-logout="{{handleLogout}}"
                     selectedOption="{{selectedOption}}"
@@ -106,9 +130,6 @@
                     jobItem="{{jobItem}}">
             <span class="title">Cell Maps</span>
             <span class="description">Systems Biology Visualization</span>
-            <!--<span class="announce">-->
-            <!--System will be down due to electric cut on 5th of March from 7pm to 9pm UTC/GMT +1 . Sorry for the inconvenience.-->
-            <!--</span>-->
             <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
                 <div class="link">
                     <a class="a" href="https://github.com/opencb/cell-maps/wiki/About-CellMaps" target="_blank">
@@ -181,7 +202,7 @@
                 this.allowedTools = ['snow', 'fatigo', 'network-miner', 'reactome-fi'];
 //                this.allowedTools = ['aaa']
 
-                this.saveInProgress = false;
+
             },
             domReady: function () {
                 var me = this;
@@ -189,13 +210,7 @@
                 this._loadNetworkSessionLocalStorage();
 
                 setInterval(function () {
-                    if (me.saveInProgress == false) {
-                        me.saveInProgress = true;
-                        me.networkViewer.saveLocalStorage();
-                        me.saveInProgress = false;
-                    } else {
-                        console.log("saveInProgress is true");
-                    }
+                    me.networkViewer.saveLocalStorage();
                 }, 15000);
             },
             userDataChanged: function (oldValue, newValue) {
