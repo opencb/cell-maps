@@ -1,6 +1,6 @@
 {
   "name": "cell-maps",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "homepage": "https://github.com/opencb/cell-maps",
   "authors": [
     "frasator <frasator@gmail.com>"
@@ -14,8 +14,20 @@
     "tests"
   ],
   "dependencies": {
+    "polymer": "Polymer/polymer#1.0.5",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#1.0.2",
+    "fontawesome": "*",
+    "cookies-js": "~1.1.0",
+    "crypto-js-evanvosberg": "3.1.4",
+    "highcharts-release": "~4.0.4",
+    "underscore": "~1.7.0",
+    "jquery": "1.11.3",
+    "backbone": "~1.1.2",
+    "qtip2": "~2.2.1",
     "bowser": "~0.7.2",
-    "webcomponentsjs": "~0.6.1"
+    "purl": "~2.3.1",
+    "jquery-mousewheel": "~3.1.12",
+    "gl-matrix": "~2.2.1"
   },
   "devDependencies": {}
 }

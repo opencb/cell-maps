@@ -1,247 +1,393 @@
+<script src="../lib/jsorolla/src/lib/utils.js"></script>
+<script src="../lib/jsorolla/src/lib/opencga-manager.js"></script>
+<script src="../lib/jsorolla/src/lib/cellbase-manager.js"></script>
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/table/jso-table.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
+
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
+
+
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 
 
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-help-menu.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser-window.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-bioformat.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-list.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-launched.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-no-ready.html">
+<!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">-->
+<!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-info-widget.html">-->
+<!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-fatigo-table.html">-->
+<!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-go-viewer.html">-->
+<!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-interactome-viewer.html">-->
+<!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-pvalue-button.html">-->
 
-<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-info-widget.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-fatigo-table.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-go-viewer.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-interactome-viewer.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-pvalue-button.html">
+<!--<link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-network-list-select.html">-->
 
-<link rel="import" href="../lib/jsorolla/src/lib/components/network/jso-network-list-select.html">
+<dom-module id="cell-maps-element">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            cursor: default;
+            font-size: 13px;
+            background-color: var(--default-primary-color);
+            height: 100%;
+        }
 
-<polymer-element name="cell-maps-element">
+        #menu div.option {
+            box-sizing: border-box;
+            margin-right: 1vw;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 30px;
+            padding: 0 5px;
+        }
+
+        #menu div.option:hover {
+            border-bottom: 1px solid var(--divider-color);
+        }
+
+        #menu div.option[active] {
+            font-weight: normal;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        div.icon {
+            margin-left: 15px;
+        }
+
+        div.menu-button {
+            padding: 0 10px;
+        }
+
+        div.menu-button:hover {
+            background-color: rgba(0, 0, 0, 0.20);
+        }
+
+        #content {
+            background-color: inherit;
+        }
+
+        jso-network-viewer {
+            height: calc(100vh - 90px);
+            box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        jso-opencga-upload-file {
+            box-sizing: border-box;
+            padding: 20px 30px;
+        }
+
+        #browserPanel {
+            position: absolute;
+            top: 64px;
+            left: 0;
+            width: 600px;
+        }
+
+        #settings {
+            width: 400px;
+            padding: 20px;
+        }
+
+        #browser {
+            /*width: 600px;*/
+
+            height: 400px;
+        }
+
+        #configure {
+            position: absolute;
+            top: 94px;
+            right: 0;
+            width: 300px;
+        }
+
+        @media (max-width: 1100px) {
+            .option-text {
+                display: none;
+            }
+        }
+
+        .userid {
+            color: var(--accent-color);
+            font-size: 16px;
+        }
+        #description {
+            color: var(--accent-color);
+            font-weight: normal;
+        }
+
+    </style>
     <template>
-        <style>
-            :host {
-                display: block;
-                position: relative;
-                cursor: default;
-                font-size: 13px;
-            }
-
-            .content {
-                background-color: #435f7a;
-                position: relative;
-                /*min-height: calc(100vh - 160px);*/
-            }
-
-            .content > * {
-                min-height: calc(100vh - 160px);
-            }
-
-            .a {
-                text-decoration: none;
-                color: #CCCCCC;
-                cursor: pointer;
-            }
-
-            .a:visited {
-                color: #CCCCCC;
-            }
-
-            .a:hover {
-                color: white;
-                /*text-decoration: underline;*/
-            }
-
-            .announce {
-                text-overflow: ellipsis;
-                background-color: #ea4242;
-                color: white;
-                padding: 5px;
-                font-size: 12px;
-            }
-
-            jso-project-browser {
-                height: calc(100vh - 60px);
-            }
-
-            jso-network-viewer {
-                height: calc(100vh - 60px);
-            }
-
-            .infobox {
-                position: fixed;
-                z-index: 110000;
-                top: 5px;
-                left: 400px;
-                padding: 8px 10px 8px 40px;
-                border-left: 5px solid #e9d295;
-                background-color: #faf3d7;
-                color: #585858;
-                font-weight: normal;
-                text-align: center;
-                width: 500px;
-                margin: 0px auto;
-                box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.5);
-            }
-
-            .infobox:after {
-                position: absolute;
-                left: 10px;
-                top: 10px;
-                box-sizing: border-box;
-                font-family: FontAwesome;
-                content: '\f071';
-                color: #bf9947;
-                font-size: 16px;
-            }
-
-        </style>
-        <!--<div class="infobox">-->
-        <!--On March 30th, 2015 there will be interruptions due to electrical cuts. <br>-->
-        <!--Mainly from 7pm to 9pm GMT +1. Sorry for the inconvenience.-->
-        <!--</div>-->
-        <jso-header id="jsoHeader"
-                    on-logout="{{handleLogout}}"
-                    selectedOption="{{selectedOption}}"
-                    userData="{{userData}}"
-                    showJobs="{{showJobs}}"
-                    options="{{options}}"
-                    studies="{{studies}}"
-                    selectedStudy="{{selectedStudy}}"
-                    allowedTools="{{allowedTools}}"
-                    jobItem="{{jobItem}}">
+        <jso-opencga-header id="jsoHeader" selected-option="{{selectedOption}}" user-data="{{userData}}"
+                            on-login="handleLogin" on-logout="handleLogout">
+            <!--<div hidden class="icon">-->
+            <!--<img src="" style="height: 0px;margin: 5px 0px 0 0;">-->
+            <!--</div>-->
             <span class="title">Cell Maps</span>
-            <span class="description">Systems Biology Visualization</span>
+            <span id="description" class="description">
+                Systems Biology Visualization
+            </span>
+
+            <div id="menu" class="menu horizontal layout flex">
+                <div style="margin-left:4vw;"></div>
+                <!--<div style="margin-left:2vw;"></div>-->
+                <div title="Browse" class="option" on-click="handleBrowserOption" data-panel="browserPanel">
+                    <i class="fa fa-cloud"></i>
+                    <span class="option-text">My data</span>
+                </div>
+                <div class="flex" style="margin-left:2vw;"></div>
+                <div title="Settings" class="option" on-click="handleMenuOption" data-panel="settingsPanel">
+                    <i class="fa fa-wrench"></i>
+                    <span class="option-text">Settings</span>
+                </div>
+            </div>
+
             <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
-                <div class="link">
-                    <a class="a" href="https://github.com/opencb/cell-maps/wiki/About-CellMaps" target="_blank">
-                        <font-awesome icon="list-alt"></font-awesome>
-                        &nbsp; About
-                    </a>
-                </div>
-                <div class="link">
-                    <a class="a" href="https://github.com/opencb/cell-maps/wiki/Documentation" target="_blank">
-                        <font-awesome icon="book"></font-awesome>
-                        &nbsp; Documentation
-                    </a>
-                </div>
-                <div class="link">
-                    <a class="a" href="https://github.com/opencb/cell-maps/wiki/Working-examples" target="_blank">
-                        <font-awesome icon="magic"></font-awesome>
-                        &nbsp; Working examples
-                    </a>
-                </div>
+                <a href="https://github.com/opencb/cell-maps/wiki/About-CellMaps" target="_blank">
+                    <i class="fa fa-list-alt"></i> &nbsp; About
+                </a>
+                <a href="https://github.com/opencb/cell-maps/wiki/Documentation" target="_blank">
+                    <i class="fa fa-book"></i> &nbsp; Documentation
+                </a>
+                <a href="https://github.com/opencb/cell-maps/wiki/Working-examples" target="_blank">
+                    <i class="fa fa-magic"></i> &nbsp; Working examples
+                </a>
             </jso-help-menu>
+        </jso-opencga-header>
 
-        </jso-header>
+        <div id="content" menu-option="home">
 
-        <div class="content">
-            <jso-job-result
-                    jobItem="{{jobItem}}"
-                    hidden?="{{selectedOption != 'jobReady' }}"
-                    selectedOption="{{selectedOption}}"
-                    networkViewer="{{networkViewer}}"
-                    ></jso-job-result>
-            <jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>
+            <!--<jso-network-viewer-->
+            <!--id="networkViewer"-->
+            <!--userData="{{userData}}"-->
+            <!--studies="{{studies}}"-->
+            <!--selectedStudy="{{selectedStudy}}"-->
+            <!--jsoHeader="{{$.jsoHeader}}"-->
+            <!--hidden?="{{!(selectedOption == 'home' || selectedOption == '')}}"-->
+            <!-->-->
+            <!--</jso-network-viewer>-->
 
-            <template if="{{selectedOption == 'projects' }}">
-                <jso-project-browser
-                        userData="{{userData}}"
-                        studies="{{studies}}"
-                        selectedStudy="{{selectedStudy}}"
-                        selectedProject="{{selectedProject}}"
-                        allowedTools="{{allowedTools}}">
-                </jso-project-browser>
-            </template>
+            <!--<jso-job-result-->
+            <!--jobItem="{{jobItem}}"-->
+            <!--hidden?="{{selectedOption != 'jobReady' }}"-->
+            <!--selectedOption="{{selectedOption}}"-->
+            <!--networkViewer="{{networkViewer}}"-->
+            <!--></jso-job-result>-->
+            <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
 
-            <jso-network-viewer
-                    id="networkViewer"
-                    userData="{{userData}}"
-                    studies="{{studies}}"
-                    selectedStudy="{{selectedStudy}}"
-                    jsoHeader="{{$.jsoHeader}}"
-                    hidden?="{{!(selectedOption == 'home' || selectedOption == '')}}"
-                    >
-            </jso-network-viewer>
+            <jso-panel hidden collapsible movable closable id="browserPanel" on-hidden="handlePanelHidden">
+                <div class="header">
+                    Browse my data
+                </div>
+                <div class="container flex">
+                    <jso-opencga-browser id="browser" on-fileselect="handleFileSelect" bioformats="{{bioformats}}"
+                                         projects="{{projects}}"
+                                         on-need-refresh="handleUserNeedRefresh"></jso-opencga-browser>
+                </div>
+            </jso-panel>
+
 
         </div>
 
         <!--<jso-footer></jso-footer>-->
     </template>
-    <script>
-        Polymer({
-            created: function () {
-                this.selectedOption = '';
-
-                this.showJobs = false;
-                this.userData;
-
-
-                this.selectedProject;
-                this.selectedStudy;
-                this.studies;
-
-                this.allowedTools = ['snow', 'fatigo', 'network-miner', 'reactome-fi'];
-//                this.allowedTools = ['aaa']
-
-
+</dom-module>
+<script>
+    Polymer({
+        is: "cell-maps-element",
+        properties: {
+            version: {
+                type: String,
+                reflectToAttribute: true
             },
-            domReady: function () {
-                var me = this;
-                this.networkViewer = this.$.networkViewer;
-                this._loadNetworkSessionLocalStorage();
-
-                setInterval(function () {
-                    me.networkViewer.saveLocalStorage();
-                }, 15000);
+            selectedOption: {
+                type: String,
+                value: "home",
+                notify: true,
+                reflectToAttribute: true,
+                observer: 'selectedOptionChanged'
             },
-            userDataChanged: function (oldValue, newValue) {
-                var me = this;
-                if (this.userData) {
-                    this.selectedProject = this.userData.projects[0];
+            userData: {
+                type: Object,
+                notify: true,
+                observer: 'userDataChanged'
+            },
+            projects: {
+                type: Array,
+                notify: true
+            },
+            bioformats: {
+                type: Array,
+                notify: true,
+                value: [{
+                    value: 'ALIGNMENT',
+                    text: 'Alignment'
+                }, {
+                    value: 'VARIANT',
+                    text: 'Variant'
+                }]
+            },
+            cellBaseHost: {
+                type: String,
+                value: CellBaseManager.host
+            },
+            opencgaHost: {
+                type: String,
+                value: OpencgaManager.host
+            }
+        },
+//            created: function () {
+//                this.allowedTools = ['snow', 'fatigo', 'network-miner', 'reactome-fi'];
+//            },
+//            domReady: function () {
+        //TODO
+//                var me = this;
+//                this.networkViewer = this.$.networkViewer;
+//                this._loadNetworkSessionLocalStorage();
+//
+//                setInterval(function () {
+//                    me.networkViewer.saveLocalStorage();
+//                }, 15000);
+//            },
 
-                    OpencgaManager.projects.studies({
-                        id: this.selectedProject.id,
-                        query: {
-                            sid: Cookies("bioinfo_sid")
-                        },
-                        request: {
-                            //method: 'POST',
-                            success: function (response) {
-                                if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                    me.studies = response.response[0].result;
-                                    me.selectedStudy = me.studies[0];
-                                } else {
-                                    console.log(response.error);
-                                    console.log(response.response[0].errorMsg);
-                                }
-                            },
-                            error: function () {
-                                console.log('Server error, try again later.');
-                            }
-                        }
-                    })
+        ready: function () {
+            var panels = Polymer.dom(this.root).querySelectorAll('jso-panel');
+            for (var i = 0; i < panels.length; i++) {
+                var panEl = panels[i];
+                var id = panEl.getAttribute('id');
+                var el = Polymer.dom(this.$.menu).querySelector('[data-panel=' + id + ']');
+                if (el) {
+                    if (panEl.hidden) {
+                        el.removeAttribute('active')
+                    } else {
+                        el.setAttribute('active', '');
+                    }
                 }
-            },
-            handleLogout: function (e) {
-                this.selectedOption = 'home';
-                this.$.networkViewer.selectedMenu = '';
-                this.userData = null;
-            },
-            _loadNetworkSessionLocalStorage: function () {
-                if (this.networkViewer.loadLocalStorage()) {
-                    console.log('Session found :), restoring information... ')
-
+            }
+        },
+        selectedOptionChanged: function (neo, old) {
+            var menuItems = Polymer.dom(this.root).querySelectorAll('[menu-option]');
+            for (var i = 0; i < menuItems.length; i++) {
+                var item = menuItems[i];
+                var currentItemValue = item.getAttribute("menu-option");
+                if (neo == currentItemValue) {
+                    item.removeAttribute("hidden");
                 } else {
-                    console.log('Session not found :( ')
+                    item.setAttribute('hidden', '');
                 }
-            },
-            __iliketomoveit: function () {
-                this.$.networkViewer.setLayout('Force directed (simulation)')
-            },
-        });
-    </script>
-</polymer-element>
+            }
+        },
+        handleMenu: function (e) {
+            var option = e.currentTarget.dataset['option'];
+            this.setMenu(option);
+        },
+        setMenu: function (option) {
+            if (option) {
+                this.selectedOption = option;
+            }
+        },
+        handleMenuOption: function (e) {
+            var panel = this.$[e.currentTarget.dataset.panel];
+            panel.hidden = !panel.hidden;
+        },
+        handleBrowserOption: function (e) {
+            if (this.$.jsoHeader.isLogged) {
+                this.$.browserPanel.hidden = !this.$.browserPanel.hidden;
+            } else {
+                this.selectedOption = 'login';
+                this._lastLogedRequest = this.$.browserPanel;
+            }
+        },
+        handlePanelHidden: function (e) {
+            var id = e.currentTarget.getAttribute('id');
+            var sel = '[data-panel=' + id + ']';
+            var el = Polymer.dom(this.$.menu).querySelector(sel);
+            if (e.currentTarget.hidden) {
+                el.removeAttribute('active')
+            } else {
+                el.setAttribute('active', '');
+            }
+        },
+        handleFileSelect: function (e) {
+            console.log("file");
+            console.log(e.detail);
+            var file = e.detail;
+            if (file.index && file.index.status == 'READY') {
+            }
+        },
+
+        handleLogin: function () {
+            this.selectedOption = "home";
+            if (this._lastLogedRequest) {
+                this._lastLogedRequest.hidden = false;
+                this._lastLogedRequest = null;
+            }
+        },
+        handleLogout: function () {
+            this.$.browserPanel.hidden = true;
+        },
+        handleUserNeedRefresh: function () {
+            this.$.jsoHeader.getUserInfo(true);
+        },
+        userDataChanged: function (neo, old) {
+            var me = this;
+            if (this.userData) {
+                var projectIds = [];
+                for (var i = 0; i < this.userData.projects.length; i++) {
+                    var p = this.userData.projects[i];
+                    projectIds.push(p.id);
+                }
+                var projects = [];
+                OpencgaManager.projects.studies({
+                    id: projectIds.join(','),
+                    query: {
+                        sid: Cookies("bioinfo_sid")
+                    },
+                    request: {
+                        success: function (response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                for (var i = 0; i < response.response.length; i++) {
+                                    var r = response.response[i];
+                                    me.userData.projects[i].studies = r.result;
+                                    projects.push(me.userData.projects[i]);
+                                }
+                                /* update projects property*/
+                                me.projects = projects;
+                            } else {
+                                console.log(response.error);
+                                console.log(response.response[0].errorMsg);
+                            }
+                            me.loading = false;
+                        },
+                        error: function () {
+                            console.log('Server error, try again later.');
+                            me.loading = false;
+                        }
+                    }
+                });
+            } else {
+                console.log("no user data")
+            }
+        },
+        _loadNetworkSessionLocalStorage: function () {
+            if (this.networkViewer.loadLocalStorage()) {
+                console.log('Session found :), restoring information... ')
+
+            } else {
+                console.log('Session not found :( ')
+            }
+        },
+        __iliketomoveit: function () {
+            this.$.networkViewer.setLayout('Force directed (simulation)')
+        },
+    });
+</script>
