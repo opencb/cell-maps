@@ -1,8 +1,4 @@
-<script src="../lib/jsorolla/src/lib/utils.js"></script>
-<script src="../lib/jsorolla/src/lib/opencga-manager.js"></script>
-<script src="../lib/jsorolla/src/lib/cellbase-manager.js"></script>
-
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
@@ -14,9 +10,6 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
-
-
-<link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 
 
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">-->
@@ -37,6 +30,7 @@
             font-size: 13px;
             background-color: var(--default-primary-color);
             height: 100%;
+            width: 100%;
         }
 
         #menu div.option {
@@ -71,12 +65,21 @@
             background-color: rgba(0, 0, 0, 0.20);
         }
 
+        jso-opencga-header {
+            position: absolute;
+            top: 0;
+        }
+
         #content {
+            position: absolute;
+            width: 100%;
+            top: 60px;
+            height: calc(100vh - 60px);
             background-color: inherit;
         }
 
         jso-network-viewer {
-            height: calc(100vh - 90px);
+            height: calc(100vh - 60px);
             box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
         }
 
@@ -120,6 +123,7 @@
             color: var(--accent-color);
             font-size: 16px;
         }
+
         #description {
             color: var(--accent-color);
             font-weight: normal;
@@ -127,6 +131,43 @@
 
     </style>
     <template>
+
+        <div id="content" menu-option="home">
+
+            <jso-network-viewer
+                    id="networkViewer"
+                    userData="{{userData}}"
+                    studies="{{studies}}"
+                    selectedStudy="{{selectedStudy}}"
+                    bioformats="{{bioformats}}"
+                    projects="{{projects}}"
+                    on-need-refresh="handleUserNeedRefresh"
+                    hidden$="{{!(selectedOption == 'home' || selectedOption == '')}}">
+            </jso-network-viewer>
+
+            <!--<jso-job-result-->
+            <!--jobItem="{{jobItem}}"-->
+            <!--hidden?="{{selectedOption != 'jobReady' }}"-->
+            <!--selectedOption="{{selectedOption}}"-->
+            <!--networkViewer="{{networkViewer}}">-->
+            <!--</jso-job-result>-->
+            <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
+
+            <jso-panel hidden collapsible movable closable id="browserPanel" on-hidden="handlePanelHidden">
+                <div class="header">
+                    Browse my data
+                </div>
+                <div class="container flex">
+                    <jso-opencga-browser id="browser"
+                                         on-fileselect="handleFileSelect"
+                                         bioformats="{{bioformats}}"
+                                         projects="{{projects}}"
+                                         on-need-refresh="handleUserNeedRefresh"></jso-opencga-browser>
+                </div>
+            </jso-panel>
+
+        </div>
+
         <jso-opencga-header id="jsoHeader" selected-option="{{selectedOption}}" user-data="{{userData}}"
                             on-login="handleLogin" on-logout="handleLogout">
             <!--<div hidden class="icon">-->
@@ -144,11 +185,11 @@
                     <i class="fa fa-cloud"></i>
                     <span class="option-text">My data</span>
                 </div>
-                <div class="flex" style="margin-left:2vw;"></div>
-                <div title="Settings" class="option" on-click="handleMenuOption" data-panel="settingsPanel">
-                    <i class="fa fa-wrench"></i>
-                    <span class="option-text">Settings</span>
-                </div>
+                <!--<div class="flex" style="margin-left:2vw;"></div>-->
+                <!--<div title="Settings" class="option" on-click="handleMenuOption" data-panel="settingsPanel">-->
+                <!--<i class="fa fa-wrench"></i>-->
+                <!--<span class="option-text">Settings</span>-->
+                <!--</div>-->
             </div>
 
             <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
@@ -164,39 +205,6 @@
             </jso-help-menu>
         </jso-opencga-header>
 
-        <div id="content" menu-option="home">
-
-            <!--<jso-network-viewer-->
-            <!--id="networkViewer"-->
-            <!--userData="{{userData}}"-->
-            <!--studies="{{studies}}"-->
-            <!--selectedStudy="{{selectedStudy}}"-->
-            <!--jsoHeader="{{$.jsoHeader}}"-->
-            <!--hidden?="{{!(selectedOption == 'home' || selectedOption == '')}}"-->
-            <!-->-->
-            <!--</jso-network-viewer>-->
-
-            <!--<jso-job-result-->
-            <!--jobItem="{{jobItem}}"-->
-            <!--hidden?="{{selectedOption != 'jobReady' }}"-->
-            <!--selectedOption="{{selectedOption}}"-->
-            <!--networkViewer="{{networkViewer}}"-->
-            <!--></jso-job-result>-->
-            <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
-
-            <jso-panel hidden collapsible movable closable id="browserPanel" on-hidden="handlePanelHidden">
-                <div class="header">
-                    Browse my data
-                </div>
-                <div class="container flex">
-                    <jso-opencga-browser id="browser" on-fileselect="handleFileSelect" bioformats="{{bioformats}}"
-                                         projects="{{projects}}"
-                                         on-need-refresh="handleUserNeedRefresh"></jso-opencga-browser>
-                </div>
-            </jso-panel>
-
-
-        </div>
 
         <!--<jso-footer></jso-footer>-->
     </template>
@@ -229,11 +237,8 @@
                 type: Array,
                 notify: true,
                 value: [{
-                    value: 'ALIGNMENT',
-                    text: 'Alignment'
-                }, {
-                    value: 'VARIANT',
-                    text: 'Variant'
+                    value: 'IDLIST',
+                    text: 'ID list'
                 }]
             },
             cellBaseHost: {
