@@ -6,13 +6,14 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/table/jso-table.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
 
 
-<!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">-->
+<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-info-widget.html">-->
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-fatigo-table.html">-->
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-go-viewer.html">-->
@@ -70,12 +71,16 @@
             top: 0;
         }
 
-        #content {
+        .content {
             position: absolute;
             width: 100%;
             top: 60px;
             height: calc(100vh - 60px);
             background-color: inherit;
+        }
+
+        jso-job-result {
+            min-height: 100%;
         }
 
         jso-network-viewer {
@@ -88,9 +93,9 @@
             padding: 20px 30px;
         }
 
-        #browserPanel {
+        #browserPanel, #jobsPanel {
             position: absolute;
-            top: 64px;
+            top: 94px;
             left: 0;
             width: 600px;
         }
@@ -131,31 +136,20 @@
 
     </style>
     <template>
-
-        <div id="content" menu-option="home">
-
+        <div class="content" menu-option="home">
             <jso-network-viewer
                     id="networkViewer"
                     userData="{{userData}}"
                     studies="{{studies}}"
                     selectedStudy="{{selectedStudy}}"
-                    bioformats="{{bioformats}}"
                     projects="{{projects}}"
                     on-need-refresh="handleUserNeedRefresh"
                     hidden$="{{!(selectedOption == 'home' || selectedOption == '')}}">
             </jso-network-viewer>
 
-            <!--<jso-job-result-->
-            <!--jobItem="{{jobItem}}"-->
-            <!--hidden?="{{selectedOption != 'jobReady' }}"-->
-            <!--selectedOption="{{selectedOption}}"-->
-            <!--networkViewer="{{networkViewer}}">-->
-            <!--</jso-job-result>-->
-            <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
-
             <jso-panel hidden collapsible movable closable id="browserPanel" on-hidden="handlePanelHidden">
                 <div class="header">
-                    Browse my data
+                    <i class="fa fa-cloud"></i>&nbsp; Browse my data
                 </div>
                 <div class="container flex">
                     <jso-opencga-browser id="browser"
@@ -166,6 +160,29 @@
                 </div>
             </jso-panel>
 
+            <jso-panel hidden collapsible movable closable id="jobsPanel" on-hidden="handlePanelHidden">
+                <div class="header">
+                    <i class="fa fa-rocket"></i>&nbsp; Browse jobs
+                </div>
+                <div class="container flex">
+                    <jso-opencga-job-browser id="jobrowser"
+                                             on-jobselect="handleJobSelect"
+                                             allowed-tools="{{allowedTools}}"
+                                             projects="{{projects}}"
+                                             on-need-refresh="handleUserNeedRefresh"></jso-opencga-job-browser>
+                </div>
+            </jso-panel>
+
+        </div>
+        <div class="content" menu-option="job">
+            <jso-job-result
+                    id="jobResult"
+                    jobItem="{{jobItem}}"
+                    hidden?="{{selectedOption != 'jobReady' }}"
+                    on-job-close="handleCloseJobResult"
+                    network-viewer="{{networkViewer}}">
+            </jso-job-result>
+            <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
         </div>
 
         <jso-opencga-header id="jsoHeader" selected-option="{{selectedOption}}" user-data="{{userData}}"
@@ -181,9 +198,13 @@
             <div id="menu" class="menu horizontal layout flex">
                 <div style="margin-left:4vw;"></div>
                 <!--<div style="margin-left:2vw;"></div>-->
-                <div title="Browse" class="option" on-click="handleBrowserOption" data-panel="browserPanel">
+                <div title="Browse my data" class="option" on-click="handleBrowserOption" data-panel="browserPanel">
                     <i class="fa fa-cloud"></i>
                     <span class="option-text">My data</span>
+                </div>
+                <div title="Browse my jobs" class="option" on-click="handleMenuOption" data-panel="jobsPanel">
+                    <i class="fa fa-rocket"></i>
+                    <span class="option-text">My jobs</span>
                 </div>
                 <!--<div class="flex" style="margin-left:2vw;"></div>-->
                 <!--<div title="Settings" class="option" on-click="handleMenuOption" data-panel="settingsPanel">-->
@@ -236,10 +257,20 @@
             bioformats: {
                 type: Array,
                 notify: true,
-                value: [{
-                    value: 'IDLIST',
-                    text: 'ID list'
-                }]
+                value: [
+                    {
+                        value: 'IDLIST',
+                        text: 'ID list'
+                    },
+                    {
+                        value: 'IDLIST_RANKED',
+                        text: 'ID list ranked'
+                    }
+                ]
+            },
+            allowedTools: {
+                type: Array,
+                value: ['snow', 'network-miner', 'fatigo']
             },
             cellBaseHost: {
                 type: String,
@@ -248,6 +279,9 @@
             opencgaHost: {
                 type: String,
                 value: OpencgaManager.host
+            },
+            networkViewer: {
+                type: Object
             }
         },
 //            created: function () {
@@ -278,6 +312,7 @@
                     }
                 }
             }
+            this.networkViewer = this.$.networkViewer;
         },
         selectedOptionChanged: function (neo, old) {
             var menuItems = Polymer.dom(this.root).querySelectorAll('[menu-option]');
@@ -328,6 +363,16 @@
             var file = e.detail;
             if (file.index && file.index.status == 'READY') {
             }
+        },
+        handleJobSelect: function (e) {
+            var job = e.detail;
+            if (job && job.status === 'READY') {
+                this.set('selectedOption', 'job');
+                this.$.jobResult.set('jobItem', e.detail);
+            }
+        },
+        handleCloseJobResult: function (e) {
+            this.set('selectedOption', 'home');
         },
 
         handleLogin: function () {
