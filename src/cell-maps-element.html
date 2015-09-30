@@ -69,6 +69,7 @@
         jso-opencga-header {
             position: absolute;
             top: 0;
+            z-index: 10;
         }
 
         .content {
@@ -76,7 +77,7 @@
             width: 100%;
             top: 60px;
             height: calc(100vh - 60px);
-            background-color: inherit;
+            background-color: transparent;
         }
 
         jso-job-result {
@@ -93,10 +94,17 @@
             padding: 20px 30px;
         }
 
-        #browserPanel, #jobsPanel {
+        #browserPanel {
             position: absolute;
-            top: 94px;
+            top: 0px;
             left: 0;
+            width: 600px;
+        }
+
+        #jobsPanel {
+            position: absolute;
+            top: 0px;
+            right: 0;
             width: 600px;
         }
 
@@ -136,31 +144,9 @@
 
     </style>
     <template>
-        <div class="content" menu-option="home">
-            <jso-network-viewer
-                    id="networkViewer"
-                    userData="{{userData}}"
-                    studies="{{studies}}"
-                    selectedStudy="{{selectedStudy}}"
-                    projects="{{projects}}"
-                    on-need-refresh="handleUserNeedRefresh"
-                    hidden$="{{!(selectedOption == 'home' || selectedOption == '')}}">
-            </jso-network-viewer>
-
-            <jso-panel hidden collapsible movable closable id="browserPanel" on-hidden="handlePanelHidden">
-                <div class="header">
-                    <i class="fa fa-cloud"></i>&nbsp; Browse my data
-                </div>
-                <div class="container flex">
-                    <jso-opencga-browser id="browser"
-                                         on-fileselect="handleFileSelect"
-                                         bioformats="{{bioformats}}"
-                                         projects="{{projects}}"
-                                         on-need-refresh="handleUserNeedRefresh"></jso-opencga-browser>
-                </div>
-            </jso-panel>
-
-            <jso-panel hidden collapsible movable closable id="jobsPanel" on-hidden="handlePanelHidden">
+        <div class="content" menu-option="home,job">
+            <jso-panel id="jobsPanel" hidden collapsible movable closable
+                       on-hidden="handlePanelHidden">
                 <div class="header">
                     <i class="fa fa-rocket"></i>&nbsp; Browse jobs
                 </div>
@@ -172,7 +158,6 @@
                                              on-need-refresh="handleUserNeedRefresh"></jso-opencga-job-browser>
                 </div>
             </jso-panel>
-
         </div>
         <div class="content" menu-option="job">
             <jso-job-result
@@ -183,6 +168,32 @@
                     network-viewer="{{networkViewer}}">
             </jso-job-result>
             <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
+        </div>
+
+        <div class="content" menu-option="home">
+            <jso-network-viewer
+                    id="networkViewer"
+                    user-data="{{userData}}"
+                    studies="{{studies}}"
+                    selectedStudy="{{selectedStudy}}"
+                    projects="{{projects}}"
+                    on-need-refresh="handleUserNeedRefresh"
+                    hidden$="{{!(selectedOption == 'home' || selectedOption == '')}}">
+            </jso-network-viewer>
+
+            <jso-panel id="browserPanel" hidden collapsible movable closable
+                       on-hidden="handlePanelHidden">
+                <div class="header">
+                    <i class="fa fa-cloud"></i>&nbsp; Browse my data
+                </div>
+                <div class="container flex">
+                    <jso-opencga-browser id="browser"
+                                         on-fileselect="handleFileSelect"
+                                         bioformats="{{bioformats}}"
+                                         projects="{{projects}}"
+                                         on-need-refresh="handleUserNeedRefresh"></jso-opencga-browser>
+                </div>
+            </jso-panel>
         </div>
 
         <jso-opencga-header id="jsoHeader" selected-option="{{selectedOption}}" user-data="{{userData}}"
@@ -198,11 +209,12 @@
             <div id="menu" class="menu horizontal layout flex">
                 <div style="margin-left:4vw;"></div>
                 <!--<div style="margin-left:2vw;"></div>-->
-                <div title="Browse my data" class="option" on-click="handleBrowserOption" data-panel="browserPanel">
+                <div title="Browse my data" class="option" on-click="handleLoggedOnlyMenuOption"
+                     data-panel="browserPanel">
                     <i class="fa fa-cloud"></i>
                     <span class="option-text">My data</span>
                 </div>
-                <div title="Browse my jobs" class="option" on-click="handleMenuOption" data-panel="jobsPanel">
+                <div title="Browse my jobs" class="option" on-click="handleLoggedOnlyMenuOption" data-panel="jobsPanel">
                     <i class="fa fa-rocket"></i>
                     <span class="option-text">My jobs</span>
                 </div>
@@ -270,7 +282,7 @@
             },
             allowedTools: {
                 type: Array,
-                value: ['snow', 'network-miner', 'fatigo']
+                value: ['snow', 'network-miner', 'fatigo', /* 'reactome-fi' */]
             },
             cellBaseHost: {
                 type: String,
@@ -284,21 +296,10 @@
                 type: Object
             }
         },
-//            created: function () {
-//                this.allowedTools = ['snow', 'fatigo', 'network-miner', 'reactome-fi'];
-//            },
-//            domReady: function () {
-        //TODO
-//                var me = this;
-//                this.networkViewer = this.$.networkViewer;
-//                this._loadNetworkSessionLocalStorage();
-//
-//                setInterval(function () {
-//                    me.networkViewer.saveLocalStorage();
-//                }, 15000);
-//            },
-
         ready: function () {
+            var me = this;
+
+            /* Update active panels */
             var panels = Polymer.dom(this.root).querySelectorAll('jso-panel');
             for (var i = 0; i < panels.length; i++) {
                 var panEl = panels[i];
@@ -312,14 +313,20 @@
                     }
                 }
             }
+
+            /* Restore last session */
             this.networkViewer = this.$.networkViewer;
+            this._loadNetworkSessionLocalStorage();
+            setInterval(function () {
+                me.networkViewer.saveLocalStorage();
+            }, 15000);
         },
         selectedOptionChanged: function (neo, old) {
             var menuItems = Polymer.dom(this.root).querySelectorAll('[menu-option]');
             for (var i = 0; i < menuItems.length; i++) {
                 var item = menuItems[i];
-                var currentItemValue = item.getAttribute("menu-option");
-                if (neo == currentItemValue) {
+                var currentItemValues = item.getAttribute("menu-option").split(',');
+                if (currentItemValues.indexOf(neo) != -1) {
                     item.removeAttribute("hidden");
                 } else {
                     item.setAttribute('hidden', '');
@@ -339,12 +346,13 @@
             var panel = this.$[e.currentTarget.dataset.panel];
             panel.hidden = !panel.hidden;
         },
-        handleBrowserOption: function (e) {
+        handleLoggedOnlyMenuOption: function (e) {
+            var panel = this.$[e.currentTarget.dataset.panel];
             if (this.$.jsoHeader.isLogged) {
-                this.$.browserPanel.hidden = !this.$.browserPanel.hidden;
+                panel.hidden = !panel.hidden;
             } else {
                 this.selectedOption = 'login';
-                this._lastLogedRequest = this.$.browserPanel;
+                this._lastLogedRequest = panel;
             }
         },
         handlePanelHidden: function (e) {
