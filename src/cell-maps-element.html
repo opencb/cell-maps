@@ -1,19 +1,21 @@
+<script src="../bower_components/file-saver.js/FileSaver.js"></script>
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/table/jso-table.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
 
-
 <link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">
+
+
+
+
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-info-widget.html">-->
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-fatigo-table.html">-->
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-go-viewer.html">-->
@@ -69,7 +71,6 @@
         jso-opencga-header {
             position: absolute;
             top: 0;
-            z-index: 10;
         }
 
         .content {
@@ -115,7 +116,6 @@
 
         #browser {
             /*width: 600px;*/
-
             height: 400px;
         }
 
@@ -141,63 +141,37 @@
             color: var(--accent-color);
             font-weight: normal;
         }
-
     </style>
     <template>
         <div class="content" menu-option="home,job">
-            <jso-panel id="jobsPanel" hidden collapsible movable closable
-                       on-hidden="handlePanelHidden">
+            <jso-panel id="jobsPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
                 <div class="header">
                     <i class="fa fa-rocket"></i>&nbsp; Browse jobs
                 </div>
                 <div class="container flex">
-                    <jso-opencga-job-browser id="jobrowser"
-                                             on-jobselect="handleJobSelect"
-                                             allowed-tools="{{allowedTools}}"
-                                             projects="{{projects}}"
-                                             on-need-refresh="handleUserNeedRefresh"></jso-opencga-job-browser>
+                    <jso-opencga-job-browser id="jobrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh"></jso-opencga-job-browser>
                 </div>
             </jso-panel>
         </div>
         <div class="content" menu-option="job">
-            <jso-job-result
-                    id="jobResult"
-                    jobItem="{{jobItem}}"
-                    hidden?="{{selectedOption != 'jobReady' }}"
-                    on-job-close="handleCloseJobResult"
-                    network-viewer="{{networkViewer}}">
+            <jso-job-result id="jobResult" jobItem="{{jobItem}}" hidden?="{{selectedOption != 'jobReady' }}" on-job-close="handleCloseJobResult" network-viewer="{{networkViewer}}">
             </jso-job-result>
             <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
         </div>
 
         <div class="content" menu-option="home">
-            <jso-network-viewer
-                    id="networkViewer"
-                    user-data="{{userData}}"
-                    studies="{{studies}}"
-                    selectedStudy="{{selectedStudy}}"
-                    projects="{{projects}}"
-                    on-need-refresh="handleUserNeedRefresh"
-                    hidden$="{{!(selectedOption == 'home' || selectedOption == '')}}">
+            <jso-network-viewer id="networkViewer" user-data="{{userData}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh" hidden$="{{!(selectedOption == 'home' || selectedOption == '')}}">
             </jso-network-viewer>
 
-            <jso-panel id="browserPanel" hidden collapsible movable closable
-                       on-hidden="handlePanelHidden">
+            <jso-panel id="browserPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
                 <div class="header">
                     <i class="fa fa-cloud"></i>&nbsp; Browse my data
                 </div>
-                <div class="container flex">
-                    <jso-opencga-browser id="browser"
-                                         on-fileselect="handleFileSelect"
-                                         bioformats="{{bioformats}}"
-                                         projects="{{projects}}"
-                                         on-need-refresh="handleUserNeedRefresh"></jso-opencga-browser>
-                </div>
+                <jso-opencga-browser id="browser" class="container flex" on-fileselect="handleFileSelect" bioformats="{{bioformats}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh"></jso-opencga-browser>
             </jso-panel>
         </div>
 
-        <jso-opencga-header id="jsoHeader" selected-option="{{selectedOption}}" user-data="{{userData}}"
-                            on-login="handleLogin" on-logout="handleLogout">
+        <jso-opencga-header id="jsoHeader" hide-jobs hide-browse hide-signup selected-option="{{selectedOption}}" user-data="{{userData}}" on-login="handleLogin" on-logout="handleLogout">
             <!--<div hidden class="icon">-->
             <!--<img src="" style="height: 0px;margin: 5px 0px 0 0;">-->
             <!--</div>-->
@@ -209,8 +183,7 @@
             <div id="menu" class="menu horizontal layout flex">
                 <div style="margin-left:4vw;"></div>
                 <!--<div style="margin-left:2vw;"></div>-->
-                <div title="Browse my data" class="option" on-click="handleLoggedOnlyMenuOption"
-                     data-panel="browserPanel">
+                <div title="Browse my data" class="option" on-click="handleLoggedOnlyMenuOption" data-panel="browserPanel">
                     <i class="fa fa-cloud"></i>
                     <span class="option-text">My data</span>
                 </div>
@@ -269,20 +242,17 @@
             bioformats: {
                 type: Array,
                 notify: true,
-                value: [
-                    {
-                        value: 'IDLIST',
-                        text: 'ID list'
-                    },
-                    {
-                        value: 'IDLIST_RANKED',
-                        text: 'ID list ranked'
-                    }
-                ]
+                value: [{
+                    value: 'IDLIST',
+                    text: 'ID list'
+                }, {
+                    value: 'IDLIST_RANKED',
+                    text: 'ID list ranked'
+                }]
             },
             allowedTools: {
                 type: Array,
-                value: ['snow', 'network-miner', 'fatigo', /* 'reactome-fi' */]
+                value: ['snow', 'network-miner', 'fatigo', /* 'reactome-fi' */ ]
             },
             cellBaseHost: {
                 type: String,
@@ -296,7 +266,7 @@
                 type: Object
             }
         },
-        ready: function () {
+        ready: function() {
             var me = this;
 
             /* Update active panels */
@@ -317,11 +287,11 @@
             /* Restore last session */
             this.networkViewer = this.$.networkViewer;
             this._loadNetworkSessionLocalStorage();
-            setInterval(function () {
+            setInterval(function() {
                 me.networkViewer.saveLocalStorage();
             }, 15000);
         },
-        selectedOptionChanged: function (neo, old) {
+        selectedOptionChanged: function(neo, old) {
             var menuItems = Polymer.dom(this.root).querySelectorAll('[menu-option]');
             for (var i = 0; i < menuItems.length; i++) {
                 var item = menuItems[i];
@@ -333,20 +303,20 @@
                 }
             }
         },
-        handleMenu: function (e) {
+        handleMenu: function(e) {
             var option = e.currentTarget.dataset['option'];
             this.setMenu(option);
         },
-        setMenu: function (option) {
+        setMenu: function(option) {
             if (option) {
                 this.selectedOption = option;
             }
         },
-        handleMenuOption: function (e) {
+        handleMenuOption: function(e) {
             var panel = this.$[e.currentTarget.dataset.panel];
             panel.hidden = !panel.hidden;
         },
-        handleLoggedOnlyMenuOption: function (e) {
+        handleLoggedOnlyMenuOption: function(e) {
             var panel = this.$[e.currentTarget.dataset.panel];
             if (this.$.jsoHeader.isLogged) {
                 panel.hidden = !panel.hidden;
@@ -355,7 +325,7 @@
                 this._lastLogedRequest = panel;
             }
         },
-        handlePanelHidden: function (e) {
+        handlePanelHidden: function(e) {
             var id = e.currentTarget.getAttribute('id');
             var sel = '[data-panel=' + id + ']';
             var el = Polymer.dom(this.$.menu).querySelector(sel);
@@ -365,38 +335,37 @@
                 el.setAttribute('active', '');
             }
         },
-        handleFileSelect: function (e) {
+        handleFileSelect: function(e) {
             console.log("file");
             console.log(e.detail);
             var file = e.detail;
-            if (file.index && file.index.status == 'READY') {
-            }
+            if (file.index && file.index.status == 'READY') {}
         },
-        handleJobSelect: function (e) {
+        handleJobSelect: function(e) {
             var job = e.detail;
             if (job && job.status === 'READY') {
                 this.set('selectedOption', 'job');
                 this.$.jobResult.set('jobItem', e.detail);
             }
         },
-        handleCloseJobResult: function (e) {
+        handleCloseJobResult: function(e) {
             this.set('selectedOption', 'home');
         },
 
-        handleLogin: function () {
+        handleLogin: function() {
             this.selectedOption = "home";
             if (this._lastLogedRequest) {
                 this._lastLogedRequest.hidden = false;
                 this._lastLogedRequest = null;
             }
         },
-        handleLogout: function () {
+        handleLogout: function() {
             this.$.browserPanel.hidden = true;
         },
-        handleUserNeedRefresh: function () {
+        handleUserNeedRefresh: function() {
             this.$.jsoHeader.getUserInfo(true);
         },
-        userDataChanged: function (neo, old) {
+        userDataChanged: function(neo, old) {
             var me = this;
             if (this.userData) {
                 var projectIds = [];
@@ -411,7 +380,7 @@
                         sid: Cookies("bioinfo_sid")
                     },
                     request: {
-                        success: function (response) {
+                        success: function(response) {
                             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                                 for (var i = 0; i < response.response.length; i++) {
                                     var r = response.response[i];
@@ -426,7 +395,7 @@
                             }
                             me.loading = false;
                         },
-                        error: function () {
+                        error: function() {
                             console.log('Server error, try again later.');
                             me.loading = false;
                         }
@@ -436,7 +405,7 @@
                 console.log("no user data")
             }
         },
-        _loadNetworkSessionLocalStorage: function () {
+        _loadNetworkSessionLocalStorage: function() {
             if (this.networkViewer.loadLocalStorage()) {
                 console.log('Session found :), restoring information... ')
 
@@ -444,7 +413,7 @@
                 console.log('Session not found :( ')
             }
         },
-        __iliketomoveit: function () {
+        __iliketomoveit: function() {
             this.$.networkViewer.setLayout('Force directed (simulation)')
         },
     });
