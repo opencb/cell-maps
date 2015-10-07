@@ -1,105 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cell Maps</title>
-    <!--Fonts-->
-    <link href='src/fonts/fonts.css' rel='stylesheet' type='text/css'>
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <!--Web Components-->
-    <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
-    <link rel="import" href="src/cell-maps-element.html">
+    <!-- Chrome for Android theme color -->
+    <!--<meta name="theme-color" content="#303F9F">-->
+    <meta name="theme-color" content="#000000">
 
-    <script src="bower_components/bowser/bowser.min.js"></script>
+    <!-- Web Application Manifest -->
+    <link rel="manifest" href="manifest.json">
 
+    <!-- Chrome for Android Theme color -->
+    <meta name="msapplication-TileColor" content="#3372DF">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Cell Maps">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Cell Maps">
+
+    <!-- Force Microsoft use latest web tech -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <!-- END meta -->
 
     <!--Config-->
-    <script src="src/cm-config.js"></script>
+    <script src="conf/config.js"></script>
 
-    <style>
-        html {
-            /*overflow:hidden;*/
-            /*overflow-x:hidden;*/
-            /*overflow-y:scroll;*/
-            /*background-color: #314559;*/
-            background-color: #435f7a;
-            /*background-color: #ececec;*/
-            /*background-color: #FFFFFF;*/
-        }
+    <!--Fonts-->
+    <link href='lib/jsorolla/styles/fonts/fonts.css' rel='stylesheet' type='text/css'>
+    <link href='bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
 
-        html, body {
-            position: relative;
-            margin: 0px;
-            font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, 'sans-serif' !important;
-        }
-
-        .iconloading1:after {
-            margin: 10px;
-            font-family: FontAwesome;
-            content: '\f021';
-        }
-    </style>
+    <!--CSS-->
+    <link href='lib/jsorolla/src/lib/components/jso-global.css' rel='stylesheet' type='text/css'>
+    <link href='lib/jsorolla/src/lib/components/jso-form.css' rel='stylesheet' type='text/css'>
+    <link href='lib/jsorolla/src/lib/components/jso-dropdown.css' rel='stylesheet' type='text/css'>
 
 
-    <script>
-        WORKERS_PATH = 'lib/jsorolla/src/lib/';
-    </script>
+    <!--Web Components-->
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+    <link rel="import" href="src/cell-maps-element.html">
+
+    <link rel="import" href="conf/theme.html">
+
 </head>
 
-<body>
-<div id="loading"
-        style="
-        box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.2);
-        display:none;
-        font-size: 18px;
-        position:fixed;
-        margin:auto auto;
-        padding:30px;
-        left:0;
-        right:0;
-        top:30px;
-        width:550px;
-        background-color:#314559;
-        text-align: center;
-        border: 1px solid #AAA;
-        color:#DDD;">
-    <b>Initializing... please wait.</b>    <span class="iconloading1" style="color:#FFAD76"></span>
-    <br>
-    <br>
-    <div style="font-size: 15px;">
-        <div>
-            Click "continue" if your browser shows:
-            "Warning: Unresponsive script"
-        </div>
-        <div>
-            This program has been optimized for:
-            Chrome, Chromium and Opera
-        </div>
-    </div>
-</div>
+<body unresolved class="fullbleed">
+<cell-maps-element version="1.0.4"></cell-maps-element>
 <script>
-    var element;
-    var loadingEl = document.querySelector('#loading');
-
-    var init = function () {
-        element = document.createElement('cell-maps-element');
-        document.body.appendChild(element);
-        document.body.removeChild(loadingEl);
-    };
-
-    if (bowser.name == "Chrome" || bowser.name == "Opera") {
-        init();
-    } else {
-        loadingEl.style.display = 'block';
-    }
-    window.addEventListener('polymer-ready', function () {
-        console.log('polymer-ready');
-        if (!(bowser.name == "Chrome" || bowser.name == "Opera")) {
-            setTimeout(function () {
-                init();
-            }, 20);
-        }
-    });
+    var cellMaps = document.querySelector('cell-maps-element');
 </script>
 
 </body>
