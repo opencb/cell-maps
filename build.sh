@@ -33,7 +33,7 @@ mv $BP/tmp/$NAME.js $BP/
 mv $BP/tmp/$NAME.min.js $BP/
 cp -r conf $BP/
 cp -r example-files $BP/
-cp -r cell-maps-index.html $BP/index.html
+cp -r $NAME-index.html $BP/index.html
 
 #
 # fix index.html paths

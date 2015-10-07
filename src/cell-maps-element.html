@@ -56,18 +56,6 @@
             border-bottom: 2px solid var(--accent-color);
         }
 
-        div.icon {
-            margin-left: 15px;
-        }
-
-        div.menu-button {
-            padding: 0 10px;
-        }
-
-        div.menu-button:hover {
-            background-color: rgba(0, 0, 0, 0.20);
-        }
-
         jso-opencga-header {
             position: absolute;
             top: 0;
@@ -171,7 +159,7 @@
             </jso-panel>
         </div>
 
-        <jso-opencga-header id="jsoHeader" hide-jobs hide-browse hide-signup selected-option="{{selectedOption}}" user-data="{{userData}}" on-login="handleLogin" on-logout="handleLogout">
+        <jso-opencga-header id="jsoHeader" hide-jobs hide-browse selected-option="{{selectedOption}}" user-data="{{userData}}" on-login="handleLogin" on-logout="handleLogout">
             <!--<div hidden class="icon">-->
             <!--<img src="" style="height: 0px;margin: 5px 0px 0 0;">-->
             <!--</div>-->
@@ -183,16 +171,16 @@
             <div id="menu" class="menu horizontal layout flex">
                 <div style="margin-left:4vw;"></div>
                 <!--<div style="margin-left:2vw;"></div>-->
-                <div title="Browse my data" class="option" on-click="handleLoggedOnlyMenuOption" data-panel="browserPanel">
+                <div title="Browse my data" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="browserPanel">
                     <i class="fa fa-cloud"></i>
                     <span class="option-text">My data</span>
                 </div>
-                <div title="Browse my jobs" class="option" on-click="handleLoggedOnlyMenuOption" data-panel="jobsPanel">
+                <div title="Browse my jobs" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="jobsPanel">
                     <i class="fa fa-rocket"></i>
                     <span class="option-text">My jobs</span>
                 </div>
                 <!--<div class="flex" style="margin-left:2vw;"></div>-->
-                <!--<div title="Settings" class="option" on-click="handleMenuOption" data-panel="settingsPanel">-->
+                <!--<div title="Settings" class="option" on-click="handleMenuPanel" data-panel="settingsPanel">-->
                 <!--<i class="fa fa-wrench"></i>-->
                 <!--<span class="option-text">Settings</span>-->
                 <!--</div>-->
@@ -303,7 +291,7 @@
                 }
             }
         },
-        handleMenu: function(e) {
+        handleMenuOption: function(e) {
             var option = e.currentTarget.dataset['option'];
             this.setMenu(option);
         },
@@ -312,11 +300,11 @@
                 this.selectedOption = option;
             }
         },
-        handleMenuOption: function(e) {
+        handleMenuPanel: function(e) {
             var panel = this.$[e.currentTarget.dataset.panel];
             panel.hidden = !panel.hidden;
         },
-        handleLoggedOnlyMenuOption: function(e) {
+        handleLoggedOnlyMenuPanel: function(e) {
             var panel = this.$[e.currentTarget.dataset.panel];
             if (this.$.jsoHeader.isLogged) {
                 panel.hidden = !panel.hidden;
