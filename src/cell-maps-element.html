@@ -274,11 +274,13 @@
             }
 
             /* Restore last session */
-            this.networkViewer = this.$.networkViewer;
-            this._loadNetworkSessionLocalStorage();
-            setInterval(function() {
-                me.networkViewer.saveLocalStorage();
-            }, 15000);
+            this.async(function() {
+                this.networkViewer = this.$.networkViewer;
+                this._loadNetworkSessionLocalStorage();
+                setInterval(function() {
+                    me.networkViewer.saveLocalStorage();
+                }, 15000);
+            });
         },
         selectedOptionChanged: function(neo, old) {
             var menuItems = Polymer.dom(this.root).querySelectorAll('[menu-option]');
