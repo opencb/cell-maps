@@ -142,7 +142,7 @@
             </jso-panel>
         </div>
         <div class="content" menu-option="job">
-            <jso-job-result id="jobResult" jobItem="{{jobItem}}" hidden?="{{selectedOption != 'jobReady' }}" on-job-close="handleCloseJobResult" network-viewer="{{networkViewer}}">
+            <jso-job-result id="jobResult" jobItem="{{jobItem}}" on-job-close="handleCloseJobResult" network-viewer="{{networkViewer}}" selected-option="{{selectedOption}}">
             </jso-job-result>
             <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
         </div>

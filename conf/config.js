@@ -9,11 +9,11 @@ OPENCGA_HOST = "http://ws.babelomics.org/opencga";
 OPENCGA_OLD_URL_FORMAT = true;
 
 CELLBASE_VERSION = "v3";
-CELLBASE_HOST = "http://bioinfodev.hpc.cam.ac.uk/cellbase";
+CELLBASE_HOST = "http://bioinfo.hpc.cam.ac.uk/cellbase";
 
 // Development
-//OPENCGA_VERSION = "v1";
-//OPENCGA_HOST = "http://test.babelomics.org/opencga";
+// OPENCGA_VERSION = "v1";
+// OPENCGA_HOST = "http://test.babelomics.org/opencga";
 
 CELLBASE_VERSION = "v3";
 CELLBASE_HOST = "http://bioinfodev.hpc.cam.ac.uk/cellbase";
