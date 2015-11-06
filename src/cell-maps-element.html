@@ -1,4 +1,5 @@
 <script src="../bower_components/file-saver.js/FileSaver.js"></script>
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-application-behavior.html">
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 
 
@@ -10,10 +11,7 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
-
 <link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">
-
-
 
 
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-info-widget.html">-->
@@ -148,7 +146,7 @@
         </div>
 
         <div class="content" menu-option="home">
-            <jso-network-viewer id="networkViewer" user-data="{{userData}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh" hidden$="{{!(selectedOption == 'home' || selectedOption == '')}}">
+            <jso-network-viewer id="networkViewer" user-data="{{userData}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh">
             </jso-network-viewer>
 
             <jso-panel id="browserPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
@@ -207,27 +205,8 @@
 <script>
     Polymer({
         is: "cell-maps-element",
+        behaviors: [JsoApplicationBehavior],
         properties: {
-            version: {
-                type: String,
-                reflectToAttribute: true
-            },
-            selectedOption: {
-                type: String,
-                value: "home",
-                notify: true,
-                reflectToAttribute: true,
-                observer: 'selectedOptionChanged'
-            },
-            userData: {
-                type: Object,
-                notify: true,
-                observer: 'userDataChanged'
-            },
-            projects: {
-                type: Array,
-                notify: true
-            },
             bioformats: {
                 type: Array,
                 notify: true,
@@ -258,20 +237,20 @@
         ready: function() {
             var me = this;
 
-            /* Update active panels */
-            var panels = Polymer.dom(this.root).querySelectorAll('jso-panel');
-            for (var i = 0; i < panels.length; i++) {
-                var panEl = panels[i];
-                var id = panEl.getAttribute('id');
-                var el = Polymer.dom(this.$.menu).querySelector('[data-panel=' + id + ']');
-                if (el) {
-                    if (panEl.hidden) {
-                        el.removeAttribute('active')
-                    } else {
-                        el.setAttribute('active', '');
-                    }
-                }
-            }
+            // /* Update active panels */
+            // var panels = Polymer.dom(this.root).querySelectorAll('jso-panel');
+            // for (var i = 0; i < panels.length; i++) {
+            //     var panEl = panels[i];
+            //     var id = panEl.getAttribute('id');
+            //     var el = Polymer.dom(this.$.menu).querySelector('[data-panel=' + id + ']');
+            //     if (el) {
+            //         if (panEl.hidden) {
+            //             el.removeAttribute('active')
+            //         } else {
+            //             el.setAttribute('active', '');
+            //         }
+            //     }
+            // }
 
             /* Restore last session */
             this.async(function() {
@@ -281,50 +260,6 @@
                     me.networkViewer.saveLocalStorage();
                 }, 15000);
             });
-        },
-        selectedOptionChanged: function(neo, old) {
-            var menuItems = Polymer.dom(this.root).querySelectorAll('[menu-option]');
-            for (var i = 0; i < menuItems.length; i++) {
-                var item = menuItems[i];
-                var currentItemValues = item.getAttribute("menu-option").split(',');
-                if (currentItemValues.indexOf(neo) != -1) {
-                    item.removeAttribute("hidden");
-                } else {
-                    item.setAttribute('hidden', '');
-                }
-            }
-        },
-        handleMenuOption: function(e) {
-            var option = e.currentTarget.dataset['option'];
-            this.setMenu(option);
-        },
-        setMenu: function(option) {
-            if (option) {
-                this.selectedOption = option;
-            }
-        },
-        handleMenuPanel: function(e) {
-            var panel = this.$[e.currentTarget.dataset.panel];
-            panel.hidden = !panel.hidden;
-        },
-        handleLoggedOnlyMenuPanel: function(e) {
-            var panel = this.$[e.currentTarget.dataset.panel];
-            if (this.$.jsoHeader.isLogged) {
-                panel.hidden = !panel.hidden;
-            } else {
-                this.selectedOption = 'login';
-                this._lastLogedRequest = panel;
-            }
-        },
-        handlePanelHidden: function(e) {
-            var id = e.currentTarget.getAttribute('id');
-            var sel = '[data-panel=' + id + ']';
-            var el = Polymer.dom(this.$.menu).querySelector(sel);
-            if (e.currentTarget.hidden) {
-                el.removeAttribute('active')
-            } else {
-                el.setAttribute('active', '');
-            }
         },
         handleFileSelect: function(e) {
             console.log("file");
@@ -342,7 +277,6 @@
         handleCloseJobResult: function(e) {
             this.set('selectedOption', 'home');
         },
-
         handleLogin: function() {
             this.selectedOption = "home";
             if (this._lastLogedRequest) {
@@ -355,46 +289,6 @@
         },
         handleUserNeedRefresh: function() {
             this.$.jsoHeader.getUserInfo(true);
-        },
-        userDataChanged: function(neo, old) {
-            var me = this;
-            if (this.userData) {
-                var projectIds = [];
-                for (var i = 0; i < this.userData.projects.length; i++) {
-                    var p = this.userData.projects[i];
-                    projectIds.push(p.id);
-                }
-                var projects = [];
-                OpencgaManager.projects.studies({
-                    id: projectIds.join(','),
-                    query: {
-                        sid: Cookies("bioinfo_sid")
-                    },
-                    request: {
-                        success: function(response) {
-                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                for (var i = 0; i < response.response.length; i++) {
-                                    var r = response.response[i];
-                                    me.userData.projects[i].studies = r.result;
-                                    projects.push(me.userData.projects[i]);
-                                }
-                                /* update projects property*/
-                                me.projects = projects;
-                            } else {
-                                console.log(response.error);
-                                console.log(response.response[0].errorMsg);
-                            }
-                            me.loading = false;
-                        },
-                        error: function() {
-                            console.log('Server error, try again later.');
-                            me.loading = false;
-                        }
-                    }
-                });
-            } else {
-                console.log("no user data")
-            }
         },
         _loadNetworkSessionLocalStorage: function() {
             if (this.networkViewer.loadLocalStorage()) {

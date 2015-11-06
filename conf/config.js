@@ -6,14 +6,15 @@
 // Default
 OPENCGA_VERSION = "v1";
 OPENCGA_HOST = "http://ws.babelomics.org/opencga";
-OPENCGA_OLD_URL_FORMAT = true;
 
 CELLBASE_VERSION = "v3";
 CELLBASE_HOST = "http://bioinfo.hpc.cam.ac.uk/cellbase";
+CELLBASE_LOG = true;
 
 // Development
-// OPENCGA_VERSION = "v1";
-// OPENCGA_HOST = "http://test.babelomics.org/opencga";
+OPENCGA_VERSION = "v1";
+OPENCGA_HOST = "http://test.babelomics.org/opencga-0.7-dev";
+OPENCGA_LOG = true;
 
 CELLBASE_VERSION = "v3";
 CELLBASE_HOST = "http://bioinfodev.hpc.cam.ac.uk/cellbase";
