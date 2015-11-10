@@ -135,7 +135,8 @@
                     <i class="fa fa-rocket"></i>&nbsp; Browse jobs
                 </div>
                 <div class="container flex">
-                    <jso-opencga-job-browser id="jobrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh"></jso-opencga-job-browser>
+                    <jso-opencga-job-browser id="jobrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh">
+                    </jso-opencga-job-browser>
                 </div>
             </jso-panel>
         </div>
@@ -153,7 +154,11 @@
                 <div class="header">
                     <i class="fa fa-cloud"></i>&nbsp; Browse my data
                 </div>
-                <jso-opencga-browser id="browser" class="container flex" on-fileselect="handleFileSelect" bioformats="{{bioformats}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh"></jso-opencga-browser>
+                <jso-opencga-browser id="browser" class="container flex" on-fileselect="handleFileSelect" bioformats="{{bioformats}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh">
+                    <div class="jso-btn jso-btn-shdw custom-button" file-ext="sif">
+                        View on CellMaps
+                    </div>
+                </jso-opencga-browser>
             </jso-panel>
         </div>
 
