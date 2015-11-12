@@ -16,12 +16,12 @@
     "dependencies": {
         "polymer": "Polymer/polymer#1.2.1",
         "iron-flex-layout": "PolymerElements/iron-flex-layout#1.0.5",
+        "fontawesome": "*",
         "backbone": "~1.1.2",
         "bowser": "~0.7.2",
         "cookies-js": "~1.1.0",
         "crypto-js-evanvosberg": "3.1.4",
         "file-saver.js": "~1.20150507.2",
-        "fontawesome": "*",
         "gl-matrix": "~2.2.1",
         "highcharts-release": "~4.0.4",
         "jquery": "1.11.3",
