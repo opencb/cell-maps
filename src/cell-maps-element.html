@@ -2,7 +2,6 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-application-behavior.html">
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 
-
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
@@ -12,7 +11,6 @@
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">
-
 
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-info-widget.html">-->
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-fatigo-table.html">-->
@@ -64,7 +62,7 @@
             width: 100%;
             top: 60px;
             height: calc(100vh - 60px);
-            background-color: transparent;
+            /*background-color: transparent;*/
         }
 
         jso-job-result {
@@ -129,6 +127,13 @@
         }
     </style>
     <template>
+        <div class="content" menu-option="job">
+            <jso-job-result id="jobResult" jobItem="{{jobItem}}" on-job-close="handleCloseJobResult" network-viewer="{{networkViewer}}" selected-option="{{selectedOption}}">
+            </jso-job-result>
+            <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
+        </div>
+
+
         <div class="content" menu-option="home,job">
             <jso-panel id="jobsPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
                 <div class="header">
@@ -140,11 +145,6 @@
                 </div>
             </jso-panel>
         </div>
-        <div class="content" menu-option="job">
-            <jso-job-result id="jobResult" jobItem="{{jobItem}}" on-job-close="handleCloseJobResult" network-viewer="{{networkViewer}}" selected-option="{{selectedOption}}">
-            </jso-job-result>
-            <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
-        </div>
 
         <div class="content" menu-option="home">
             <jso-network-viewer id="networkViewer" user-data="{{userData}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh">
@@ -155,9 +155,9 @@
                     <i class="fa fa-cloud"></i>&nbsp; Browse my data
                 </div>
                 <jso-opencga-browser id="browser" class="container flex" on-fileselect="handleFileSelect" bioformats="{{bioformats}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh">
-                    <div class="jso-btn jso-btn-shdw custom-button" file-ext="sif">
+                    <!-- <div class="jso-btn jso-btn-shdw custom-button" file-ext="sif">
                         View on CellMaps
-                    </div>
+                    </div> -->
                 </jso-opencga-browser>
             </jso-panel>
         </div>
@@ -202,109 +202,105 @@
                 </a>
             </jso-help-menu>
         </jso-opencga-header>
-
-
         <!--<jso-footer></jso-footer>-->
     </template>
+
+    <script>
+        Polymer({
+            is: "cell-maps-element",
+            behaviors: [JsoApplicationBehavior],
+            properties: {
+                bioformats: {
+                    type: Array,
+                    notify: true,
+                    value: [{
+                        value: 'IDLIST',
+                        text: 'ID list'
+                    }, {
+                        value: 'IDLIST_RANKED',
+                        text: 'ID list ranked'
+                    }]
+                },
+                allowedTools: {
+                    type: Array,
+                    value: ['snow', 'network-miner', 'fatigo', /* 'reactome-fi' */ ]
+                },
+                cellBaseHost: {
+                    type: String,
+                    value: CellBaseManager.host
+                },
+                opencgaHost: {
+                    type: String,
+                    value: OpencgaManager.host
+                },
+                networkViewer: {
+                    type: Object
+                }
+            },
+            ready: function() {
+                var me = this;
+                // /* Update active panels */
+                // var panels = Polymer.dom(this.root).querySelectorAll('jso-panel');
+                // for (var i = 0; i < panels.length; i++) {
+                //     var panEl = panels[i];
+                //     var id = panEl.getAttribute('id');
+                //     var el = Polymer.dom(this.$.menu).querySelector('[data-panel=' + id + ']');
+                //     if (el) {
+                //         if (panEl.hidden) {
+                //             el.removeAttribute('active')
+                //         } else {
+                //             el.setAttribute('active', '');
+                //         }
+                //     }
+                // }
+                /* Restore last session */
+                this.async(function() {
+                    this.networkViewer = this.$.networkViewer;
+                    this._loadNetworkSessionLocalStorage();
+                    setInterval(function() {
+                        me.networkViewer.saveLocalStorage();
+                    }, 15000);
+                });
+            },
+            handleFileSelect: function(e) {
+                console.log("file");
+                console.log(e.detail);
+                var file = e.detail;
+                if (file.index && file.index.status == 'READY') {}
+            },
+            handleJobSelect: function(e) {
+                var job = e.detail;
+                if (job && job.status === 'READY') {
+                    this.set('selectedOption', 'job');
+                    this.$.jobResult.set('jobItem', e.detail);
+                }
+            },
+            handleCloseJobResult: function(e) {
+                this.set('selectedOption', 'home');
+            },
+            handleLogin: function() {
+                this.selectedOption = "home";
+                if (this._lastLogedRequest) {
+                    this._lastLogedRequest.hidden = false;
+                    this._lastLogedRequest = null;
+                }
+            },
+            handleLogout: function() {
+                this.$.browserPanel.hidden = true;
+            },
+            handleUserNeedRefresh: function() {
+                this.$.jsoHeader.getUserInfo(true);
+            },
+            _loadNetworkSessionLocalStorage: function() {
+                if (this.networkViewer.loadLocalStorage()) {
+                    console.log('Session found :), restoring information... ')
+                } else {
+                    console.log('Session not found :( ')
+                }
+            },
+            __iliketomoveit: function() {
+                this.$.networkViewer.setLayout('Force directed (simulation)')
+            },
+        });
+    </script>
 </dom-module>
-<script>
-    Polymer({
-        is: "cell-maps-element",
-        behaviors: [JsoApplicationBehavior],
-        properties: {
-            bioformats: {
-                type: Array,
-                notify: true,
-                value: [{
-                    value: 'IDLIST',
-                    text: 'ID list'
-                }, {
-                    value: 'IDLIST_RANKED',
-                    text: 'ID list ranked'
-                }]
-            },
-            allowedTools: {
-                type: Array,
-                value: ['snow', 'network-miner', 'fatigo', /* 'reactome-fi' */ ]
-            },
-            cellBaseHost: {
-                type: String,
-                value: CellBaseManager.host
-            },
-            opencgaHost: {
-                type: String,
-                value: OpencgaManager.host
-            },
-            networkViewer: {
-                type: Object
-            }
-        },
-        ready: function() {
-            var me = this;
-
-            // /* Update active panels */
-            // var panels = Polymer.dom(this.root).querySelectorAll('jso-panel');
-            // for (var i = 0; i < panels.length; i++) {
-            //     var panEl = panels[i];
-            //     var id = panEl.getAttribute('id');
-            //     var el = Polymer.dom(this.$.menu).querySelector('[data-panel=' + id + ']');
-            //     if (el) {
-            //         if (panEl.hidden) {
-            //             el.removeAttribute('active')
-            //         } else {
-            //             el.setAttribute('active', '');
-            //         }
-            //     }
-            // }
-
-            /* Restore last session */
-            this.async(function() {
-                this.networkViewer = this.$.networkViewer;
-                this._loadNetworkSessionLocalStorage();
-                setInterval(function() {
-                    me.networkViewer.saveLocalStorage();
-                }, 15000);
-            });
-        },
-        handleFileSelect: function(e) {
-            console.log("file");
-            console.log(e.detail);
-            var file = e.detail;
-            if (file.index && file.index.status == 'READY') {}
-        },
-        handleJobSelect: function(e) {
-            var job = e.detail;
-            if (job && job.status === 'READY') {
-                this.set('selectedOption', 'job');
-                this.$.jobResult.set('jobItem', e.detail);
-            }
-        },
-        handleCloseJobResult: function(e) {
-            this.set('selectedOption', 'home');
-        },
-        handleLogin: function() {
-            this.selectedOption = "home";
-            if (this._lastLogedRequest) {
-                this._lastLogedRequest.hidden = false;
-                this._lastLogedRequest = null;
-            }
-        },
-        handleLogout: function() {
-            this.$.browserPanel.hidden = true;
-        },
-        handleUserNeedRefresh: function() {
-            this.$.jsoHeader.getUserInfo(true);
-        },
-        _loadNetworkSessionLocalStorage: function() {
-            if (this.networkViewer.loadLocalStorage()) {
-                console.log('Session found :), restoring information... ')
-
-            } else {
-                console.log('Session not found :( ')
-            }
-        },
-        __iliketomoveit: function() {
-            this.$.networkViewer.setLayout('Force directed (simulation)')
-        },
-    });
-</script>

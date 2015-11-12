@@ -16,7 +16,7 @@ CELLBASE_HOST = "http://bioinfo.hpc.cam.ac.uk/cellbase";
 CELLBASE_LOG = true;
 
 OPENCGA_VERSION = "v1";
-OPENCGA_HOST = "http://test.babelomics.org/opencga-0.7-dev";
+OPENCGA_HOST = "http://ws1.babelomics.org/opencga-0.7";
 OPENCGA_LOG = true;
 
 STUDY_NAME = "CHECK_THIS";
