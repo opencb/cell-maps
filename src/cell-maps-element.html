@@ -61,12 +61,12 @@
             position: absolute;
             width: 100%;
             top: 60px;
-            height: calc(100vh - 60px);
+            /*height: calc(100vh - 60px);*/
             /*background-color: transparent;*/
         }
 
         jso-job-result {
-            min-height: 100%;
+            min-height: calc(100vh - 60px);
         }
 
         jso-network-viewer {
@@ -140,16 +140,10 @@
                     <i class="fa fa-rocket"></i>&nbsp; Browse jobs
                 </div>
                 <div class="container flex">
-                    <jso-opencga-job-browser id="jobrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh">
+                    <jso-opencga-job-browser id="jobrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh" disable-relaunch>
                     </jso-opencga-job-browser>
                 </div>
             </jso-panel>
-        </div>
-
-        <div class="content" menu-option="home">
-            <jso-network-viewer id="networkViewer" user-data="{{userData}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh">
-            </jso-network-viewer>
-
             <jso-panel id="browserPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
                 <div class="header">
                     <i class="fa fa-cloud"></i>&nbsp; Browse my data
@@ -160,6 +154,11 @@
                     </div> -->
                 </jso-opencga-browser>
             </jso-panel>
+        </div>
+
+        <div class="content" menu-option="home">
+            <jso-network-viewer id="networkViewer" user-data="{{userData}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh">
+            </jso-network-viewer>
         </div>
 
         <jso-opencga-header id="jsoHeader" show-anonymous hide-jobs hide-browse selected-option="{{selectedOption}}" user-data="{{userData}}" on-login="handleLogin" on-logout="handleLogout">
@@ -260,6 +259,12 @@
                     setInterval(function() {
                         me.networkViewer.saveLocalStorage();
                     }, 15000);
+
+                    if (window.innerHeight < 800) {
+                        this.networkViewer.$.nodeRenderPanel.hidden = true;
+                        this.networkViewer.$.edgeRenderPanel.hidden = true;
+                    }
+
                 });
             },
             handleFileSelect: function(e) {
