@@ -81,14 +81,14 @@
 
         #browserPanel {
             position: absolute;
-            top: 0px;
+            top: 0;
             left: 0;
             width: 600px;
         }
 
         #jobsPanel {
             position: absolute;
-            top: 0px;
+            top: 0;
             right: 0;
             width: 600px;
         }
@@ -134,13 +134,18 @@
         </div>
 
 
+        <div class="content" menu-option="home">
+            <jso-network-viewer id="networkViewer" user-data="{{userData}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh" on-job-launched="handleJobLaunched">
+            </jso-network-viewer>
+        </div>
+
         <div class="content" menu-option="home,job">
             <jso-panel id="jobsPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
                 <div class="header">
                     <i class="fa fa-rocket"></i>&nbsp; Browse jobs
                 </div>
                 <div class="container flex">
-                    <jso-opencga-job-browser id="jobrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh" disable-relaunch>
+                    <jso-opencga-job-browser id="jobBrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh" disable-relaunch>
                     </jso-opencga-job-browser>
                 </div>
             </jso-panel>
@@ -154,11 +159,6 @@
                     </div> -->
                 </jso-opencga-browser>
             </jso-panel>
-        </div>
-
-        <div class="content" menu-option="home">
-            <jso-network-viewer id="networkViewer" user-data="{{userData}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh">
-            </jso-network-viewer>
         </div>
 
         <jso-opencga-header id="jsoHeader" show-anonymous hide-jobs hide-browse selected-option="{{selectedOption}}" user-data="{{userData}}" on-login="handleLogin" on-logout="handleLogout">
@@ -283,6 +283,9 @@
             handleCloseJobResult: function(e) {
                 this.set('selectedOption', 'home');
             },
+            handleJobLaunched:function(e){
+                this.$.jobsPanel.show();
+            },
             handleLogin: function() {
                 this.selectedOption = "home";
                 if (this._lastLogedRequest) {
@@ -292,6 +295,7 @@
             },
             handleLogout: function() {
                 this.$.browserPanel.hidden = true;
+                this.$.jobsPanel.hidden = true;
             },
             handleUserNeedRefresh: function() {
                 this.$.jsoHeader.getUserInfo(true);
