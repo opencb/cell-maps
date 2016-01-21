@@ -135,14 +135,14 @@
 
 
         <div class="content" menu-option="home">
-            <jso-network-viewer id="networkViewer" user-data="{{userData}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh" on-job-launched="handleJobLaunched">
+            <jso-network-viewer id="networkViewer" user-data="{{userData}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh" on-job-launched="handleJobLaunched" on-session-manager-hidden="handleSessionManagerHidden">
             </jso-network-viewer>
         </div>
 
         <div class="content" menu-option="home,job">
             <jso-panel id="jobsPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
                 <div class="header">
-                    <i class="fa fa-rocket"></i>&nbsp; Browse jobs
+                    <i class="fa fa-rocket"></i>&nbsp; Browse my analysis
                 </div>
                 <div class="container flex">
                     <jso-opencga-job-browser id="jobBrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh" disable-relaunch>
@@ -151,7 +151,7 @@
             </jso-panel>
             <jso-panel id="browserPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
                 <div class="header">
-                    <i class="fa fa-cloud"></i>&nbsp; Browse my data
+                    <i class="fa fa-cloud"></i>&nbsp; Browse my analysis data
                 </div>
                 <jso-opencga-browser id="browser" class="container flex" on-fileselect="handleFileSelect" bioformats="{{bioformats}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh">
                     <!-- <div class="jso-btn jso-btn-shdw custom-button" file-ext="sif">
@@ -171,16 +171,20 @@
             </span>
 
             <div id="menu" class="menu horizontal layout flex">
-                <div class="flex"></div>
                 <!-- <div style="margin-left:4vw;"></div> -->
-                <!--<div style="margin-left:2vw;"></div>-->
-                <div title="Browse my data" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="browserPanel">
+                <div style="margin-left:2vw;"></div>
+                <div title="Sessions" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="#networkViewer jso-panel[id=sessionManagerPanel]">
                     <i class="fa fa-cloud"></i>
-                    <span class="option-text">My data</span>
+                    <span class="option-text">My Sessions</span>
+                </div>
+                <div class="flex"></div>
+                <div title="Browse my data" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="browserPanel">
+                    <i class="fa fa-folder"></i>
+                    <span class="option-text">My analysis data</span>
                 </div>
                 <div title="Browse my jobs" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="jobsPanel">
                     <i class="fa fa-rocket"></i>
-                    <span class="option-text">My jobs</span>
+                    <span class="option-text">My analysis</span>
                 </div>
                 <!--<div class="flex" style="margin-left:2vw;"></div>-->
                 <!--<div title="Settings" class="option" on-click="handleMenuPanel" data-panel="settingsPanel">-->
@@ -299,6 +303,15 @@
             },
             handleUserNeedRefresh: function() {
                 this.$.jsoHeader.getUserInfo(true);
+            },
+            handleSessionManagerHidden:function(e){
+                var panel = e.detail;
+                var option = Polymer.dom(this.$.menu).querySelector('[title=Sessions]');
+                if (panel.hidden) {
+                    option.removeAttribute('active');
+                } else {
+                    option.setAttribute('active', '');
+                }
             },
             _loadNetworkSessionLocalStorage: function() {
                 if (this.networkViewer.loadLocalStorage()) {
